@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1440" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family:"Noto Sans SC"; src:url("fonts/NotoSansSC-400.woff2") format("woff2"); font-weight:400; font-display:block; }
+      @font-face { font-family:"Noto Sans SC"; src:url("fonts/NotoSansSC-700.woff2") format("woff2"); font-weight:700; font-display:block; }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      :root { --c1:#2b5bff; --c2:#a13bff; --c3:#ff2d7a; --accent:#22d3ee; --ink:#e6ecff; --pur:#c2a6ff; --base:#04060f; --dim:#7f93c0; }
+      html, body { width:1080px; height:1440px; overflow:hidden; background:var(--base); color:var(--ink); font-family:"Noto Sans SC", sans-serif; }
+      #root { position:relative; width:1080px; height:1440px; }
+      .course-brand-mark{position:absolute;top:28px;left:50%;width:92px;height:92px;transform:translateX(-50%);object-fit:contain;z-index:60;pointer-events:none}
+      .bg { position:absolute; inset:0; overflow:hidden; z-index:0; background:var(--base); }
+      .bg canvas { position:absolute; inset:0; width:1080px; height:1440px; display:block; }
+      .depth { position:absolute; inset:0; z-index:1; overflow:hidden; }
+      .ghost { position:absolute; font-size:440px; font-weight:700; color:#a9c7ff; opacity:.05; white-space:nowrap; letter-spacing:-10px; }
+      .g1 { top:120px; left:-60px; } .g2 { bottom:60px; right:-40px; }
+      .content { position:absolute; inset:0; z-index:2; }
+
+      .lessonbar { position:absolute; top:54px; left:64px; width:952px; display:flex; align-items:center; justify-content:space-between; }
+      .ltag { background:linear-gradient(90deg,var(--accent),var(--c1)); color:var(--base); font-size:26px; font-weight:700; letter-spacing:4px; padding:9px 22px; border-radius:6px; box-shadow:0 0 24px rgba(34,211,238,.5); }
+      .lno { color:var(--pur); font-size:26px; font-weight:700; letter-spacing:2px; opacity:.9; }
+
+      .stage { position:absolute; top:240px; left:64px; width:952px; height:800px; }
+      .scene { position:absolute; inset:0; }
+
+      /* 场景1 传送带 */
+      .tcard { position:absolute; left:50%; top:50%; font-size:44px; font-weight:700; color:var(--ink); padding:22px 36px; border-radius:18px;
+        background:rgba(22,34,68,.72); border:2px solid rgba(127,217,255,.38); box-shadow:0 10px 44px rgba(0,0,0,.45),0 0 26px rgba(43,91,255,.28); white-space:nowrap; }
+      .s1hub { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:150px; height:150px; border-radius:50%; opacity:0;
+        background:radial-gradient(circle,rgba(34,211,238,.5),rgba(43,91,255,.15) 70%); border:2px solid var(--accent); box-shadow:0 0 50px var(--accent);
+        display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:700; color:#fff; }
+
+      /* 场景2 便利/习惯 */
+      .pbar { position:absolute; left:50%; top:160px; transform:translateX(-50%); width:780px; min-height:90px; padding:24px 32px; border-radius:18px;
+        background:rgba(16,24,50,.72); border:2px solid rgba(127,217,255,.4); box-shadow:0 0 30px rgba(43,91,255,.25); font-size:38px; color:var(--ink); opacity:0; display:flex; align-items:center; }
+      .pcur { display:inline-block; width:4px; height:42px; background:var(--accent); margin-left:4px; box-shadow:0 0 10px var(--accent); }
+      .acard { position:absolute; left:50%; top:330px; transform:translateX(-50%); width:560px; padding:30px; border-radius:20px;
+        background:rgba(20,40,70,.7); border:2px solid var(--accent); box-shadow:0 0 44px rgba(34,211,238,.42); text-align:center; opacity:0; }
+      .acard .atick { display:inline-block; font-size:30px; font-weight:700; color:var(--base); background:var(--accent); padding:6px 22px; border-radius:20px; margin-bottom:16px; }
+      .acard .atxt { font-size:48px; font-weight:700; color:#fff; }
+      .habit { position:absolute; left:0; top:580px; width:952px; text-align:center; font-size:74px; font-weight:700; color:#fff; opacity:0; text-shadow:0 0 40px rgba(140,90,255,.6); }
+      .habit em { color:var(--accent); font-style:normal; text-shadow:0 0 30px var(--accent); }
+
+      /* 场景3 设问 + 被吵翻 */
+      .brainwrap { position:absolute; left:50%; top:120px; transform:translateX(-50%); width:420px; height:330px; }
+      .bnode { opacity:0; }
+      .crackq { position:absolute; left:0; top:430px; width:952px; text-align:center; }
+      .bigq2 { display:inline-block; font-size:150px; font-weight:700; color:#fff; line-height:1; text-shadow:0 0 56px rgba(161,59,255,.75); }
+      .bigq2 em { color:var(--accent); font-style:normal; text-shadow:0 0 46px var(--accent); }
+      .bub { position:absolute; font-size:34px; font-weight:700; color:var(--ink); padding:12px 24px; border-radius:22px; background:rgba(22,34,68,.72); border:1px solid rgba(127,217,255,.32); box-shadow:0 4px 20px rgba(0,0,0,.35); opacity:0; white-space:nowrap; }
+      .b1{left:20px;top:70px} .b2{right:30px;top:110px} .b3{left:0;top:300px} .b4{right:10px;top:300px} .b5{left:50%;top:660px;transform:translateX(-50%)}
+
+      .substrip { position:absolute; top:1150px; left:64px; width:952px; height:170px; }
+      .sub { position:absolute; top:0; left:0; width:952px; text-align:center; text-wrap:balance; color:#fff; font-size:50px; font-weight:700; line-height:1.4; text-shadow:0 3px 20px rgba(0,0,0,.75); opacity:0; }
+      .sub .hl { color:var(--accent); text-shadow:0 0 18px rgba(34,211,238,.85); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="36.14" data-width="1080" data-height="1440">
+      <img class="course-brand-mark" src="assets/red-maple-leaf.png" alt="" aria-hidden="true" data-layout-ignore />
+      <div class="bg"><canvas id="bgc" width="1080" height="1440"></canvas></div>
+      <div class="depth" data-layout-ignore><div class="ghost g1" id="gh1">思考</div><div class="ghost g2" id="gh2">记忆</div></div>
+      <div class="content">
+        <div class="lessonbar"><div class="ltag">深度讲解</div><div class="lno">课程讲解模板</div></div>
+        <div class="stage" id="stage">
+
+          <div class="scene" id="s1"><div class="s1hub" id="s1hub">AI</div></div>
+
+          <div class="scene" id="s2">
+            <div class="pbar" id="pbar"><span id="pq"></span><span class="pcur" id="pcur"></span></div>
+            <div class="acard" id="acard"><div class="atick">秒回</div><div class="atxt">一句话，结果就有了</div></div>
+            <div class="habit" id="habit">遇事不决，<em>先问 AI</em></div>
+          </div>
+
+          <div class="scene" id="s3">
+            <svg class="brainwrap" id="brainwrap" viewBox="0 0 420 330">
+              <path id="brainpath" d="M150,70 C80,40 40,110 70,160 C40,210 90,270 160,250 C195,285 280,285 310,245 C375,255 405,180 360,135 C395,80 330,30 260,72 C225,40 180,45 150,70 Z" fill="none" stroke="#7fd9ff" stroke-width="4"/>
+              <line x1="210" y1="80" x2="210" y2="250" stroke="#7fd9ff" stroke-width="3" opacity="0.4"/>
+              <circle class="bnode" cx="120" cy="130" r="11" fill="#22d3ee"/><circle class="bnode" cx="290" cy="120" r="11" fill="#22d3ee"/>
+              <circle class="bnode" cx="160" cy="200" r="11" fill="#22d3ee"/><circle class="bnode" cx="300" cy="205" r="11" fill="#22d3ee"/>
+              <circle class="bnode" cx="210" cy="155" r="11" fill="#a13bff"/><circle class="bnode" cx="235" cy="245" r="11" fill="#22d3ee"/>
+            </svg>
+            <div class="crackq"><span class="bigq2" id="bigq2">会变笨<em>？</em></span></div>
+            <div class="bub b1" id="bb1">会啊！</div><div class="bub b2" id="bb2">不至于吧</div>
+            <div class="bub b3" id="bb3">我反正记不住了</div><div class="bub b4" id="bb4">有点慌</div>
+            <div class="bub b5" id="bb5">想多了</div>
+          </div>
+
+        </div>
+        <div class="substrip" id="substrip"></div>
+      </div>
+    </div>
+
+    <script>
+      function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+      const cv=document.getElementById("bgc"),ctx=cv.getContext("2d");
+      const rb_=mulberry32(20260621);
+      const stars=Array.from({length:120},()=>({x:rb_(),y:rb_()*0.5,r:rb_()*1.4+0.4,tw:rb_()*6.28}));
+      const motes=Array.from({length:44},()=>({x:rb_(),y0:rb_(),sp:0.05+rb_()*0.07,r:rb_()*1.8+0.6,hue:160+rb_()*120,ph:rb_()*6.28}));
+      const ribbons=[{hue:158,y:.46,amp:.13,sp:.5,th:.30,ph:0},{hue:186,y:.50,amp:.16,sp:.4,th:.24,ph:2.1},{hue:280,y:.55,amp:.11,sp:.62,th:.20,ph:4.2}];
+      const STEPS=44;
+      function drawBG(t){
+        const w=cv.width,h=cv.height; ctx.globalCompositeOperation="source-over";
+        const bg=ctx.createLinearGradient(0,0,0,h); bg.addColorStop(0,"#04060f"); bg.addColorStop(1,"#06101c"); ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+        ctx.globalCompositeOperation="lighter";
+        for(const s of stars){const a=0.3+0.6*Math.abs(Math.sin(t*0.9+s.tw)); ctx.fillStyle=`rgba(190,212,255,${a*0.7})`; ctx.beginPath(); ctx.arc(s.x*w,s.y*h,s.r,0,6.283); ctx.fill();}
+        for(const rb of ribbons){
+          const yf=s=>rb.y+Math.sin(s/STEPS*6+t*rb.sp+rb.ph)*rb.amp+Math.sin(s/STEPS*13+t*rb.sp*0.5)*0.03;
+          ctx.beginPath();
+          for(let s=0;s<=STEPS;s++){const x=s/STEPS*w,y=yf(s)*h; s===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+          for(let s=STEPS;s>=0;s--){const x=s/STEPS*w,y=(yf(s)-rb.th)*h; ctx.lineTo(x,y);}
+          ctx.closePath();
+          const g=ctx.createLinearGradient(0,(rb.y-rb.th)*h,0,(rb.y+0.04)*h);
+          g.addColorStop(0,`hsla(${rb.hue},92%,62%,0)`); g.addColorStop(0.5,`hsla(${rb.hue},92%,60%,0.34)`); g.addColorStop(1,`hsla(${rb.hue},92%,66%,0)`);
+          ctx.fillStyle=g; ctx.fill(); ctx.lineWidth=1.2;
+          for(let s=2;s<=STEPS-2;s+=2){const x=s/STEPS*w,y=yf(s)*h; const sh=0.5+0.5*Math.sin(s*0.7+t*1.5+rb.ph); const len=rb.th*h*(0.6+sh*0.9);
+            const r2=ctx.createLinearGradient(0,y,0,y-len); r2.addColorStop(0,`hsla(${rb.hue},92%,68%,${0.12*sh})`); r2.addColorStop(1,`hsla(${rb.hue},92%,68%,0)`);
+            ctx.strokeStyle=r2; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y-len); ctx.stroke();}
+        }
+        for(const m of motes){const y=((m.y0-m.sp*t)%1.1+1.1)%1.1-0.05; const a=Math.max(0,0.45+0.55*Math.sin(t*2+m.ph));
+          ctx.fillStyle=`hsla(${m.hue},90%,72%,${0.5*a})`; ctx.beginPath(); ctx.arc((m.x+Math.sin(t*0.3+m.ph)*0.02)*w,y*h,m.r,0,6.283); ctx.fill();}
+        ctx.globalCompositeOperation="source-over";
+        const vg=ctx.createRadialGradient(w/2,h*0.5,Math.min(w,h)*0.32,w/2,h*0.5,Math.max(w,h)*0.72); vg.addColorStop(0,"rgba(4,6,15,0)"); vg.addColorStop(1,"rgba(4,6,15,0.62)"); ctx.fillStyle=vg; ctx.fillRect(0,0,w,h);
+      }
+      drawBG(0);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const DUR = 36.14, BG_SPEED = 1.4;
+      const bgp={t:0}; tl.to(bgp,{t:DUR,duration:DUR,ease:"none",onUpdate:()=>drawBG(bgp.t*BG_SPEED)},0);
+      tl.fromTo("#gh1",{x:-30,y:0},{x:70,y:50,duration:DUR,ease:"sine.inOut"},0);
+      tl.fromTo("#gh2",{x:30,y:0},{x:-60,y:-40,duration:DUR,ease:"sine.inOut"},0);
+      tl.from(".lessonbar",{y:-30,opacity:0,duration:0.6,ease:"power3.out"},0.1);
+
+      function phraseHTML(t){ return t.replace(/\*\*(.+?)\*\*/g,'<span class="hl">$1</span>'); }
+      // 字幕:每句卡着配音精确起止(来自 act1_timings.json)
+      const SUBS=[
+        {s:0.1,e:2.97,t:"今天早上你可能也是这么过来的——"},
+        {s:2.97,e:4.94,t:"让 AI 写了封邮件，"},
+        {s:4.94,e:7.8,t:"让它把一份十几页的报告压成三行，"},
+        {s:7.8,e:9.95,t:"顺手又让它想了几个标题。"},
+        {s:9.95,e:11.31,t:"咖啡还没喝完，"},
+        {s:11.31,e:12.92,t:"一上午的脑力活，"},
+        {s:12.92,e:14.53,t:"**基本被它包圆了**。"},
+        {s:14.53,e:16.93,t:"说实话这感觉挺爽。"},
+        {s:16.93,e:19.19,t:"以前抓耳挠腮半天的事，"},
+        {s:19.19,e:21.25,t:"现在一句话就有结果。"},
+        {s:21.25,e:23.03,t:"我们越来越习惯——"},
+        {s:23.03,e:25.2,t:"遇事不决，**先问 AI**。"},
+        {s:25.2,e:27.64,t:"但最近有个问题被吵翻了："},
+        {s:27.64,e:28.86,t:"这么用下去，"},
+        {s:28.86,e:30.48,t:"我们自己的脑子，"},
+        {s:30.48,e:32.31,t:"**会不会越来越不灵**？"},
+        {s:32.31,e:33.2,t:"这事儿，"},
+        {s:33.2,e:36.08,t:"还真有科学家拿数据较过真。"}
+      ];
+      const strip=document.getElementById("substrip");
+      SUBS.forEach(p=>{ const d=document.createElement("div"); d.className="sub"; d.innerHTML=phraseHTML(p.t); strip.appendChild(d);
+        tl.fromTo(d,{opacity:0,y:14},{opacity:1,y:0,duration:0.22,ease:"power2.out"},p.s);
+        tl.to(d,{opacity:0,duration:0.18,ease:"power1.in"},Math.max(p.s+0.4,p.e-0.18)); });
+
+      function drawIn(tl,sel,t0,dur){ document.querySelectorAll(sel).forEach(p=>{const L=p.getTotalLength(); p.style.strokeDasharray=L; p.style.strokeDashoffset=L; tl.to(p,{strokeDashoffset:0,duration:dur||1.0,ease:"power1.inOut"},t0);}); }
+
+      /* ===== 场景1 传送带(S1 早晨场景,0–15.07)===== */
+      const CARDS=[["写邮件",-190,-150,-8],["总结报告",140,-130,7],["想标题",-70,-30,-4],["查资料",210,10,9],["改代码",-230,70,-10],["做 PPT",60,90,3],["写文案",-60,185,-6],["做翻译",200,165,8]];
+      const s1=document.getElementById('s1'); const ct=[0.6,1.5,2.3,3.1,3.9,4.6,5.2,5.8];
+      CARDS.forEach(([txt,x,y,r],i)=>{ const d=document.createElement('div'); d.className='tcard'; d.textContent=txt;
+        d.style.marginLeft=(x-130)+'px'; d.style.marginTop=(y-44)+'px'; s1.appendChild(d);
+        tl.fromTo(d,{x:800,y:-70,rotation:24,opacity:0},{x:0,y:0,rotation:r,opacity:1,duration:0.55,ease:"power3.out"},ct[i]); });
+      tl.fromTo("#s1hub",{opacity:0,scale:0.5},{opacity:1,scale:1,duration:0.5,ease:"back.out(1.7)"},6.0);
+      tl.to("#s1hub",{scale:1.08,duration:1.4,ease:"sine.inOut",yoyo:true,repeat:4},6.5);
+      tl.to("#s1",{opacity:0,scale:0.95,filter:"blur(12px)",duration:0.5,ease:"power2.in"},14.0);
+
+      /* ===== 场景2 便利成习惯(S2,15.07–27.82):提问框 → 秒回 → 先问 AI ===== */
+      tl.fromTo("#s2",{opacity:0},{opacity:1,duration:0.4,ease:"sine.out"},14.6);
+      tl.fromTo("#pbar",{opacity:0,y:20},{opacity:1,y:0,duration:0.5,ease:"power3.out"},15.0);
+      const PQ="帮我写封邮件、顺便总结下这份报告…"; const pqEl=document.getElementById("pq");
+      for(let i=0;i<PQ.length;i++){ tl.call((function(idx){return function(){pqEl.textContent=PQ.substring(0,idx+1);};})(i), null, 15.2+(i/PQ.length)*2.0); }
+      tl.to("#pcur",{opacity:0,duration:0.42,repeat:11,yoyo:true,ease:"steps(1)"},15.2);
+      tl.fromTo("#acard",{opacity:0,scale:0.8,y:24},{opacity:1,scale:1,y:0,duration:0.5,ease:"back.out(1.6)"},17.8);
+      tl.fromTo("#habit",{opacity:0,scale:0.9},{opacity:1,scale:1,duration:0.6,ease:"power3.out"},20.4);
+      tl.to("#s2",{opacity:0,y:-50,filter:"blur(12px)",duration:0.45,ease:"power2.in"},24.8);
+
+      /* ===== 场景3 设问 + 被吵翻(S3,27.82–38.62):大脑自绘 + 裂帘设问 + 弹幕 ===== */
+      tl.fromTo("#s3",{opacity:0},{opacity:1,duration:0.3},25.2);
+      drawIn(tl,"#brainpath",25.5,1.3);
+      tl.fromTo(".bnode",{opacity:0,scale:0.3,transformOrigin:"center"},{opacity:0.95,scale:1,duration:0.4,ease:"back.out(2)",stagger:0.08},25.9);
+      tl.to(".bnode",{opacity:0.22,duration:1.6,ease:"power2.in",stagger:0.07},28.0);
+      tl.fromTo("#bigq2",{clipPath:"inset(0 50% 0 50%)",opacity:0.15,y:20},{clipPath:"inset(0 0% 0 0%)",opacity:1,y:0,duration:0.8,ease:"power3.out"},26.4);
+      ["#bb1","#bb2","#bb3","#bb4","#bb5"].forEach((s,i)=> tl.fromTo(s,{opacity:0,scale:0.6,y:10},{opacity:0.92,scale:1,y:0,duration:0.4,ease:"back.out(1.8)"},28.2+i*0.45));
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "ai-video-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI 辅助的教学与概念讲解视频制作流程",
+  "engines": { "node": ">=22.9.0" },
+  "scripts": {
+    "test": "node --env-file-if-exists=.env --test build/*.test.mjs",
+    "test:python": "node --env-file-if-exists=.env build/run_python.mjs -m unittest discover -s tests",
+    "voiceover": "node --env-file-if-exists=.env build/run_python.mjs pipeline/02_audio/voxcpm_tts.py",
+    "init:episode": "node --env-file-if-exists=.env build/init_course_episode.mjs",
+    "topic:check": "node --env-file-if-exists=.env build/check_course_topic_duplicate.mjs",
+    "review": "node --env-file-if-exists=.env build/course_video.mjs review",
+    "publish:package": "node --env-file-if-exists=.env build/course_video.mjs publish",
+    "check:release": "node --env-file-if-exists=.env build/check_course_release.mjs",
+    "doctor": "node --env-file-if-exists=.env build/doctor.mjs",
+    "example": "node --env-file-if-exists=.env examples/context-window/run.mjs"
+  }
+}

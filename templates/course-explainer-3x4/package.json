@@ -1,0 +1,11 @@
+{
+  "name": "course-explainer-3x4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.6.113 preview",
+    "check": "npx --yes hyperframes@0.6.113 lint && npx --yes hyperframes@0.6.113 validate && npx --yes hyperframes@0.6.113 inspect",
+    "render": "npx --yes hyperframes@0.6.113 render",
+    "publish": "npx --yes hyperframes@0.6.113 publish"
+  }
+}

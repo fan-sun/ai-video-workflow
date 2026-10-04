@@ -1,0 +1,2 @@
+# 配音依赖；在已安装 CUDA 版 PyTorch 的独立 Python 环境中运行。
+voxcpm==2.0.3

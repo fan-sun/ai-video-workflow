@@ -1,0 +1,112 @@
+{
+  "segments": [
+    {
+      "id": "g01",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g02",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g03",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g04",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g05",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g06",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g07",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g08",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g09",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g10",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g11",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g12",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g13",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g14",
+      "voice_id": "clone",
+      "pause_after": 0.15,
+      "text": "2026 年 6 月，一位叫 Peter Steinberger 的开发者发了句话：",
+      "tts_text": "二零二六年六月，一位叫 Peter Steinberger 的开发者发了句话：",
+      "subtitle_units": [
+        {
+          "id": "g14.u01",
+          "text": "2026 年 6 月，",
+          "tts_text": "二零二六年六月，"
+        },
+        {
+          "id": "g14.u02",
+          "text": "一位叫 Peter Steinberger 的开发者发了句话："
+        }
+      ]
+    },
+    {
+      "id": "g15",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g16",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g17",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g18",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    },
+    {
+      "id": "g19",
+      "text": "测试字幕。",
+      "pause_after": 0.15
+    }
+  ]
+}

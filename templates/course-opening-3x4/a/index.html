@@ -1,0 +1,661 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  data-composition-variables='[
+    {"id":"lead","type":"string","label":"引导语","default":"__OPENING_LEAD_JSON__"},
+    {"id":"topic","type":"string","label":"主题词","default":"__OPENING_TOPIC_JSON__"},
+    {"id":"topicStart","type":"number","label":"主题词朗读起点","default":__OPENING_TOPIC_START__}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080,height=1440" />
+    <title>通用开场模板 A · 酒红</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      :root {
+        --paper: #eeeade;
+        --paper-bright: #fbf8ed;
+        --ink: #20231f;
+        --steel: #53686e;
+        --steel-light: #cfd7d5;
+        --brass: #ad7928;
+        --brass-light: #e0bb73;
+        --red: #c53e2d;
+      }
+      html, body, #root {
+        width: 1080px;
+        height: 1440px;
+        overflow: hidden;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Course", sans-serif;
+      }
+      #root {
+        position: relative;
+        isolation: isolate;
+        background-image:
+          radial-gradient(circle at 50% 46%, rgba(255, 255, 250, 0.98), transparent 38%),
+          linear-gradient(90deg, rgba(197, 62, 45, 0.055) 1px, transparent 1px),
+          linear-gradient(rgba(83, 104, 110, 0.055) 1px, transparent 1px);
+        background-size: auto, 54px 54px, 54px 54px;
+      }
+      #root::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.11;
+        pointer-events: none;
+        z-index: 30;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.26' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #root::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 3px solid var(--ink);
+        box-shadow: inset 0 0 0 7px rgba(83, 104, 110, 0.12);
+        pointer-events: none;
+        z-index: 40;
+      }
+      .corner {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-color: var(--red);
+        z-index: 41;
+      }
+      .corner.tl { left: 29px; top: 29px; border-left: 8px solid; border-top: 8px solid; }
+      .corner.tr { right: 29px; top: 29px; border-right: 8px solid; border-top: 8px solid; }
+      .corner.bl { left: 29px; bottom: 29px; border-left: 8px solid; border-bottom: 8px solid; }
+      .corner.br { right: 29px; bottom: 29px; border-right: 8px solid; border-bottom: 8px solid; }
+
+      .top-deck {
+        position: absolute;
+        top: 46px;
+        left: 54px;
+        width: 972px;
+        height: 230px;
+        z-index: 18;
+      }
+      .brand-row {
+        height: 78px;
+        display: grid;
+        grid-template-columns: 1fr 100px 1fr;
+        align-items: center;
+        border-bottom: 4px solid var(--ink);
+      }
+      .brand {
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+      }
+      .leaf {
+        justify-self: center;
+        width: 76px;
+        height: 76px;
+        object-fit: contain;
+      }
+      .serial {
+        justify-self: end;
+        font: 700 17px/1.2 monospace;
+        letter-spacing: 0.11em;
+        color: var(--steel);
+        text-align: right;
+      }
+      .telemetry {
+        height: 92px;
+        display: grid;
+        grid-template-columns: 1.15fr 1fr 1fr 1.35fr;
+        border-bottom: 2px solid var(--ink);
+      }
+      .telemetry-cell {
+        position: relative;
+        padding: 14px 17px 10px;
+        border-right: 2px solid rgba(32, 35, 31, 0.66);
+        overflow: hidden;
+      }
+      .telemetry-cell:last-child { border-right: 0; }
+      .telemetry-cell::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--steel);
+      }
+      .telemetry-cell.alert::before { background: var(--red); }
+      .kicker {
+        display: block;
+        color: var(--steel);
+        font: 700 14px/1 monospace;
+        letter-spacing: 0.13em;
+      }
+      .metric {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 10px;
+        font: 700 23px/1 monospace;
+        letter-spacing: 0.04em;
+      }
+      .status-light {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--red);
+        box-shadow: 0 0 0 5px rgba(197, 62, 45, 0.13);
+      }
+      .micro-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        height: 25px;
+      }
+      .micro-bars i { width: 5px; background: var(--brass); }
+      .micro-bars i:nth-child(1) { height: 9px; }
+      .micro-bars i:nth-child(2) { height: 17px; }
+      .micro-bars i:nth-child(3) { height: 12px; }
+      .micro-bars i:nth-child(4) { height: 23px; }
+      .micro-bars i:nth-child(5) { height: 15px; }
+      .ruler {
+        height: 31px;
+        border-bottom: 2px solid var(--ink);
+        background:
+          linear-gradient(90deg, transparent 49.7%, var(--red) 49.7% 50.3%, transparent 50.3%),
+          repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 27px);
+        background-size: 100% 100%, 100% 13px;
+        background-position: 0 0, 0 18px;
+        background-repeat: no-repeat;
+      }
+
+      .lead-wrap {
+        position: absolute;
+        top: 303px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 14;
+      }
+      .lead-index {
+        display: block;
+        margin-bottom: 12px;
+        color: #a92f23;
+        font: 700 16px/1 monospace;
+        letter-spacing: 0.25em;
+      }
+      .lead {
+        display: inline-block;
+        color: var(--steel);
+        font-size: 47px;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+      }
+      .side-code {
+        position: absolute;
+        top: 437px;
+        color: #52676d;
+        font: 700 13px/1 monospace;
+        letter-spacing: 0.12em;
+        writing-mode: vertical-rl;
+        z-index: 8;
+      }
+      .side-code.left { left: 35px; transform: rotate(180deg); }
+      .side-code.right { right: 35px; }
+
+      .machine {
+        position: absolute;
+        top: 425px;
+        left: 54px;
+        width: 972px;
+        height: 565px;
+        perspective: 1800px;
+        z-index: 12;
+      }
+      .target-ring {
+        position: absolute;
+        top: 3px;
+        left: 208px;
+        width: 556px;
+        height: 556px;
+        border: 2px solid rgba(83, 104, 110, 0.45);
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .target-ring::before,
+      .target-ring::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        border: 2px dashed rgba(173, 121, 40, 0.65);
+      }
+      .target-ring::before { inset: 43px; }
+      .target-ring::after { inset: 102px; border-color: rgba(197, 62, 45, 0.45); }
+      .axis-h, .axis-v {
+        position: absolute;
+        background: rgba(83, 104, 110, 0.34);
+        opacity: 0;
+      }
+      .axis-h { top: 280px; left: 16px; width: 940px; height: 2px; }
+      .axis-v { top: 16px; left: 485px; width: 2px; height: 530px; }
+      .machine-core {
+        position: absolute;
+        top: 67px;
+        left: 10px;
+        width: 952px;
+        height: 430px;
+        transform-origin: center center;
+      }
+      .backplate {
+        position: absolute;
+        inset: 0;
+        border: 6px solid var(--ink);
+        background:
+          linear-gradient(155deg, rgba(255,255,255,.68), transparent 37%),
+          repeating-linear-gradient(135deg, rgba(83,104,110,.085) 0 9px, transparent 9px 18px),
+          #ddd9cd;
+        box-shadow: 15px 18px 0 rgba(32, 35, 31, 0.15), 0 0 0 8px rgba(255,255,255,.32);
+        opacity: 0;
+      }
+      .backplate::before {
+        content: "";
+        position: absolute;
+        inset: 22px;
+        border: 3px solid var(--steel);
+        background: rgba(253, 251, 244, 0.8);
+      }
+      .backplate::after {
+        content: "";
+        position: absolute;
+        inset: 60px 50px;
+        border: 4px solid #713844;
+        background: #f7efe7;
+        box-shadow: inset 0 0 0 7px rgba(113, 56, 68, 0.08);
+      }
+      .bolt {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        background: var(--steel-light);
+        z-index: 4;
+      }
+      .bolt::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        top: 11px;
+        height: 3px;
+        background: var(--ink);
+        transform: rotate(-28deg);
+      }
+      .b1 { left: 38px; top: 38px; }
+      .b2 { right: 38px; top: 38px; }
+      .b3 { left: 38px; bottom: 38px; }
+      .b4 { right: 38px; bottom: 38px; }
+      .camera {
+        position: absolute;
+        inset: 66px 0;
+        perspective: 1800px;
+        perspective-origin: 50% 50%;
+        z-index: 10;
+      }
+      .retreat {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(3.8);
+        transform-style: preserve-3d;
+      }
+      .word {
+        position: relative;
+        color: var(--ink);
+        font-size: 178px;
+        font-weight: 700;
+        line-height: 1.24;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+        transform-style: preserve-3d;
+        transform-origin: 50% 50%;
+      }
+      .face {
+        position: relative;
+        display: block;
+        z-index: 5;
+        transform: translateZ(3px);
+        color: #713844;
+        backface-visibility: visible;
+      }
+      .depth {
+        position: absolute;
+        inset: 0;
+        display: block;
+        color: var(--brass);
+        pointer-events: none;
+        backface-visibility: visible;
+      }
+      .clamp {
+        position: absolute;
+        top: 128px;
+        width: 61px;
+        height: 178px;
+        border: 4px solid var(--ink);
+        background: linear-gradient(90deg, #40555c, #91a1a3 50%, #40555c);
+        box-shadow: 7px 8px 0 rgba(32,35,31,.14);
+        opacity: 0;
+        z-index: 13;
+      }
+      .clamp::after {
+        content: "";
+        position: absolute;
+        top: 61px;
+        width: 34px;
+        height: 47px;
+        border: 4px solid var(--ink);
+        background: var(--brass-light);
+      }
+      .clamp-left { left: -5px; }
+      .clamp-left::after { left: 57px; border-left: 0; }
+      .clamp-right { right: -5px; }
+      .clamp-right::after { right: 57px; border-right: 0; }
+      .scanner {
+        position: absolute;
+        top: 52px;
+        bottom: 52px;
+        left: 0;
+        width: 12px;
+        opacity: 0;
+        background: linear-gradient(90deg, transparent, rgba(197,62,45,.76), rgba(255,255,255,.95), transparent);
+        box-shadow: 0 0 21px rgba(197,62,45,.48);
+        z-index: 16;
+      }
+      .shine {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.8) 49%, transparent 60%);
+        transform: translateX(-120%);
+        pointer-events: none;
+        z-index: 15;
+      }
+      .shine, .scanner { opacity: 0 !important; }
+      .burst {
+        position: absolute;
+        top: 280px;
+        left: 486px;
+        width: 405px;
+        height: 5px;
+        background: linear-gradient(90deg, var(--red), transparent);
+        transform-origin: left center;
+        opacity: 0;
+        z-index: 2;
+      }
+      .burst.b2x { transform: rotate(45deg); }
+      .burst.b3x { transform: rotate(90deg); }
+      .burst.b4x { transform: rotate(135deg); }
+      .burst.b5x { transform: rotate(180deg); }
+      .burst.b6x { transform: rotate(225deg); }
+      .burst.b7x { transform: rotate(270deg); }
+      .burst.b8x { transform: rotate(315deg); }
+
+      .lower-deck {
+        position: absolute;
+        left: 54px;
+        bottom: 48px;
+        width: 972px;
+        height: 344px;
+        z-index: 14;
+      }
+      .progress-track {
+        height: 50px;
+        border: 3px solid var(--ink);
+        padding: 7px;
+        background: rgba(251, 248, 237, .62);
+      }
+      .progress-grid {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        background: repeating-linear-gradient(90deg, rgba(83,104,110,.38) 0 2px, transparent 2px 31px);
+      }
+      .progress-fill {
+        position: absolute;
+        inset: 0;
+        transform: scaleX(0);
+        transform-origin: left center;
+        background: linear-gradient(90deg, var(--brass), var(--red));
+        mix-blend-mode: multiply;
+      }
+      .progress-head {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        right: 0;
+        width: 7px;
+        background: var(--ink);
+      }
+      .lower-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 67px;
+        border-bottom: 3px solid var(--ink);
+        font: 700 17px/1 monospace;
+        letter-spacing: 0.14em;
+      }
+      .lower-title strong {
+        padding: 9px 13px;
+        color: var(--paper-bright);
+        background: var(--ink);
+        font-size: 15px;
+      }
+      .module-grid {
+        height: 139px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        border-bottom: 3px solid var(--ink);
+      }
+      .module {
+        position: relative;
+        padding: 20px 18px;
+        border-right: 3px solid var(--ink);
+        overflow: hidden;
+      }
+      .module:last-child { border-right: 0; }
+      .module-label {
+        display: block;
+        color: var(--steel);
+        font: 700 13px/1 monospace;
+        letter-spacing: 0.16em;
+      }
+      .module-value {
+        display: block;
+        margin-top: 18px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: .06em;
+      }
+      .signal {
+        position: absolute;
+        right: 17px;
+        bottom: 20px;
+        display: flex;
+        gap: 5px;
+        align-items: flex-end;
+        height: 48px;
+      }
+      .signal i { width: 8px; border: 2px solid var(--ink); background: var(--brass-light); }
+      .signal i:nth-child(1) { height: 14px; }
+      .signal i:nth-child(2) { height: 25px; }
+      .signal i:nth-child(3) { height: 37px; }
+      .signal i:nth-child(4) { height: 48px; background: var(--red); }
+      .footer {
+        height: 77px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--steel);
+        font-size: 23px;
+        letter-spacing: 0.12em;
+      }
+      .footer-mark {
+        width: 212px;
+        height: 18px;
+        background: repeating-linear-gradient(110deg, var(--brass) 0 8px, transparent 8px 17px);
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root" data-composition-id="main" data-start="0" data-duration="2.433333333333333" data-width="1080" data-height="1440">
+      <i class="corner tl" data-layout-ignore></i><i class="corner tr" data-layout-ignore></i>
+      <i class="corner bl" data-layout-ignore></i><i class="corner br" data-layout-ignore></i>
+
+      <header class="top-deck">
+        <div class="brand-row">
+          <span class="brand">深度讲解</span>
+          <img class="leaf" src="assets/red-maple-leaf.png" alt="" aria-hidden="true" data-layout-ignore />
+          <span class="serial">KNOWLEDGE UNIT<br />OPENING / A2</span>
+        </div>
+        <div class="telemetry">
+          <div class="telemetry-cell"><span class="kicker">SYSTEM</span><span class="metric"><i class="status-light"></i>ONLINE</span></div>
+          <div class="telemetry-cell alert"><span class="kicker">FORMAT</span><span class="metric">09:16</span></div>
+          <div class="telemetry-cell"><span class="kicker">SEQUENCE</span><span class="metric">01 / START</span></div>
+          <div class="telemetry-cell"><span class="kicker">SIGNAL</span><span class="metric"><span class="micro-bars"><i></i><i></i><i></i><i></i><i></i></span>96%</span></div>
+        </div>
+        <div class="ruler" data-layout-ignore></div>
+      </header>
+
+      <div class="lead-wrap" data-layout-allow-overlap>
+        <span class="lead-index">// TOPIC ACQUISITION</span>
+        <h1 class="lead" id="lead">__OPENING_LEAD_HTML__</h1>
+      </div>
+
+      <span class="side-code left" data-layout-ignore>CALIBRATION · 000—180—360</span>
+      <span class="side-code right" data-layout-ignore>LOCK SEQUENCE · ACTIVE</span>
+
+      <section class="machine" data-layout-allow-overflow>
+        <div class="target-ring" data-layout-ignore></div>
+        <div class="axis-h" data-layout-ignore></div><div class="axis-v" data-layout-ignore></div>
+        <i class="burst b1x" data-layout-ignore></i><i class="burst b2x" data-layout-ignore></i>
+        <i class="burst b3x" data-layout-ignore></i><i class="burst b4x" data-layout-ignore></i>
+        <i class="burst b5x" data-layout-ignore></i><i class="burst b6x" data-layout-ignore></i>
+        <i class="burst b7x" data-layout-ignore></i><i class="burst b8x" data-layout-ignore></i>
+        <div class="machine-core">
+          <div class="backplate" data-layout-ignore>
+            <i class="bolt b1"></i><i class="bolt b2"></i><i class="bolt b3"></i><i class="bolt b4"></i>
+          </div>
+          <div class="camera">
+            <div class="retreat">
+              <div class="word" id="word" data-layout-allow-overlap data-layout-allow-occlusion>
+                <span class="face" id="topic">__OPENING_TOPIC_HTML__</span>
+              </div>
+            </div>
+          </div>
+          <div class="clamp clamp-left" data-layout-ignore></div>
+          <div class="clamp clamp-right" data-layout-ignore></div>
+          <div class="scanner" data-layout-ignore></div>
+          <div class="shine" data-layout-ignore></div>
+        </div>
+      </section>
+
+      <section class="lower-deck" data-layout-allow-overlap>
+        <div class="progress-track" data-layout-ignore><div class="progress-grid"><div class="progress-fill"><i class="progress-head"></i></div></div></div>
+        <div class="lower-title"><span>LEARNING MODULE / INITIALIZATION</span><strong>TOPIC LOCKED</strong></div>
+        <div class="module-grid">
+          <div class="module"><span class="module-label">MODE</span><span class="module-value">深度学习</span></div>
+          <div class="module"><span class="module-label">TARGET</span><span class="module-value">概念掌握</span></div>
+          <div class="module"><span class="module-label">READINESS</span><span class="module-value">准备完成</span><span class="signal"><i></i><i></i><i></i><i></i></span></div>
+        </div>
+        <footer class="footer"><span class="footer-mark" data-layout-ignore></span><span>今天 · 学会一个概念</span></footer>
+      </section>
+
+      <audio id="narration" src="narration.wav" data-start="0" data-duration="2.4004791666666665" data-track-index="1"></audio>
+    </main>
+    <script>
+      const DUR = 2.433333333333333;
+      const variables = window.__hyperframes.getVariables();
+      const topic = String(variables.topic || "__OPENING_TOPIC_JSON__").trim();
+      const lead = String(variables.lead || "__OPENING_LEAD_JSON__").trim();
+      const LAND = Math.min(Math.max(Number(variables.topicStart) || __OPENING_TOPIC_START__, 1.27), DUR - 0.9);
+
+      document.getElementById("lead").textContent = lead;
+      document.getElementById("topic").textContent = topic;
+
+      // 只按字符类型估算宽度，不读取运行时布局，保证并行渲染结果确定。
+      const visualUnits = Array.from(topic).reduce((sum, char) => {
+        if (/\s/u.test(char)) return sum + 0.34;
+        if (/[\u3400-\u9fff\uf900-\ufaff]/u.test(char)) return sum + 1;
+        if (/[A-Z]/u.test(char)) return sum + 0.68;
+        return sum + 0.56;
+      }, 0);
+      const topicSize = Math.max(62, Math.min(178, 735 / Math.max(visualUnits, 1)));
+      const word = document.getElementById("word");
+      word.style.fontSize = `${topicSize}px`;
+      word.style.letterSpacing = visualUnits > 10 ? "-0.045em" : "-0.04em";
+
+      // 厚度层始终复制整个主题词，中文和英文短语均不拆分。
+      for (let index = 1; index <= 0; index += 1) {
+        const layer = document.createElement("span");
+        layer.className = "depth";
+        layer.textContent = topic;
+        layer.setAttribute("aria-hidden", "true");
+        layer.setAttribute("data-layout-ignore", "");
+        layer.style.color = index % 2 ? "#815a22" : "#ad7928";
+        layer.style.transform = `translateZ(${-index * 1.25}px)`;
+        word.appendChild(layer);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 顶部遥测区逐格启动，形成系统上电感。
+      tl.fromTo(".brand-row", { opacity: 0, y: -34 }, { opacity: 1, y: 0, duration: 0.42, ease: "expo.out", immediateRender: false }, 0.02);
+      tl.fromTo(".telemetry-cell", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.38, stagger: 0.055, ease: "power4.out", immediateRender: false }, 0.13);
+      tl.fromTo(".ruler", { opacity: 0, scaleX: 0.12 }, { opacity: 1, scaleX: 1, transformOrigin: "50% 50%", duration: 0.48, ease: "expo.out", immediateRender: false }, 0.18);
+
+      // 引导语先就位，主题词作为一个整体从镜头外翻转、后退并锁定。
+      tl.fromTo(".lead-wrap", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.46, ease: "power3.out", immediateRender: false }, 0.2);
+      tl.fromTo(".target-ring", { opacity: 0, scale: 0.48, rotation: -28 }, { opacity: 0.78, scale: 1, rotation: 0, duration: LAND * 0.74, ease: "circ.out", immediateRender: false }, 0.16);
+      tl.fromTo([".axis-h", ".axis-v"], { opacity: 0, scale: 0.16 }, { opacity: 0.72, scale: 1, duration: 0.48, ease: "power3.out", immediateRender: false }, 0.35);
+      tl.fromTo(".backplate", { opacity: 0, y: 82, scale: 0.86 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power4.out", immediateRender: false }, 0.31);
+      tl.fromTo(".retreat", { scale: 3.8, y: 6 }, { scale: 1, y: 0, duration: LAND, ease: "power3.out", immediateRender: false }, 0);
+      tl.fromTo(".word", { rotationY: -18, rotationX: -8 }, { rotationY: 720, rotationX: 0, duration: LAND, ease: "circ.out", immediateRender: false }, 0);
+
+      // 主题词落位时夹具合拢、光线扫描、结构轻微回弹。
+      tl.fromTo(".clamp-left", { opacity: 0, x: -86 }, { opacity: 1, x: 0, duration: 0.19, ease: "power4.out", immediateRender: false }, LAND - 0.04);
+      tl.fromTo(".clamp-right", { opacity: 0, x: 86 }, { opacity: 1, x: 0, duration: 0.19, ease: "power4.out", immediateRender: false }, LAND - 0.04);
+      tl.fromTo(".machine-core", { scale: 1 }, { scale: 0.975, duration: 0.07, ease: "power1.in", immediateRender: false }, LAND);
+      tl.to(".machine-core", { scale: 1, duration: 0.24, ease: "back.out(2.2)" }, LAND + 0.07);
+      tl.fromTo(".burst", { opacity: 0, scaleX: 0 }, { opacity: 0.56, scaleX: 1, duration: 0.18, stagger: 0.012, ease: "power4.out", immediateRender: false }, LAND);
+      tl.to(".burst", { opacity: 0, scaleX: 0.28, duration: 0.22, ease: "power2.in" }, LAND + 0.18);
+      tl.fromTo(".scanner", { opacity: 0, x: 80 }, { opacity: 0.9, x: 830, duration: Math.max(0.42, DUR - LAND - 0.1), ease: "power1.inOut", immediateRender: false }, LAND);
+      tl.fromTo(".shine", { opacity: 0, xPercent: -120 }, { opacity: 0.72, xPercent: 120, duration: DUR - LAND, ease: "power2.out", immediateRender: false }, LAND);
+
+      // 底部控制台持续推进，填充画面并提供启动进度反馈。
+      tl.fromTo(".lower-deck", { y: 62 }, { y: 0, duration: 0.55, ease: "power4.out", immediateRender: false }, 0.28);
+      tl.fromTo(".module", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.42, stagger: 0.065, ease: "power3.out", immediateRender: false }, 0.48);
+      tl.fromTo(".progress-fill", { scaleX: 0 }, { scaleX: 1, duration: DUR - 0.3, ease: "power1.inOut", immediateRender: false }, 0.18);
+      tl.fromTo(".status-light", { scale: 0.58, opacity: 0.45 }, { scale: 1, opacity: 1, duration: 0.38, repeat: 3, yoyo: true, ease: "sine.inOut", immediateRender: false }, 0.22);
+
+      window.__timelines.main = tl;
+    </script>
+  </body>
+</html>

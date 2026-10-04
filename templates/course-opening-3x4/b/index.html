@@ -1,0 +1,637 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  data-composition-variables='[
+    {"id":"lead","type":"string","label":"引导语","default":"__OPENING_LEAD_JSON__"},
+    {"id":"topic","type":"string","label":"主题词","default":"__OPENING_TOPIC_JSON__"},
+    {"id":"topicStart","type":"number","label":"主题词朗读起点","default":__OPENING_TOPIC_START__}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080,height=1440" />
+    <title>通用开场母版 B · 全屏执行路线定稿</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      :root {
+        --paper: #eee8db;
+        --paper-bright: #f9f5eb;
+        --ink: #102f48;
+        --blue: #285f91;
+        --blue-soft: #7898b2;
+        --red: #ae4836;
+        --yellow: #d3a63f;
+        --muted: #405c71;
+      }
+      html, body, #root {
+        width: 1080px;
+        height: 1440px;
+        overflow: hidden;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Course", sans-serif;
+      }
+      #root {
+        position: relative;
+        isolation: isolate;
+        background-image:
+          radial-gradient(circle at 51% 50%, rgba(255,255,255,.94), transparent 36%),
+          linear-gradient(rgba(16,47,72,.075) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(16,47,72,.075) 1px, transparent 1px);
+        background-size: auto, 40px 40px, 40px 40px;
+      }
+      #root::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: .1;
+        pointer-events: none;
+        z-index: 35;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.22' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #root::after {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 3px solid rgba(16,47,72,.76);
+        pointer-events: none;
+        z-index: 40;
+      }
+
+      .brand-lockup {
+        position: absolute;
+        top: 54px;
+        left: 58px;
+        width: 410px;
+        z-index: 22;
+      }
+      .brand {
+        display: block;
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: .2em;
+      }
+      .brand-rule {
+        display: block;
+        width: 184px;
+        height: 7px;
+        margin-top: 18px;
+        background: var(--red);
+      }
+      .brand-meta {
+        display: block;
+        margin-top: 13px;
+        color: var(--muted);
+        font: 700 14px/1.35 monospace;
+        letter-spacing: .13em;
+      }
+      .brand-meta span,
+      .map-id span,
+      .node-label span,
+      .route-note span { display: block; }
+      .leaf {
+        position: absolute;
+        top: 47px;
+        right: 62px;
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        z-index: 22;
+      }
+      .map-id {
+        position: absolute;
+        top: 145px;
+        right: 62px;
+        width: 285px;
+        padding-top: 13px;
+        border-top: 3px solid var(--ink);
+        color: var(--muted);
+        font: 700 15px/1.45 monospace;
+        letter-spacing: .12em;
+        text-align: right;
+        z-index: 22;
+      }
+
+      .lead-wrap {
+        position: absolute;
+        top: 270px;
+        left: 88px;
+        width: 610px;
+        z-index: 18;
+      }
+      .lead-index {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        color: var(--red);
+        font: 700 16px/1 monospace;
+        letter-spacing: .2em;
+      }
+      .lead-index::before {
+        content: "";
+        display: block;
+        width: 52px;
+        height: 5px;
+        background: var(--yellow);
+      }
+      .lead {
+        color: var(--blue);
+        font-size: 49px;
+        font-weight: 400;
+        letter-spacing: .1em;
+        text-align: left;
+      }
+
+      .legend {
+        position: absolute;
+        top: 265px;
+        right: 70px;
+        width: 230px;
+        z-index: 19;
+      }
+      .legend-title {
+        display: block;
+        padding-bottom: 10px;
+        border-bottom: 3px solid var(--ink);
+        font: 700 14px/1 monospace;
+        letter-spacing: .15em;
+      }
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        height: 42px;
+        padding-left: 4px;
+        border-bottom: 2px solid rgba(16,47,72,.34);
+        color: var(--muted);
+        font: 700 13px/1 monospace;
+        letter-spacing: .11em;
+      }
+      .legend-row i {
+        width: 13px;
+        height: 13px;
+        border: 3px solid var(--ink);
+      }
+      .legend-row:nth-of-type(2) i { background: var(--yellow); transform: rotate(45deg); }
+      .legend-row:nth-of-type(3) i { background: var(--red); border-radius: 50%; }
+      .legend-row:nth-of-type(4) i { background: var(--blue); }
+
+      .ghost-index {
+        position: absolute;
+        right: 36px;
+        bottom: 78px;
+        color: rgba(16,47,72,.075);
+        font: 700 310px/.8 monospace;
+        letter-spacing: -.1em;
+        z-index: 1;
+      }
+      .axis-label {
+        position: absolute;
+        color: var(--muted);
+        font: 700 13px/1 monospace;
+        letter-spacing: .13em;
+        z-index: 17;
+      }
+      .axis-label.left {
+        left: 35px;
+        top: 480px;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+      }
+      .axis-label.bottom { left: 82px; bottom: 43px; }
+
+      .topography {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1440px;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .topography path {
+        fill: none;
+        stroke: rgba(40,95,145,.13);
+        stroke-width: 2;
+      }
+
+      .route-map {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1440px;
+        z-index: 7;
+        pointer-events: none;
+      }
+      .route-shadow {
+        fill: none;
+        stroke: rgba(16,47,72,.13);
+        stroke-width: 25;
+        stroke-linecap: square;
+        stroke-linejoin: round;
+      }
+      .route-guide {
+        fill: none;
+        stroke: rgba(16,47,72,.26);
+        stroke-width: 3;
+        stroke-linecap: square;
+        stroke-linejoin: round;
+      }
+      .draw-path {
+        fill: none;
+        stroke: var(--blue);
+        stroke-width: 9;
+        stroke-linecap: square;
+        stroke-linejoin: round;
+      }
+      .route-out { stroke: var(--red); }
+
+      .node {
+        position: absolute;
+        width: 31px;
+        height: 31px;
+        margin: -15px 0 0 -15px;
+        border: 5px solid var(--ink);
+        background: var(--paper-bright);
+        z-index: 15;
+        opacity: 0;
+      }
+      .node.round { border-radius: 50%; background: var(--red); }
+      .node.diamond { background: var(--yellow); transform: rotate(45deg); }
+      .node.start { left: 80px; top: 1255px; width: 39px; height: 39px; margin: -19px 0 0 -19px; }
+      .node.n2 { left: 250px; top: 1115px; }
+      .node.n3 { left: 145px; top: 950px; }
+      .node.n4 { left: 360px; top: 825px; }
+      .node.n5 { left: 790px; top: 605px; }
+      .node.n6 { left: 935px; top: 440px; }
+      .node.n7 { left: 770px; top: 292px; }
+      .node.end { left: 982px; top: 292px; width: 39px; height: 39px; margin: -19px 0 0 -19px; }
+
+      .node-label {
+        position: absolute;
+        color: var(--muted);
+        font: 700 13px/1.2 monospace;
+        letter-spacing: .12em;
+        z-index: 16;
+        opacity: 0;
+      }
+      .label-start { left: 76px; top: 1291px; }
+      .label-n2 { left: 278px; top: 1080px; }
+      .label-n3 { left: 82px; top: 915px; text-align: right; }
+      .label-n4 { left: 390px; top: 790px; }
+      .label-n5 { left: 817px; top: 570px; }
+      .label-n6 { left: 839px; top: 403px; text-align: right; }
+      .label-n7 { left: 700px; top: 250px; text-align: right; }
+      .label-end { right: 58px; top: 326px; text-align: right; }
+
+      .traveler {
+        position: absolute;
+        left: 68px;
+        top: 1243px;
+        width: 24px;
+        height: 24px;
+        border: 4px solid var(--ink);
+        border-radius: 50%;
+        background: var(--yellow);
+        box-shadow: 0 0 0 8px rgba(211,166,63,.22);
+        z-index: 20;
+        opacity: 0;
+      }
+
+      .station {
+        position: absolute;
+        left: 540px;
+        top: 720px;
+        width: 890px;
+        height: 430px;
+        margin: -215px 0 0 -445px;
+        perspective: 1800px;
+        z-index: 12;
+      }
+      .station::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 790px;
+        height: 245px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: rgba(238,232,219,.9);
+        box-shadow: 0 0 60px 30px rgba(238,232,219,.88);
+        z-index: 2;
+      }
+      .ring {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        z-index: 3;
+      }
+      .ring.outer {
+        width: 550px;
+        height: 550px;
+        border: 3px solid rgba(40,95,145,.36);
+      }
+      .ring.middle {
+        width: 410px;
+        height: 410px;
+        border: 3px dashed rgba(185,76,57,.52);
+      }
+      .ring.inner {
+        width: 286px;
+        height: 286px;
+        border: 12px solid rgba(40,95,145,.12);
+      }
+      .crosshair-h,
+      .crosshair-v {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        background: rgba(16,47,72,.33);
+        opacity: 0;
+        z-index: 3;
+      }
+      .crosshair-h { width: 790px; height: 3px; margin-left: -395px; }
+      .crosshair-v { width: 3px; height: 390px; margin-top: -195px; }
+      .station-label {
+        position: absolute;
+        top: -44px;
+        left: 50%;
+        width: 310px;
+        margin-left: -155px;
+        padding: 10px 14px;
+        color: var(--paper-bright);
+        background: var(--ink);
+        font: 700 14px/1 monospace;
+        letter-spacing: .14em;
+        text-align: center;
+        opacity: 0;
+      }
+      .camera {
+        position: absolute;
+        inset: 52px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1800px;
+        z-index: 8;
+      }
+      .retreat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(3.75);
+        transform-style: preserve-3d;
+      }
+      .word {
+        position: relative;
+        color: var(--ink);
+        font-size: 178px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: -.045em;
+        white-space: nowrap;
+        transform-style: preserve-3d;
+        transform-origin: center center;
+      }
+      .face {
+        position: relative;
+        display: block;
+        z-index: 7;
+        transform: translateZ(3px);
+        backface-visibility: hidden;
+      }
+      .rear {
+        position: absolute;
+        inset: 0;
+        display: block;
+        z-index: 6;
+        color: var(--ink);
+        transform: rotateY(180deg) translateZ(3px);
+        backface-visibility: hidden;
+      }
+      .destination-badge {
+        position: absolute;
+        left: 50%;
+        bottom: -18px;
+        width: 286px;
+        margin-left: -143px;
+        padding: 11px 14px;
+        border: 4px solid var(--ink);
+        color: var(--paper-bright);
+        background: var(--red);
+        font: 700 14px/1 monospace;
+        letter-spacing: .12em;
+        text-align: center;
+        opacity: 0;
+        z-index: 10;
+      }
+      .impact-line {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 330px;
+        height: 4px;
+        transform-origin: left center;
+        background: linear-gradient(90deg, var(--yellow), transparent);
+        opacity: 0;
+      }
+      .impact-line.i2 { transform: rotate(60deg); }
+      .impact-line.i3 { transform: rotate(120deg); }
+      .impact-line.i4 { transform: rotate(180deg); }
+      .impact-line.i5 { transform: rotate(240deg); }
+      .impact-line.i6 { transform: rotate(300deg); }
+
+      .route-note {
+        position: absolute;
+        left: 86px;
+        bottom: 76px;
+        width: 310px;
+        padding-top: 13px;
+        border-top: 3px solid var(--ink);
+        color: var(--muted);
+        font: 700 14px/1.4 monospace;
+        letter-spacing: .12em;
+        z-index: 18;
+      }
+      .footer {
+        position: absolute;
+        right: 62px;
+        bottom: 48px;
+        color: var(--muted);
+        font-size: 23px;
+        letter-spacing: .12em;
+        z-index: 18;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root" data-composition-id="main" data-start="0" data-duration="2.433333333333333" data-width="1080" data-height="1440">
+      <header class="brand-lockup">
+        <span class="brand">深度讲解</span>
+        <i class="brand-rule" data-layout-ignore></i>
+        <span class="brand-meta"><span>EXECUTION MAP</span><span>FULL ROUTE / B2</span></span>
+      </header>
+      <img class="leaf" src="assets/red-maple-leaf.png" alt="" aria-hidden="true" data-layout-ignore />
+      <span class="map-id"><span>COURSE OPENING / 09:16</span><span>ROUTE ENGINE · ACTIVE</span></span>
+
+      <section class="lead-wrap" data-layout-allow-overlap>
+        <span class="lead-index">ROUTE TO KNOWLEDGE</span>
+        <h1 class="lead" id="lead">__OPENING_LEAD_HTML__</h1>
+      </section>
+
+      <aside class="legend">
+        <span class="legend-title">MAP LEGEND</span>
+        <span class="legend-row"><i data-layout-ignore></i>ORIGIN</span>
+        <span class="legend-row"><i data-layout-ignore></i>IN PROGRESS</span>
+        <span class="legend-row"><i data-layout-ignore></i>DESTINATION</span>
+      </aside>
+
+      <span class="ghost-index" data-layout-ignore>B</span>
+      <span class="axis-label left" data-layout-ignore>Y / 000—1440 / EXECUTION</span>
+      <span class="axis-label bottom" data-layout-ignore>X / 000—1080 / KNOWLEDGE ROUTE</span>
+
+      <svg class="topography" viewBox="0 0 1080 1440" data-layout-ignore>
+        <path d="M-40 650C130 535 188 590 310 512S548 420 660 498 875 605 1125 445" />
+        <path d="M-60 704C118 582 207 640 332 557S562 468 688 548 902 662 1140 494" />
+        <path d="M-72 758C107 633 229 690 348 609S588 515 710 602 922 711 1150 550" />
+        <path d="M-90 812C96 686 251 744 370 661S610 568 731 654 948 762 1160 608" />
+      </svg>
+
+      <svg class="route-map" viewBox="0 0 1080 1440" data-layout-ignore>
+        <path class="route-shadow" d="M80 1255H250V1115H145V950H360V825H540V720H790V605H935V440H770V292H982" />
+        <path class="route-guide" d="M80 1255H250V1115H145V950H360V825H540V720H790V605H935V440H770V292H982" />
+        <path class="draw-path route-in" d="M80 1255H250V1115H145V950H360V825H540V720" />
+        <path class="draw-path route-out" d="M540 720H790V605H935V440H770V292H982" />
+      </svg>
+
+      <i class="node diamond start" data-layout-ignore></i><span class="node-label label-start" data-layout-ignore>START / 00</span>
+      <i class="node round n2" data-layout-ignore></i><span class="node-label label-n2" data-layout-ignore>INPUT / 01</span>
+      <i class="node n3" data-layout-ignore></i><span class="node-label label-n3" data-layout-ignore><span>TRACE</span><span>02</span></span>
+      <i class="node round n4" data-layout-ignore></i><span class="node-label label-n4" data-layout-ignore>PROCESS / 03</span>
+      <i class="node n5" data-layout-ignore></i><span class="node-label label-n5" data-layout-ignore>VERIFY / 04</span>
+      <i class="node round n6" data-layout-ignore></i><span class="node-label label-n6" data-layout-ignore><span>OUTPUT</span><span>05</span></span>
+      <i class="node n7" data-layout-ignore></i><span class="node-label label-n7" data-layout-ignore>LOCK / 06</span>
+      <i class="node diamond end" data-layout-ignore></i><span class="node-label label-end" data-layout-ignore>READY / 07</span>
+      <i class="traveler" data-layout-ignore></i>
+
+      <section class="station" data-layout-allow-overflow>
+        <i class="ring outer" data-layout-ignore></i>
+        <i class="ring middle" data-layout-ignore></i>
+        <i class="ring inner" data-layout-ignore></i>
+        <i class="crosshair-h" data-layout-ignore></i><i class="crosshair-v" data-layout-ignore></i>
+        <span class="station-label" data-layout-ignore>DESTINATION / TOPIC NODE</span>
+        <i class="impact-line i1" data-layout-ignore></i><i class="impact-line i2" data-layout-ignore></i>
+        <i class="impact-line i3" data-layout-ignore></i><i class="impact-line i4" data-layout-ignore></i>
+        <i class="impact-line i5" data-layout-ignore></i><i class="impact-line i6" data-layout-ignore></i>
+        <div class="camera">
+          <div class="retreat">
+            <div class="word" id="word" data-layout-allow-overlap data-layout-allow-occlusion>
+              <span class="face" id="topic" data-layout-ignore>__OPENING_TOPIC_HTML__</span>
+              <span class="rear" id="topicRear" data-layout-ignore aria-hidden="true">__OPENING_TOPIC_HTML__</span>
+            </div>
+          </div>
+        </div>
+        <span class="destination-badge" data-layout-ignore>DESTINATION REACHED</span>
+      </section>
+
+      <span class="route-note"><span>LIVE ROUTE</span><span>FROM INPUT TO UNDERSTANDING</span></span>
+      <footer class="footer">今天 · 学会一个概念</footer>
+
+      <audio id="narration" src="narration.wav" data-start="0" data-duration="2.4004791666666665" data-track-index="1"></audio>
+    </main>
+    <script>
+      const DUR = 2.433333333333333;
+      const variables = window.__hyperframes.getVariables();
+      const topic = String(variables.topic || "__OPENING_TOPIC_JSON__").trim();
+      const lead = String(variables.lead || "__OPENING_LEAD_JSON__").trim();
+      const LAND = Math.min(Math.max(Number(variables.topicStart) || __OPENING_TOPIC_START__, 1.27), DUR - .9);
+
+      document.getElementById("lead").textContent = lead;
+      document.getElementById("topic").textContent = topic;
+      document.getElementById("topicRear").textContent = topic;
+
+      // 主题词只按字符类型估算宽度，渲染过程中不读取动态布局。
+      const visualUnits = Array.from(topic).reduce((sum, char) => {
+        if (/\s/u.test(char)) return sum + .34;
+        if (/[\u3400-\u9fff\uf900-\ufaff]/u.test(char)) return sum + 1;
+        if (/[A-Z]/u.test(char)) return sum + .68;
+        return sum + .56;
+      }, 0);
+      const topicSize = Math.max(62, Math.min(178, 760 / Math.max(visualUnits, 1)));
+      const word = document.getElementById("word");
+      word.style.fontSize = `${topicSize}px`;
+      word.style.letterSpacing = visualUnits > 10 ? "-.045em" : "-.04em";
+
+      const routeIn = document.querySelector(".route-in");
+      const routeOut = document.querySelector(".route-out");
+      const routeInLength = routeIn.getTotalLength();
+      const routeOutLength = routeOut.getTotalLength();
+      routeIn.style.strokeDasharray = String(routeInLength);
+      routeIn.style.strokeDashoffset = String(routeInLength);
+      routeOut.style.strokeDasharray = String(routeOutLength);
+      routeOut.style.strokeDashoffset = String(routeOutLength);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 贴边信息以不同方向进入，建立非对称地图构图。
+      tl.fromTo(".brand-lockup", { opacity: 0, x: -38 }, { opacity: 1, x: 0, duration: .45, ease: "expo.out", immediateRender: false }, .08);
+      tl.fromTo(".leaf", { opacity: 0, scale: .65, rotation: -24 }, { opacity: 1, scale: 1, rotation: 0, duration: .38, ease: "back.out(1.7)", immediateRender: false }, .12);
+      tl.fromTo(".map-id", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: .34, ease: "power4.out", immediateRender: false }, .18);
+      tl.fromTo(".lead-wrap", { opacity: 0, x: -42 }, { opacity: 1, x: 0, duration: .5, ease: "power3.out", immediateRender: false }, .2);
+      tl.fromTo(".legend", { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: .36, ease: "circ.out", immediateRender: false }, .28);
+      tl.fromTo(".route-note", { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: .4, ease: "power2.out", immediateRender: false }, .34);
+
+      // 路线从左下开始绘制，移动标记经过四个节点抵达主题站。
+      tl.fromTo(".start", { opacity: 0, scale: .25 }, { opacity: 1, scale: 1, duration: .23, ease: "back.out(2)", immediateRender: false }, .15);
+      tl.fromTo(".label-start", { opacity: 0, y: 9 }, { opacity: 1, y: 0, duration: .25, ease: "power3.out", immediateRender: false }, .2);
+      tl.fromTo(routeIn, { strokeDashoffset: routeInLength }, { strokeDashoffset: 0, duration: LAND - .16, ease: "power1.inOut", immediateRender: false }, .16);
+      tl.fromTo(".traveler", { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: 170, y: -140, duration: .28, ease: "power2.inOut", immediateRender: false }, .18);
+      tl.to(".traveler", { x: 65, y: -305, duration: .27, ease: "power1.inOut" }, .46);
+      tl.to(".traveler", { x: 280, y: -430, duration: .29, ease: "power2.inOut" }, .73);
+      tl.to(".traveler", { x: 460, y: -535, duration: Math.max(.25, LAND - 1.02), ease: "power3.out" }, 1.02);
+      tl.fromTo([".n2", ".n3", ".n4"], { opacity: 0, scale: .3 }, { opacity: 1, scale: 1, duration: .2, stagger: .18, ease: "back.out(1.8)", immediateRender: false }, .42);
+      tl.fromTo([".label-n2", ".label-n3", ".label-n4"], { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: .23, stagger: .18, ease: "power4.out", immediateRender: false }, .47);
+
+      // 主题站由地图线框构成，不使用卡片；主题词整词翻转后退到中心。
+      tl.fromTo(".station-label", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: .35, ease: "expo.out", immediateRender: false }, .48);
+      tl.fromTo(".ring.outer", { opacity: 0, scale: .45, rotation: -34 }, { opacity: .82, scale: 1, rotation: 0, duration: LAND * .72, ease: "circ.out", immediateRender: false }, .2);
+      tl.fromTo(".ring.middle", { opacity: 0, scale: .3, rotation: 45 }, { opacity: .8, scale: 1, rotation: 0, duration: LAND * .62, ease: "power3.out", immediateRender: false }, .34);
+      tl.fromTo(".ring.inner", { opacity: 0, scale: .2 }, { opacity: 1, scale: 1, duration: .48, ease: "back.out(1.6)", immediateRender: false }, LAND - .5);
+      tl.fromTo([".crosshair-h", ".crosshair-v"], { opacity: 0, scale: .2 }, { opacity: .74, scale: 1, duration: .44, ease: "power4.out", immediateRender: false }, LAND - .42);
+      tl.fromTo(".retreat", { scale: 3.75, y: 8 }, { scale: 1, y: 0, duration: LAND - .1, ease: "power3.out", immediateRender: false }, .1);
+      tl.fromTo(".word", { rotationY: -18, rotationX: -7 }, { rotationY: 720, rotationX: 0, duration: LAND - .1, ease: "circ.out", immediateRender: false }, .1);
+
+      // 落位冲击后，路线从主题站继续向右上完成。
+      tl.fromTo(".impact-line", { opacity: 0, scaleX: 0 }, { opacity: .66, scaleX: 1, duration: .17, stagger: .012, ease: "power4.out", immediateRender: false }, LAND);
+      tl.to(".impact-line", { opacity: 0, scaleX: .24, duration: .2, ease: "power2.in" }, LAND + .17);
+      tl.fromTo(routeOut, { strokeDashoffset: routeOutLength }, { strokeDashoffset: 0, duration: DUR - LAND, ease: "power2.out", immediateRender: false }, LAND);
+      tl.to(".traveler", { x: 710, y: -650, duration: .21, ease: "power2.inOut" }, LAND);
+      tl.to(".traveler", { x: 855, y: -815, duration: .22, ease: "power1.inOut" }, LAND + .21);
+      tl.to(".traveler", { x: 690, y: -963, duration: .22, ease: "power2.inOut" }, LAND + .43);
+      tl.to(".traveler", { x: 902, y: -963, duration: .24, ease: "power3.out" }, LAND + .65);
+      tl.fromTo([".n5", ".n6", ".n7", ".end"], { opacity: 0, scale: .3 }, { opacity: 1, scale: 1, duration: .18, stagger: .15, ease: "back.out(1.7)", immediateRender: false }, LAND + .09);
+      tl.fromTo([".label-n5", ".label-n6", ".label-n7", ".label-end"], { opacity: 0, x: 10 }, { opacity: 1, x: 0, duration: .2, stagger: .15, ease: "power3.out", immediateRender: false }, LAND + .12);
+      tl.fromTo(".destination-badge", { opacity: 0, y: 20, scale: .78 }, { opacity: 1, y: 0, scale: 1, duration: .27, ease: "back.out(1.9)", immediateRender: false }, LAND + .2);
+
+      window.__timelines.main = tl;
+    </script>
+  </body>
+</html>

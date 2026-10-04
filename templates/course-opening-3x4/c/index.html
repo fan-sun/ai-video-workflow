@@ -1,0 +1,857 @@
+<!doctype html>
+<html
+  lang="zh-CN"
+  data-composition-variables='[
+    {"id":"lead","type":"string","label":"引导语","default":"__OPENING_LEAD_JSON__"},
+    {"id":"topic","type":"string","label":"主题词","default":"__OPENING_TOPIC_JSON__"},
+    {"id":"topicStart","type":"number","label":"主题词朗读起点","default":__OPENING_TOPIC_START__}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080,height=1440" />
+    <title>通用开场模板 C · 轨道指挥盘</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      :root {
+        --paper: #f7f6f2;
+        --paper-bright: #fffefa;
+        --ink: #262b48;
+        --muted: #505775;
+        --purple: #6657c8;
+        --purple-dark: #4f429d;
+        --teal: #39a88f;
+        --yellow: #e1a72e;
+        --coral: #e36f68;
+      }
+      html, body, #root {
+        width: 1080px;
+        height: 1440px;
+        overflow: hidden;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Course", sans-serif;
+      }
+      #root {
+        position: relative;
+        isolation: isolate;
+        background-image:
+          radial-gradient(circle at 11% 12%, rgba(102,87,200,.18), transparent 28%),
+          radial-gradient(circle at 88% 88%, rgba(57,168,143,.18), transparent 28%),
+          radial-gradient(rgba(38,43,72,.16) 1.6px, transparent 1.6px);
+        background-size: auto, auto, 26px 26px;
+      }
+      #root::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: .09;
+        pointer-events: none;
+        z-index: 35;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.22' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #root::after {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border: 3px solid rgba(38,43,72,.78);
+        border-radius: 34px;
+        pointer-events: none;
+        z-index: 40;
+      }
+      .corner-dot {
+        position: absolute;
+        width: 21px;
+        height: 21px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        z-index: 41;
+      }
+      .corner-dot.tl { top: 37px; left: 37px; background: var(--yellow); }
+      .corner-dot.tr { top: 37px; right: 37px; background: var(--teal); }
+      .corner-dot.bl { bottom: 37px; left: 37px; background: var(--coral); }
+      .corner-dot.br { bottom: 37px; right: 37px; background: var(--purple); }
+
+      .kit-head {
+        position: absolute;
+        top: 46px;
+        left: 58px;
+        width: 964px;
+        height: 220px;
+        z-index: 20;
+      }
+      .brand-row {
+        height: 78px;
+        display: grid;
+        grid-template-columns: 1fr 92px 1fr;
+        align-items: center;
+        border-bottom: 3px solid var(--ink);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        width: max-content;
+        padding: 9px 17px;
+        border: 3px solid var(--ink);
+        border-radius: 17px;
+        background: rgba(255,254,250,.86);
+        box-shadow: 5px 6px 0 rgba(38,43,72,.13);
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: .15em;
+      }
+      .leaf {
+        justify-self: center;
+        width: 74px;
+        height: 74px;
+        object-fit: contain;
+      }
+      .head-code {
+        justify-self: end;
+        color: var(--muted);
+        font: 700 15px/1.25 monospace;
+        letter-spacing: .13em;
+        text-align: right;
+      }
+      .kit-tabs {
+        height: 92px;
+        display: grid;
+        grid-template-columns: 1.1fr .9fr 1.15fr;
+        gap: 14px;
+        padding-top: 14px;
+      }
+      .kit-tab {
+        position: relative;
+        min-width: 0;
+        padding: 15px 17px;
+        border: 3px solid var(--ink);
+        border-radius: 18px;
+        background: var(--paper-bright);
+        box-shadow: 5px 6px 0 rgba(38,43,72,.13);
+        overflow: hidden;
+      }
+      .kit-tab::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 13px;
+        right: 14px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+      }
+      .kit-tab.purple::after { background: var(--purple); }
+      .kit-tab.teal::after { background: var(--teal); }
+      .kit-tab.yellow::after { background: var(--yellow); }
+      .tab-label {
+        display: block;
+        color: var(--muted);
+        font: 700 13px/1 monospace;
+        letter-spacing: .13em;
+      }
+      .tab-value {
+        display: block;
+        margin-top: 12px;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: .05em;
+      }
+      .head-rule {
+        height: 38px;
+        border-bottom: 3px solid var(--ink);
+        background:
+          linear-gradient(90deg, var(--purple) 0 26%, transparent 26% 28%, var(--teal) 28% 62%, transparent 62% 64%, var(--yellow) 64% 100%) 0 16px / 100% 8px no-repeat;
+      }
+
+      .lead-wrap {
+        position: absolute;
+        top: 300px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 19;
+      }
+      .lead-index {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--purple-dark);
+        font: 700 15px/1 monospace;
+        letter-spacing: .24em;
+      }
+      .lead {
+        color: var(--purple);
+        font-size: 47px;
+        font-weight: 400;
+        letter-spacing: .1em;
+      }
+
+      .edge-label {
+        position: absolute;
+        top: 465px;
+        color: var(--muted);
+        font: 700 13px/1 monospace;
+        letter-spacing: .1em;
+        writing-mode: vertical-rl;
+        z-index: 14;
+      }
+      .edge-label.left { left: 36px; transform: rotate(180deg); }
+      .edge-label.right { right: 36px; }
+
+      .kit-board {
+        position: absolute;
+        top: 420px;
+        left: 72px;
+        width: 936px;
+        height: 500px;
+        z-index: 10;
+      }
+      .board-ring {
+        position: absolute;
+        top: 78px;
+        left: 246px;
+        width: 444px;
+        height: 320px;
+        border: 3px dashed rgba(102,87,200,.34);
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .module-card {
+        position: absolute;
+        border: 4px solid var(--ink);
+        border-radius: 30px;
+        box-shadow: 11px 12px 0 rgba(38,43,72,.15);
+        opacity: 0;
+        will-change: transform;
+      }
+      .m1 { left: 80px; top: 145px; width: 326px; height: 181px; background: var(--teal); }
+      .m2 { left: 525px; top: 125px; width: 332px; height: 186px; background: var(--yellow); }
+      .m3 { left: 121px; top: 340px; width: 250px; height: 126px; background: var(--coral); }
+      .m4 { left: 620px; top: 328px; width: 292px; height: 140px; background: var(--purple); }
+      .m5 { left: 326px; top: 52px; width: 284px; height: 112px; background: var(--purple-dark); }
+      .module-card .mini-line {
+        position: absolute;
+        left: 23px;
+        right: 23px;
+        bottom: 25px;
+        height: 8px;
+        border-radius: 8px;
+        background: rgba(255,255,255,.75);
+      }
+      .module-card .mini-grid {
+        position: absolute;
+        top: 22px;
+        left: 23px;
+        display: grid;
+        grid-template-columns: repeat(3, 18px);
+        gap: 8px;
+      }
+      .mini-grid i {
+        width: 18px;
+        height: 18px;
+        border: 3px solid var(--ink);
+        border-radius: 6px;
+        background: rgba(255,255,255,.82);
+      }
+      .module-card .module-word {
+        position: absolute;
+        top: 24px;
+        left: 24px;
+        color: var(--paper-bright);
+        font: 700 15px/1 monospace;
+        letter-spacing: .13em;
+      }
+      .m2 .module-word { color: var(--ink); }
+      .m3 .module-word { color: var(--ink); }
+
+      .topic-card {
+        position: absolute;
+        top: 154px;
+        left: 34px;
+        width: 868px;
+        height: 268px;
+        border: 5px solid var(--ink);
+        border-radius: 30px;
+        background: var(--paper-bright);
+        box-shadow: 13px 15px 0 rgba(38,43,72,.18);
+        perspective: 1800px;
+        z-index: 12;
+        opacity: 0;
+      }
+      .topic-card::before {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 3px solid var(--purple);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 18px 18px, var(--purple) 0 4px, transparent 4.5px) 0 0 / 36px 36px,
+          linear-gradient(90deg, transparent 49.5%, rgba(102,87,200,.14) 49.5% 50.5%, transparent 50.5%);
+        opacity: .55;
+      }
+      .topic-tab {
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        width: 204px;
+        height: 42px;
+        margin-left: -102px;
+        border: 4px solid var(--ink);
+        border-radius: 18px;
+        background: var(--purple);
+        z-index: 16;
+      }
+      .topic-tab::after {
+        content: "";
+        position: absolute;
+        inset: 12px 38px;
+        border-radius: 10px;
+        background: rgba(255,255,255,.78);
+      }
+      .card-port {
+        position: absolute;
+        top: 102px;
+        width: 38px;
+        height: 62px;
+        border: 4px solid var(--ink);
+        border-radius: 12px;
+        z-index: 15;
+      }
+      .port-left { left: -25px; background: var(--yellow); }
+      .port-right { right: -25px; background: var(--teal); }
+      .camera {
+        position: absolute;
+        inset: 37px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1800px;
+        z-index: 14;
+      }
+      .retreat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(3.75);
+        transform-style: preserve-3d;
+      }
+      .word {
+        position: relative;
+        color: var(--ink);
+        font-size: 178px;
+        font-weight: 700;
+        line-height: 1.22;
+        letter-spacing: -.04em;
+        white-space: nowrap;
+        transform-style: preserve-3d;
+        transform-origin: center center;
+      }
+      .face {
+        position: relative;
+        display: block;
+        z-index: 6;
+        transform: translateZ(3px);
+        backface-visibility: visible;
+      }
+      .depth {
+        position: absolute;
+        inset: 0;
+        display: block;
+        color: var(--purple);
+        pointer-events: none;
+        backface-visibility: visible;
+      }
+      .scan {
+        position: absolute;
+        top: 30px;
+        bottom: 30px;
+        left: 0;
+        width: 15px;
+        opacity: 0;
+        background: linear-gradient(90deg, transparent, var(--coral), rgba(255,255,255,.95), transparent);
+        box-shadow: 0 0 20px rgba(227,111,104,.52);
+        z-index: 17;
+      }
+      .ready-ribbon {
+        position: absolute;
+        right: 34px;
+        bottom: -25px;
+        padding: 12px 16px;
+        border: 4px solid var(--ink);
+        border-radius: 15px;
+        color: var(--paper-bright);
+        background: var(--coral);
+        box-shadow: 6px 7px 0 rgba(38,43,72,.16);
+        font: 700 14px/1 monospace;
+        letter-spacing: .1em;
+        opacity: 0;
+        z-index: 18;
+      }
+
+      .tool-deck {
+        position: absolute;
+        left: 58px;
+        bottom: 48px;
+        width: 964px;
+        height: 336px;
+        z-index: 20;
+      }
+      .deck-title {
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 3px solid var(--ink);
+        border-bottom: 3px solid var(--ink);
+        font: 700 16px/1 monospace;
+        letter-spacing: .13em;
+      }
+      .deck-title strong {
+        padding: 9px 13px;
+        border: 3px solid var(--ink);
+        border-radius: 13px;
+        background: var(--yellow);
+        font-size: 14px;
+      }
+      .tool-row {
+        height: 178px;
+        display: grid;
+        grid-template-columns: 1.1fr .9fr 1.25fr;
+        gap: 15px;
+        padding: 15px 0;
+      }
+      .tool-card {
+        position: relative;
+        padding: 21px 20px;
+        border: 3px solid var(--ink);
+        border-radius: 22px;
+        box-shadow: 6px 7px 0 rgba(38,43,72,.13);
+        overflow: hidden;
+      }
+      .tool-card.one { background: #ede9ff; }
+      .tool-card.two { background: #d9f3ec; }
+      .tool-card.three { background: #fff0bf; }
+      .tool-index {
+        position: absolute;
+        top: 11px;
+        right: 15px;
+        color: rgba(38,43,72,.17);
+        font: 700 62px/1 monospace;
+      }
+      .tool-label {
+        position: relative;
+        display: block;
+        color: var(--muted);
+        font: 700 13px/1 monospace;
+        letter-spacing: .13em;
+      }
+      .tool-value {
+        position: relative;
+        display: block;
+        margin-top: 26px;
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: .06em;
+      }
+      .tool-fill {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        height: 8px;
+        border-radius: 8px;
+        background: var(--ink);
+        transform: scaleX(0);
+        transform-origin: left center;
+      }
+      .tool-check {
+        position: absolute;
+        right: 19px;
+        bottom: 19px;
+        width: 28px;
+        height: 16px;
+        border-left: 5px solid var(--ink);
+        border-bottom: 5px solid var(--ink);
+        transform: rotate(-45deg) scale(.4);
+        opacity: 0;
+      }
+      .footer {
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 23px;
+        letter-spacing: .12em;
+      }
+      .footer-tabs {
+        display: flex;
+        gap: 8px;
+      }
+      .footer-tabs i {
+        display: block;
+        width: 40px;
+        height: 16px;
+        border: 3px solid var(--ink);
+        border-radius: 9px;
+      }
+      .footer-tabs i:nth-child(1) { background: var(--purple); }
+      .footer-tabs i:nth-child(2) { background: var(--teal); }
+      .footer-tabs i:nth-child(3) { background: var(--yellow); }
+
+      .orbit-ticks {
+        position: absolute;
+        top: 52px;
+        left: 100px;
+        width: 736px;
+        height: 736px;
+        border-radius: 50%;
+        background: repeating-conic-gradient(
+          from -3deg,
+          rgba(38,43,72,.55) 0 1deg,
+          transparent 1deg 12deg
+        );
+        -webkit-mask: radial-gradient(circle, transparent 0 67%, #000 67.2% 68.3%, transparent 68.6%);
+        mask: radial-gradient(circle, transparent 0 67%, #000 67.2% 68.3%, transparent 68.6%);
+        opacity: 0;
+        z-index: 1;
+      }
+      .orbit-connectors {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .orbit-link {
+        fill: none;
+        stroke: rgba(79,66,157,.52);
+        stroke-width: 2.5;
+        stroke-dasharray: 7 10;
+        stroke-dashoffset: 120;
+        opacity: 0;
+      }
+      .orbit-link.teal { stroke: rgba(57,168,143,.58); }
+      .orbit-link.yellow { stroke: rgba(225,167,46,.64); }
+      .axis-line {
+        position: absolute;
+        display: block;
+        background: rgba(38,43,72,.14);
+        opacity: 0;
+        z-index: 1;
+      }
+      .axis-x {
+        left: 186px;
+        top: 420px;
+        width: 564px;
+        height: 2px;
+        transform-origin: center;
+      }
+      .axis-y {
+        left: 467px;
+        top: 158px;
+        width: 2px;
+        height: 524px;
+        transform-origin: center;
+      }
+      .orbit-index {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        color: var(--ink);
+        background: var(--paper-bright);
+        box-shadow: 4px 5px 0 rgba(38,43,72,.12);
+        font: 700 13px/1 monospace;
+        opacity: 0;
+        z-index: 7;
+      }
+      .oi1 { left: 264px; top: 146px; }
+      .oi2 { right: 258px; top: 148px; }
+      .oi3 { left: 278px; bottom: 120px; }
+      .oi4 { right: 274px; bottom: 118px; }
+      .orbit-meta {
+        position: absolute;
+        padding: 7px 10px;
+        border: 2px solid rgba(38,43,72,.5);
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(255,254,250,.84);
+        font: 700 11px/1 monospace;
+        letter-spacing: .12em;
+        opacity: 0;
+        z-index: 7;
+      }
+      .om1 { left: 298px; top: 208px; }
+      .om2 { right: 286px; top: 208px; }
+      .om3 { left: 300px; bottom: 178px; }
+      .om4 { right: 292px; bottom: 178px; }
+
+      /* 方案 03：双轨道、五个工具节点和三张浮动说明卡共同围绕主题词。 */
+      #root {
+        background-image:
+          radial-gradient(circle at 50% 47%, rgba(255,255,255,.98), transparent 31%),
+          radial-gradient(circle at 50% 47%, rgba(57,168,143,.13), transparent 56%),
+          radial-gradient(rgba(38,43,72,.15) 1.5px, transparent 1.5px);
+      }
+      .kit-head { height: 92px; }
+      .brand-row { height: 78px; border-bottom: 0; }
+      .kit-tabs, .head-rule, .edge-label { display: none; }
+      .lead-wrap { top: 166px; }
+      .kit-board { top: 278px; height: 830px; }
+      .kit-board::before {
+        content: "C / ACTION SYSTEM";
+        position: absolute;
+        left: 50%; top: 32px;
+        transform: translateX(-50%);
+        color: rgba(79,66,157,.42);
+        font: 700 18px/1 monospace;
+        letter-spacing: .22em;
+      }
+      .board-ring {
+        top: 70px; left: 118px; width: 700px; height: 700px;
+        border: 5px dashed rgba(79,66,157,.34);
+      }
+      .board-ring::before,
+      .board-ring::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+      }
+      .board-ring::before {
+        inset: 62px;
+        border: 4px solid rgba(57,168,143,.24);
+      }
+      .board-ring::after {
+        inset: 128px;
+        border: 3px dashed rgba(225,167,46,.34);
+      }
+      .module-card {
+        width: 154px; height: 154px;
+        border-radius: 50%;
+        box-shadow: 9px 10px 0 rgba(38,43,72,.14);
+      }
+      .m1 { left: 44px; top: 168px; background: #3f9f8b; }
+      .m2 { left: 738px; top: 160px; background: #dfb13d; }
+      .m3 { left: 126px; top: 602px; width: 136px; height: 136px; background: #da746d; }
+      .m4 { left: 684px; top: 606px; width: 136px; height: 136px; background: #6657c8; }
+      .m5 { left: 356px; top: 42px; width: 224px; height: 88px; border-radius: 999px; background: #4f429d; }
+      .module-card .mini-line { left: 30px; right: 30px; }
+      .topic-card {
+        top: 278px; left: 8px; width: 920px; height: 280px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+      .topic-card::before, .topic-tab, .card-port { display: none; }
+      .camera { inset: 0; }
+      .face { color: #27304d; }
+      .scan, .depth { display: none !important; }
+      .ready-ribbon {
+        right: 50%; bottom: -36px; transform: translateX(50%);
+        border-radius: 999px;
+        background: #da746d;
+      }
+      .tool-deck {
+        left: 0; top: 0; bottom: auto;
+        width: 1080px; height: 1440px;
+        z-index: 8;
+      }
+      .deck-title {
+        position: absolute;
+        left: 58px; bottom: 112px;
+        width: 964px; height: 48px;
+      }
+      .tool-row { display: block; height: 0; padding: 0; }
+      .tool-card {
+        position: absolute;
+        width: 260px; height: 122px;
+        padding: 18px;
+        border-radius: 22px 8px 22px 8px;
+      }
+      .tool-card.one { left: 46px; top: 294px; }
+      .tool-card.two { right: 44px; top: 294px; }
+      .tool-card.three { left: 410px; top: 1080px; }
+      .tool-label { color: #353953; font-size: 11px; }
+      .tool-value { margin-top: 22px; font-size: 27px; }
+      .footer {
+        position: absolute;
+        left: 58px; bottom: 30px;
+        width: 964px; height: 70px;
+        font-size: 19px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root" data-composition-id="main" data-start="0" data-duration="2.433333333333333" data-width="1080" data-height="1440">
+      <i class="corner-dot tl" data-layout-ignore></i><i class="corner-dot tr" data-layout-ignore></i>
+      <i class="corner-dot bl" data-layout-ignore></i><i class="corner-dot br" data-layout-ignore></i>
+
+      <header class="kit-head">
+        <div class="brand-row">
+          <span class="brand">深度讲解</span>
+          <img class="leaf" src="assets/red-maple-leaf.png" alt="" aria-hidden="true" data-layout-ignore />
+          <span class="head-code">ACTION TOOLKIT<br />MODULE / C1</span>
+        </div>
+        <div class="kit-tabs">
+          <div class="kit-tab purple"><span class="tab-label">STEP 01</span><span class="tab-value">理解</span></div>
+          <div class="kit-tab teal"><span class="tab-label">STEP 02</span><span class="tab-value">拆解</span></div>
+          <div class="kit-tab yellow"><span class="tab-label">STEP 03</span><span class="tab-value">应用</span></div>
+        </div>
+        <div class="head-rule" data-layout-ignore></div>
+      </header>
+
+      <div class="lead-wrap" data-layout-allow-overlap>
+        <span class="lead-index">// ACTION TOOLKIT</span>
+        <h1 class="lead" id="lead">__OPENING_LEAD_HTML__</h1>
+      </div>
+      <span class="edge-label left" data-layout-ignore>BUILD / TEST / APPLY</span>
+      <span class="edge-label right" data-layout-ignore>LEARN BY DOING</span>
+
+      <section class="kit-board" data-layout-allow-overflow>
+        <div class="orbit-ticks" data-layout-ignore></div>
+        <svg class="orbit-connectors" viewBox="0 0 936 830" aria-hidden="true" data-layout-ignore>
+          <path class="orbit-link teal" d="M121 245 Q268 290 468 420" />
+          <path class="orbit-link yellow" d="M815 237 Q668 286 468 420" />
+          <path class="orbit-link" d="M194 674 Q294 566 468 420" />
+          <path class="orbit-link" d="M752 674 Q642 562 468 420" />
+          <path class="orbit-link" d="M468 86 L468 420" />
+        </svg>
+        <i class="axis-line axis-x" data-layout-ignore></i>
+        <i class="axis-line axis-y" data-layout-ignore></i>
+        <span class="orbit-index oi1" data-layout-ignore>01</span>
+        <span class="orbit-index oi2" data-layout-ignore>02</span>
+        <span class="orbit-index oi3" data-layout-ignore>03</span>
+        <span class="orbit-index oi4" data-layout-ignore>04</span>
+        <span class="orbit-meta om1" data-layout-ignore>ANGLE / -720</span>
+        <span class="orbit-meta om2" data-layout-ignore>SCALE / 1.00</span>
+        <span class="orbit-meta om3" data-layout-ignore>VOICE / SYNC</span>
+        <span class="orbit-meta om4" data-layout-ignore>LOCK / 01:41</span>
+        <div class="board-ring" data-layout-ignore></div>
+        <div class="module-card m1" data-layout-ignore><span class="module-word">ACTION</span><i class="mini-line"></i></div>
+        <div class="module-card m2" data-layout-ignore><span class="module-word">METHOD</span><i class="mini-line"></i></div>
+        <div class="module-card m3" data-layout-ignore><span class="module-word">TRY</span><span class="mini-grid"><i></i><i></i><i></i></span></div>
+        <div class="module-card m4" data-layout-ignore><span class="module-word">DO</span><span class="mini-grid"><i></i><i></i><i></i></span></div>
+        <div class="module-card m5" data-layout-ignore><span class="module-word">LEARNING KIT</span><i class="mini-line"></i></div>
+
+        <section class="topic-card" data-layout-allow-overflow>
+          <i class="topic-tab" data-layout-ignore></i>
+          <i class="card-port port-left" data-layout-ignore></i><i class="card-port port-right" data-layout-ignore></i>
+          <div class="camera">
+            <div class="retreat">
+              <div class="word" id="word" data-layout-allow-overlap data-layout-allow-occlusion>
+                <span class="face" id="topic">__OPENING_TOPIC_HTML__</span>
+              </div>
+            </div>
+          </div>
+          <i class="scan" data-layout-ignore></i>
+          <span class="ready-ribbon" data-layout-ignore>READY TO PRACTICE</span>
+        </section>
+      </section>
+
+      <section class="tool-deck" data-layout-allow-overlap>
+        <div class="deck-title"><span>LEARNING TOOLKIT / READY TO USE</span><strong>DO IT NOW</strong></div>
+        <div class="tool-row">
+          <div class="tool-card one"><span class="tool-index" data-layout-ignore>01</span><span class="tool-label">UNDERSTAND</span><span class="tool-value">先看清</span><i class="tool-fill"></i><i class="tool-check" data-layout-ignore></i></div>
+          <div class="tool-card two"><span class="tool-index" data-layout-ignore>02</span><span class="tool-label">BREAK DOWN</span><span class="tool-value">再拆开</span><i class="tool-fill"></i><i class="tool-check" data-layout-ignore></i></div>
+          <div class="tool-card three"><span class="tool-index" data-layout-ignore>03</span><span class="tool-label">PUT TO WORK</span><span class="tool-value">去实践</span><i class="tool-fill"></i><i class="tool-check" data-layout-ignore></i></div>
+        </div>
+        <footer class="footer"><span class="footer-tabs"><i></i><i></i><i></i></span><span>今天 · 学会一个概念</span></footer>
+      </section>
+
+      <audio id="narration" src="narration.wav" data-start="0" data-duration="2.4004791666666665" data-track-index="1"></audio>
+    </main>
+    <script>
+      const DUR = 2.433333333333333;
+      const variables = window.__hyperframes.getVariables();
+      const topic = String(variables.topic || "__OPENING_TOPIC_JSON__").trim();
+      const lead = String(variables.lead || "__OPENING_LEAD_JSON__").trim();
+      const LAND = Math.min(Math.max(Number(variables.topicStart) || __OPENING_TOPIC_START__, 1.27), DUR - .9);
+
+      document.getElementById("lead").textContent = lead;
+      document.getElementById("topic").textContent = topic;
+
+      // 仅按字符类型估算宽度，避免渲染时读取布局导致帧间差异。
+      const visualUnits = Array.from(topic).reduce((sum, char) => {
+        if (/\s/u.test(char)) return sum + .34;
+        if (/[\u3400-\u9fff\uf900-\ufaff]/u.test(char)) return sum + 1;
+        if (/[A-Z]/u.test(char)) return sum + .68;
+        return sum + .56;
+      }, 0);
+      const topicSize = Math.max(62, Math.min(178, 700 / Math.max(visualUnits, 1)));
+      const word = document.getElementById("word");
+      word.style.fontSize = `${topicSize}px`;
+      word.style.letterSpacing = visualUnits > 10 ? "-.045em" : "-.04em";
+
+      // 深度层复制完整主题词，始终不按字符或英文单词拆分。
+      for (let index = 1; index <= 0; index += 1) {
+        const layer = document.createElement("span");
+        layer.className = "depth";
+        layer.textContent = topic;
+        layer.setAttribute("aria-hidden", "true");
+        layer.setAttribute("data-layout-ignore", "");
+        layer.style.color = index % 2 ? "#6657c8" : "#4f429d";
+        layer.style.transform = `translate3d(${-index * 2}px, ${index * 2}px, ${-index * 1.2}px)`;
+        word.appendChild(layer);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 顶部工具栏按行动步骤逐项启用。
+      tl.fromTo(".brand-row", { opacity: 0, y: -28 }, { opacity: 1, y: 0, duration: .38, ease: "expo.out", immediateRender: false }, .04);
+      tl.fromTo(".kit-tab", { opacity: 0, y: -22, scale: .9 }, { opacity: 1, y: 0, scale: 1, duration: .34, stagger: .07, ease: "back.out(1.6)", immediateRender: false }, .15);
+      tl.fromTo(".head-rule", { opacity: 0, scaleX: .12 }, { opacity: 1, scaleX: 1, duration: .42, ease: "expo.out", immediateRender: false }, .22);
+      tl.fromTo(".lead-wrap", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: .42, ease: "power3.out", immediateRender: false }, .2);
+
+      // 五张工具卡从中心散开，形成可操作的拼装板。
+      tl.fromTo(".board-ring", { opacity: 0, scale: .42, rotation: -25 }, { opacity: .84, scale: 1, rotation: 0, duration: LAND * .75, ease: "circ.out", immediateRender: false }, .16);
+      tl.fromTo(".orbit-ticks", { opacity: 0, scale: .72, rotation: 42 }, { opacity: .7, scale: 1, rotation: 0, duration: LAND * .72, ease: "expo.out", immediateRender: false }, .12);
+      tl.fromTo(".axis-x", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: .58, ease: "power3.out", immediateRender: false }, .28);
+      tl.fromTo(".axis-y", { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: .58, ease: "power3.out", immediateRender: false }, .34);
+      tl.fromTo(".orbit-link", { opacity: 0, strokeDashoffset: 120 }, { opacity: .62, strokeDashoffset: 0, duration: .64, stagger: .045, ease: "power2.out", immediateRender: false }, .36);
+      tl.fromTo(".orbit-index", { opacity: 0, scale: .35, rotation: -24 }, { opacity: 1, scale: 1, rotation: 0, duration: .32, stagger: .055, ease: "back.out(1.8)", immediateRender: false }, .48);
+      tl.fromTo(".orbit-meta", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .34, stagger: .05, ease: "power3.out", immediateRender: false }, .62);
+      tl.fromTo(".m1", { opacity: 0, x: 215, y: -25, rotation: 0, scale: .55 }, { opacity: 1, x: 0, y: 0, rotation: -8, scale: 1, duration: .56, ease: "power3.out", immediateRender: false }, .28);
+      tl.fromTo(".m2", { opacity: 0, x: -227, y: 0, rotation: 0, scale: .55 }, { opacity: 1, x: 0, y: 0, rotation: 7, scale: 1, duration: .54, ease: "expo.out", immediateRender: false }, .34);
+      tl.fromTo(".m3", { opacity: 0, x: 203, y: -175, rotation: 0, scale: .55 }, { opacity: 1, x: 0, y: 0, rotation: 5, scale: 1, duration: .48, ease: "power4.out", immediateRender: false }, .39);
+      tl.fromTo(".m4", { opacity: 0, x: -297, y: -188, rotation: 0, scale: .55 }, { opacity: 1, x: 0, y: 0, rotation: -6, scale: 1, duration: .48, ease: "back.out(1.5)", immediateRender: false }, .44);
+      tl.fromTo(".m5", { opacity: 0, x: 72, y: 100, rotation: 0, scale: .55 }, { opacity: 1, x: 0, y: 0, rotation: 2, scale: 1, duration: .45, ease: "power3.out", immediateRender: false }, .5);
+
+      // 主题卡覆盖到最上层，主题词整词翻转、后退，在主题读出时定格。
+      tl.fromTo(".topic-card", { opacity: 0, y: 74, scale: .82, rotation: -4 }, { opacity: 1, y: 0, scale: 1, rotation: 0, duration: .32, ease: "power4.out", immediateRender: false }, .31);
+      tl.fromTo(".retreat", { scale: 3.75, y: 7 }, { scale: 1, y: 0, duration: LAND, ease: "power3.out", immediateRender: false }, 0);
+      tl.fromTo(".word", { rotationY: 18, rotationX: -7 }, { rotationY: -720, rotationX: 0, duration: LAND, ease: "circ.out", immediateRender: false }, 0);
+      tl.fromTo(".topic-card", { scale: 1 }, { scale: .972, duration: .07, ease: "power1.in", immediateRender: false }, LAND);
+      tl.to(".topic-card", { scale: 1, duration: .22, ease: "back.out(2.1)" }, LAND + .07);
+      tl.fromTo(".scan", { opacity: 0, x: 20 }, { opacity: .92, x: 800, duration: Math.max(.42, DUR - LAND - .1), ease: "power1.inOut", immediateRender: false }, LAND);
+      tl.fromTo(".ready-ribbon", { opacity: 0, y: 20, scale: .75 }, { opacity: 1, y: 0, scale: 1, duration: .28, ease: "back.out(1.8)", immediateRender: false }, LAND + .2);
+
+      // 底部行动卡片在主题锁定后依次完成。
+      tl.fromTo(".tool-deck", { y: 54 }, { y: 0, duration: .5, ease: "power4.out", immediateRender: false }, .28);
+      tl.fromTo(".tool-card", { opacity: 0, y: 24, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .36, stagger: .075, ease: "power3.out", immediateRender: false }, .43);
+      tl.fromTo(".tool-fill", { scaleX: 0 }, { scaleX: 1, duration: .38, stagger: .14, ease: "power2.out", immediateRender: false }, LAND + .1);
+      tl.fromTo(".tool-check", { opacity: 0, scale: .4 }, { opacity: 1, scale: 1, duration: .22, stagger: .14, ease: "back.out(1.8)", immediateRender: false }, LAND + .24);
+
+      window.__timelines.main = tl;
+    </script>
+  </body>
+</html>
