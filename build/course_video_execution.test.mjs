@@ -60,6 +60,19 @@ function createProjectFixture() {
   return { rootDir, index };
 }
 
+test('分幕截图和视频素材进入构建目录并参与输入签名', t => {
+  const { rootDir, index } = createProjectFixture();
+  t.after(() => fs.rmSync(rootDir, { recursive: true, force: true }));
+  const asset = 'course/episodes/04-prompt/source-assets/comment.png';
+  write(path.join(rootDir, asset), '真实截图素材');
+  index.acts[0].visual_assets = [asset];
+  const plan = createCourseVideoPlan(index, 'review', { rootDir, act: 1 });
+  const act = plan.acts[0];
+  assert.ok(act.inputs.includes(path.join(rootDir, asset)));
+  prepareCourseAct(act, plan);
+  assert.equal(fs.readFileSync(path.join(act.buildDir, 'assets/comment.png'), { encoding: 'utf8' }), '真实截图素材');
+});
+
 test("章节标题按 HTML 与脚本上下文分别转义，重复注入保持幂等", () => {
   const source = '<html><head></head><body><main id="root" data-composition-id="main"></main></body></html>';
   const chapter = {

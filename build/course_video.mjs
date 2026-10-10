@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 用途：从已确认的四幕 WAV/timings 串行生成 课程审片版或高清发布版。
+ * 用途：从已确认的四幕或六幕 WAV/timings 串行生成课程审片版或高清发布版。
  * 运行：node build/course_video.mjs <review|publish> <制作索引.json> [--act N] [--check-only | --range 起秒:止秒]
  * 依赖：Node.js、Python、FFmpeg、模板内声明的 HyperFrames CLI。
  */
@@ -103,8 +103,8 @@ export function extractCourseLayoutCheckTimes(sourceText) {
 }
 
 function assertIndex(index, selectedAct) {
-  if (!Array.isArray(index.acts) || index.acts.length !== 4) {
-    throw new Error("制作索引 acts 必须包含 4 幕");
+  if (!Array.isArray(index.acts) || ![4, 6].includes(index.acts.length)) {
+    throw new Error("制作索引 acts 必须包含 4 幕或 6 幕");
   }
   const highlightFormats = new Set();
   let structuredHighlightCount = 0;
@@ -186,8 +186,9 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     throw new Error("模式必须是 review 或 publish");
   }
   assertCourseEpisodeScriptLocation(rootDir);
-  if (selectedAct !== undefined && (!Number.isInteger(selectedAct) || selectedAct < 1 || selectedAct > 4)) {
-    throw new Error("--act 必须是 1 到 4 的整数");
+  const actCount = index.acts?.length ?? 4;
+  if (selectedAct !== undefined && (!Number.isInteger(selectedAct) || selectedAct < 1 || selectedAct > actCount)) {
+    throw new Error(`--act 必须是 1 到 ${actCount} 的整数`);
   }
   if ((selectedAct || checkOnly || range) && mode !== "review") throw new Error("分幕、预检和片段选项仅适用于 review");
   if (range && (!selectedAct || checkOnly || !Array.isArray(range) || range.length !== 2
@@ -213,9 +214,9 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
 
   let chapterProgress = null;
   if (requiresEpisodeContract(index.episode, 23, index.production_contract === "current")) {
-    if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== 4
+    if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== actCount
       || index.chapter_titles.some((title) => typeof title !== "string" || !title.trim())) {
-      throw new Error("新期次 chapter_titles 必须包含四个非空章节标题");
+      throw new Error(`新期次 chapter_titles 必须包含 ${actCount} 个非空章节标题`);
     }
     if (index.chapter_titles.some((title) => title !== title.trim())) {
       throw new Error("章节标题不能有首尾空白，画面与发布文案必须使用同一原文");
@@ -223,15 +224,15 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     const timelineFile = absolute(rootDir, index.timeline_summary);
     const timeline = JSON.parse(fs.readFileSync(timelineFile, { encoding: "utf8" }));
     if (!Number.isFinite(timeline.total_s) || timeline.total_s <= 0
-      || !Array.isArray(timeline.acts) || timeline.acts.length !== 4) {
-      throw new Error("章节进度需要有效的四幕整期时间表");
+      || !Array.isArray(timeline.acts) || timeline.acts.length !== actCount) {
+      throw new Error(`章节进度需要有效的 ${actCount} 幕整期时间表`);
     }
     let previousEnd = 0;
     for (const [number, act] of timeline.acts.entries()) {
       if (Number(act.act) !== number + 1
         || !Number.isFinite(act.start_s) || !Number.isFinite(act.end_s)
         || Math.abs(act.start_s - previousEnd) > 0.002 || act.end_s <= act.start_s) {
-        throw new Error("章节进度的四幕时间边界必须连续");
+        throw new Error("章节进度的各幕时间边界必须连续");
       }
       previousEnd = act.end_s;
     }
@@ -274,7 +275,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
       const chapterAct = chapterProgress.acts[actNumber - 1];
       if (!Number.isFinite(timing.total)
         || Math.abs(chapterAct.endS - chapterAct.startS - timing.total) > 0.002) {
-        throw new Error(`第${["一", "二", "三", "四"][actNumber - 1]}幕时间表时长与 timings.total 不一致`);
+        throw new Error(`第${["一", "二", "三", "四", "五", "六"][actNumber - 1]}幕时间表时长与 timings.total 不一致`);
       }
     }
     const buildDir = absolute(
@@ -376,6 +377,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
       subtitleHighlights: sourceAct.subtitle_highlights,
       motionCheck: sourceAct.motion_check ?? null,
       allowedWarnings: sourceAct.allowed_warnings,
+      visualAssets: (sourceAct.visual_assets ?? []).map(file => absolute(rootDir, file)),
       range,
       buildDir,
       output: finalFile,
@@ -396,6 +398,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
       },
       inputs: [
         visualSource,
+        ...(sourceAct.visual_assets ?? []).map(file => absolute(rootDir, file)),
         ...(chapterProgress ? [chapterProgress.timelineFile] : []),
         ...(openingOverlay ? [absolute(rootDir, openingOverlay.video)] : []),
         absolute(rootDir, sourceAct.audio),
@@ -562,6 +565,9 @@ export function prepareCourseAct(act, plan, { spawnSyncImpl = spawnSync } = {}) 
     path.join(templateDir, "assets/red-maple-leaf.png"),
     path.join(act.buildDir, "assets/red-maple-leaf.png"),
   );
+  for (const asset of act.visualAssets ?? []) {
+    copyRequired(asset, path.join(act.buildDir, 'assets', path.basename(asset)));
+  }
 
   const subtitleArgs = [path.join(BUILD_TOOLS_DIR, "timings_to_subs.py"), act.timings];
   if (act.subtitleHighlights.length) {
@@ -711,15 +717,16 @@ export function verifyCourseVideoInputs(plan) {
     }
   }
   if (!requiresEpisodeContract(plan.index?.episode, 6, plan.index?.production_contract === "current")) return;
-  const act4 = plan.acts.find((act) => Number(act.act) === 4);
-  if (!act4) {
+  const lastActNumber = plan.index?.acts?.length ?? 4;
+  const lastAct = plan.acts.find((act) => Number(act.act) === lastActNumber);
+  if (!lastAct) {
     if (plan.partial) return;
-    throw new Error("输入预检失败，缺少第四幕");
+    throw new Error(`输入预检失败，缺少最后一幕（第 ${lastActNumber} 幕）`);
   }
   assertCourseOutroTailArtifacts({
-    audioFile: act4.audio,
-    timingsFile: act4.timings,
-    visualFile: act4.source,
+    audioFile: lastAct.audio,
+    timingsFile: lastAct.timings,
+    visualFile: lastAct.source,
   });
 }
 

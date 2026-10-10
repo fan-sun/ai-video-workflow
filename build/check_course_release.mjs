@@ -378,8 +378,10 @@ export function checkCourseRelease(indexPath, {
       throw new Error("视频总结与发布文案不能相同");
     }
   }
-  if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== 4) {
-    throw new Error("chapter_titles 必须包含 4 幕标题");
+  const actCount = index.acts?.length ?? 4;
+  if (![4, 6].includes(actCount)) throw new Error("制作索引必须包含 4 幕或 6 幕");
+  if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== actCount) {
+    throw new Error(`chapter_titles 必须包含 ${actCount} 幕标题`);
   }
   if ((currentContract || !episodeMatch || Number(episodeMatch[1]) >= 23)
     && index.chapter_titles.some((title) => typeof title !== "string"
@@ -391,25 +393,25 @@ export function checkCourseRelease(indexPath, {
     throw new Error(`timeline_summary 文件不存在: ${index.timeline_summary}`);
   }
   const timeline = readJson(timelinePath);
-  if (!Array.isArray(timeline.acts) || timeline.acts.length !== 4) {
-    throw new Error("整期时间表必须包含 4 幕");
+  if (!Array.isArray(timeline.acts) || timeline.acts.length !== actCount) {
+    throw new Error(`整期时间表必须包含 ${actCount} 幕`);
   }
   if (outroTailRequired) {
-    const act4 = Array.isArray(index.acts)
-      ? index.acts.find((act) => Number(act.act) === 4)
+    const lastAct = Array.isArray(index.acts)
+      ? index.acts.find((act) => Number(act.act) === actCount)
       : null;
-    if (!act4?.timings) {
-      throw new Error("制作索引必须记录第四幕 timings");
+    if (!lastAct?.timings) {
+      throw new Error(`制作索引必须记录第 ${actCount} 幕 timings`);
     }
-    const act4TimingsFile = resolveRequiredArtifact(
+    const lastTimingsFile = resolveRequiredArtifact(
       rootDir,
-      "第四幕 timings",
-      act4.timings,
+      `第 ${actCount} 幕 timings`,
+      lastAct.timings,
     );
-    const act4Timings = readJson(act4TimingsFile);
-    const outro = assertCourseOutroTailTiming(act4Timings);
-    if (Math.abs(Number(timeline.acts[3].duration_s) - outro.total) > 0.001) {
-      throw new Error("整期时间表第四幕时长必须等于包含片尾 1 秒的 timings.total");
+    const lastTimings = readJson(lastTimingsFile);
+    const outro = assertCourseOutroTailTiming(lastTimings);
+    if (Math.abs(Number(timeline.acts[actCount - 1].duration_s) - outro.total) > 0.001) {
+      throw new Error(`整期时间表第 ${actCount} 幕时长必须等于包含片尾 1 秒的 timings.total`);
     }
   }
   const expectedDuration = Number(index.publish_spec?.duration_s);
@@ -425,7 +427,7 @@ export function checkCourseRelease(indexPath, {
       videoFile: publishOutputFile,
     })
     : null;
-  const actLabels = ["第一幕", "第二幕", "第三幕", "第四幕"];
+  const actLabels = ["第一幕", "第二幕", "第三幕", "第四幕", "第五幕", "第六幕"];
   timeline.acts.forEach((act, indexNumber) => {
     const expected = `${formatClock(act.start_s)}–${formatClock(act.end_s)}　${actLabels[indexNumber]} · ${index.chapter_titles[indexNumber]}`;
     if (!publishCopyText.includes(expected)) {

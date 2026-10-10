@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import importlib.util
 import pathlib
+import re
 import unittest
 
 
@@ -29,6 +30,15 @@ class InjectCourseCoverTests(unittest.TestCase):
         self.assertIn('data-duration="0.5"', result)
         self.assertIn('data-track-index="99"', result)
         self.assertLess(result.index('id="cover-intro"'), result.index("<p>正文</p>"))
+
+    def test_封面层级必须高于随后插入的课程字幕(self):
+        module = load_module()
+        # 同层字幕在封面后插入，会覆盖封面，导致封面时间窗与正式 PNG 不一致。
+        source = '<html><head><style>.body-substrip{position:absolute;z-index:100}</style></head><body><main id="root" data-composition-id="main"><div class="body-substrip">字幕</div></main></body></html>'
+        result = module.inject_cover_html(source, "assets/cover.png", 0.5)
+        cover_level = int(re.search(r"\.cover-intro\{[^}]*z-index:(\d+)", result).group(1))
+        subtitle_level = int(re.search(r"\.body-substrip\{[^}]*z-index:(\d+)", result).group(1))
+        self.assertGreater(cover_level, subtitle_level)
 
     def test_仅在缺少原生_seek时桥接播放器_renderSeek(self):
         module = load_module()

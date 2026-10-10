@@ -12,8 +12,8 @@ function escapeHtml(value) {
 
 export function injectCourseChapterProgressHtml(source, chapter) {
   if (typeof source !== "string" || !chapter || !Array.isArray(chapter.titles)
-    || chapter.titles.length !== 4 || !Array.isArray(chapter.acts)
-    || chapter.acts.length !== 4 || !Number.isFinite(chapter.totalS)
+    || ![4, 6].includes(chapter.titles.length) || !Array.isArray(chapter.acts)
+    || chapter.acts.length !== chapter.titles.length || !Number.isFinite(chapter.totalS)
     || chapter.totalS <= 0 || !Number.isFinite(chapter.startS)
     || !Number.isFinite(chapter.endS) || chapter.endS <= chapter.startS
     || !Number.isFinite(chapter.introEndS) || chapter.introEndS < 0) {

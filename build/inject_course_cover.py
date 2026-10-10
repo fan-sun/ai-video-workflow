@@ -99,7 +99,7 @@ def inject_cover_html(source, cover_src, duration_s=0.5):
     style = (
         '\n<style id="%s">\n'
         ".cover-intro{position:absolute;inset:0;width:100%%;height:100%%;"
-        "object-fit:cover;z-index:100}\n"
+        "object-fit:cover;z-index:1000}\n"
         "</style>\n" % STYLE_ID
     )
     head_end = head_matches[0].start()
@@ -124,7 +124,11 @@ def inject_cover_html(source, cover_src, duration_s=0.5):
         "if(typeof window.__hf.seek==='function')return;"
         "window.__hf.seek=function(time){const player=window.__player;"
         "if(player&&typeof player.renderSeek==='function')player.renderSeek(time);"
-        "else if(player&&typeof player.seek==='function')player.seek(time);};}"
+        "else if(player&&typeof player.seek==='function')player.seek(time);"
+        "else{for(const timeline of Object.values(window.__timelines||{}))"
+        "if(typeof timeline.seek==='function')timeline.seek(time,false);"
+        "const cover=document.getElementById('cover-intro');"
+        "if(cover)cover.style.opacity=time>=0&&time<Number(cover.dataset.duration)?'1':'0';}};}"
         "if(document.readyState==='loading')"
         "document.addEventListener('DOMContentLoaded',function(){setTimeout(install,0);},{once:true});"
         "else setTimeout(install,0);})();\n"

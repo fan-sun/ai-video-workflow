@@ -22,8 +22,8 @@ function escapeHtml(value) {
 }
 
 export function createQcSamples({ timeline, coverDurationS = 0.5, fps = 30 }) {
-  if (!Array.isArray(timeline?.acts) || timeline.acts.length !== 4) {
-    throw new Error("质检时间表必须包含 4 幕");
+  if (!Array.isArray(timeline?.acts) || ![4, 6].includes(timeline.acts.length)) {
+    throw new Error("质检时间表必须包含 4 幕或 6 幕");
   }
   const totalDuration = Number(timeline.total_s);
   if (!Number.isFinite(totalDuration) || totalDuration <= 1) {
@@ -124,7 +124,7 @@ function renderHtml(videoFile, samples) {
   <header>
     <div class="eyebrow">LOCAL QC / STATIC HTML</div>
     <h1>课程视频质检报告</h1>
-    <div class="progress"><span>✓ 抽帧完成</span><span>✓ 封面边界</span><span>✓ 四幕代表帧</span><span>✓ 幕间交界</span><span>✓ 片尾收尾</span></div>
+    <div class="progress"><span>✓ 抽帧完成</span><span>✓ 封面边界</span><span>✓ ${samples.filter(sample => sample.group === "幕中代表帧").length} 幕代表帧</span><span>✓ 幕间交界</span><span>✓ 片尾收尾</span></div>
     <p class="source">视频：${escapeHtml(videoFile)}</p>
   </header>
   ${sections}

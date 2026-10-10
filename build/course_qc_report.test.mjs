@@ -19,6 +19,15 @@ const TIMELINE = {
   total_s: 40,
 };
 
+test("六幕质检覆盖每幕正文和五处交界", () => {
+  const timeline = { acts: Array.from({ length: 6 }, (_, i) => ({ act: i + 1, start_s: i * 10, end_s: (i + 1) * 10 })), total_s: 60 };
+  const samples = createQcSamples({ timeline });
+  assert.equal(samples.length, 21);
+  assert.equal(samples.filter(sample => sample.group === "幕中代表帧").length, 6);
+  assert.equal(samples.filter(sample => sample.group === "幕间交界").length, 10);
+  assert.ok(samples.some(sample => sample.stem === "transition-5-6-after"));
+});
+
 test("质检采样覆盖封面边界、四幕代表帧、幕间交界和片尾 1 秒", () => {
   const samples = createQcSamples({
     timeline: TIMELINE,

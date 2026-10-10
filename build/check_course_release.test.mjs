@@ -117,6 +117,31 @@ function createFixture({ publishCopy = null, publishCopyText = "", realMedia = f
 
 const validVideoSummary = "循环工程是一种把目标、执行、反馈和停止条件组成可验证闭环的方法。它强调依据检查结果持续修正，同时保留人工边界，避免模型陷入没有标准和终点的无限重复。";
 
+test("六幕发布包核对全部章节，并在第六幕检查片尾收尾", () => {
+  const copyPath = "pipeline/output/course/ep02_loop-engineering/v3/course_ep02_loop-engineering_v3.txt";
+  const titles = ["选题", "写稿", "切分", "配音", "画面", "发布"];
+  const labels = ["一", "二", "三", "四", "五", "六"];
+  const fixture = createFixture({ publishCopy: copyPath, publishCopyText: `【标题】\n示例\n【发布文案】\n制作流程\n【标签】\n#AI #AI基础 #深度讲解\n【视频总结】\n${validVideoSummary}\n【视频章节】\n` + titles.map((title, i) => `00:${String(i * 2).padStart(2, "0")}–00:${String((i + 1) * 2).padStart(2, "0")}　第${labels[i]}幕 · ${title}`).join("\n") });
+  try {
+    const index = JSON.parse(fs.readFileSync(fixture.indexPath, { encoding: "utf8" }));
+    index.production_contract = "current";
+    index.chapter_titles = titles;
+    index.acts = titles.map((_, i) => ({ act: i + 1, timings: `audio/act${i + 1}_timings.json` }));
+    index.publish_spec.duration_s = 12;
+    writeJson(fixture.indexPath, index);
+    const timeline = { acts: titles.map((_, i) => ({ act: i + 1, start_s: i * 2, end_s: (i + 1) * 2, duration_s: 2 })), total_s: 12 };
+    writeJson(path.join(fixture.rootDir, index.timeline_summary), timeline);
+    const ledgerPath = path.join(fixture.rootDir, "course/episodes.json");
+    const ledger = JSON.parse(fs.readFileSync(ledgerPath, { encoding: "utf8" }));
+    ledger.episodes[0].duration_s = 12;
+    writeJson(ledgerPath, ledger);
+    writeJson(path.join(fixture.rootDir, index.acts[5].timings), { total: 2, phrases: [{ id: "g01", start: 0, end: 1, gap: 1 }] });
+    assert.equal(checkCourseRelease(fixture.indexPath, { rootDir: fixture.rootDir }).ok, true);
+    fs.writeFileSync(path.join(fixture.rootDir, copyPath), fs.readFileSync(path.join(fixture.rootDir, copyPath), { encoding: "utf8" }).replace("第六幕 · 发布", "第六幕 · 错误"), { encoding: "utf8" });
+    assert.throws(() => checkCourseRelease(fixture.indexPath, { rootDir: fixture.rootDir }), /第 6 幕章节/);
+  } finally { fs.rmSync(fixture.rootDir, { recursive: true, force: true }); }
+});
+
 function publishCopyWithChapters(
   chapter2 = "循环闭合",
   summary = validVideoSummary,

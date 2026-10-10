@@ -90,6 +90,8 @@ course/docs/assets/video-style-presets/
 
 ## 六、HTML 合成契约
 
+渲染入口支持四幕或六幕，`acts`、`chapter_titles` 和整期时间表的章节数必须一致；单幕制作只要求该幕画面已就绪，片尾检查作用于最后一幕。需要真实截图或成片片段时，在 `acts[].visual_assets` 中登记相对仓库路径数组，构建入口将它们按原文件名复制到 `assets/`，同时纳入输入签名。素材文件名须彼此不同，HTML 用 `assets/<文件名>` 引用。
+
 每个 `course/acts/epNN_<slug>/actN.html` 是可长期保留的画面源，至少满足：
 
 1. `<body>` 下直接存在独立合成根节点，不用 `<template>` 包裹；
