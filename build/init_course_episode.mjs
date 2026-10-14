@@ -24,7 +24,8 @@ export function assertCourseEpisodeScriptLocation(root) {
   }
 }
 
-export function initCourseEpisode(root, episode, { topic = "待确认", topicTerms = [topic] } = {}) {
+export function initCourseEpisode(root, episode, { topic = "待确认", topicTerms = [topic], route = "course" } = {}) {
+  if (!["course", "vibe"].includes(route)) throw new Error("路线必须为 course 或 vibe");
   if (!EPISODE_DIR_RE.test(episode)) {
     throw new Error("期目录名必须符合 NN-slug，例如 07-new-topic");
   }
@@ -46,6 +47,11 @@ export function initCourseEpisode(root, episode, { topic = "待确认", topicTer
   if (existing && (existing.ep !== ep || existing.slug !== slug)) {
     throw new Error("期号或 slug 已用于其他主题，不能重复登记");
   }
+  const existingIndex = path.join(root, "course", "episodes", episode, "制作索引.json");
+  if (fs.existsSync(existingIndex)
+    && (JSON.parse(fs.readFileSync(existingIndex, { encoding: "utf8" })).route ?? "course") !== route) {
+    throw new Error("已有期次的路线不同，请继续使用原路线，不自动切换");
+  }
 
   const paths = {
     episode,
@@ -62,13 +68,13 @@ export function initCourseEpisode(root, episode, { topic = "待确认", topicTer
   if (!existing) {
     ledger.episodes.push({ ep, type: "concept_explainer", topic, topic_terms: topic === "待确认" ? [] : topicTerms,
       slug, status: "选题中", publish_status: "未发布", version: "v1", script: null, output: null,
-      selection_note: "待补录", notes: "" });
+      selection_note: "待补录", notes: "", route });
     fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2) + "\n", { encoding: "utf8" });
   }
   const indexFile = path.join(paths.courseEpisodeDir, "制作索引.json");
   if (!fs.existsSync(indexFile)) {
     const index = { episode: `ep${number}`, slug, topic: existing?.topic ?? topic, type: "concept_explainer",
-      current_version: "v1", production_contract: "current", source_refs: [], script: null, split_preview: null,
+      current_version: "v1", production_contract: "current", route, source_refs: [], script: null, split_preview: null,
       selected_style: null, cover_selection: null, cover_output: null, cover_upload_output: null,
       timeline_summary: null, chapter_titles: [], audio_review: null, review_approval: null,
       review_output: null, publish_output: null, publish_copy: null,
@@ -78,6 +84,14 @@ export function initCourseEpisode(root, episode, { topic = "待确认", topicTer
         duration_s: null, duration_tolerance_s: 0.2 },
       acts: [1, 2, 3, 4].map(act => ({ act, script: null, audio: null, timings: null,
         visual_source: null, subtitle_highlights: [], allowed_warnings: {} })) };
+    if (route === "vibe") {
+      index.narrative_mode = "vibe_knowledge";
+      index.cover_embed = { duration_s: 0 };
+      Object.assign(index.publish_spec, { width: 1920, height: 1080, audio_channels: 2 });
+      index.content_approval = null;
+      index.bgm = null;
+      index.acts.forEach(act => Object.assign(act, { visual_timing: null, sfx: null }));
+    }
     fs.writeFileSync(indexFile, JSON.stringify(index, null, 2) + "\n", { encoding: "utf8" });
   }
   return paths;
@@ -94,8 +108,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === currentFile) {
   const root = path.resolve(path.dirname(currentFile), "..");
   try {
     const topicAt = process.argv.indexOf("--topic");
+    const routeAt = process.argv.indexOf("--route");
+    if (routeAt >= 0 && !process.argv[routeAt + 1]?.trim()) throw new Error("--route 缺少路线");
     if (topicAt >= 0 && !process.argv[topicAt + 1]?.trim()) throw new Error("--topic 缺少主题词");
-    const paths = initCourseEpisode(root, episode, topicAt >= 0 ? { topic: process.argv[topicAt + 1] } : {});
+    const paths = initCourseEpisode(root, episode, {
+      ...(topicAt >= 0 ? { topic: process.argv[topicAt + 1] } : {}),
+      ...(routeAt >= 0 ? { route: process.argv[routeAt + 1] } : {}),
+    });
     console.log(`课程期目录已就绪：${paths.episode}`);
     console.log(path.relative(root, paths.courseEpisodeDir));
     console.log(path.relative(root, paths.scriptDir));

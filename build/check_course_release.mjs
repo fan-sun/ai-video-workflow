@@ -8,6 +8,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+import { readPngDimensions } from "./check_course_cover.mjs";
+import { assertVibeTimeline } from "./vibe_timeline.mjs";
 
 import {
   assertCourseOutroTailTiming,
@@ -293,6 +296,9 @@ export function checkCourseRelease(indexPath, {
   outroTailVerifier,
 } = {}) {
   const index = readJson(indexPath);
+  const vibe = index.route === "vibe";
+  if (index.route !== undefined && !["course", "vibe"].includes(index.route)) throw new Error("未知制作路线");
+  if (vibe && !index.example && (!index.review_approval?.confirmed || !index.cover_selection)) throw new Error("Vibe发布需要已确认审片版及独立封面");
   if (typeof index.publish_copy !== "string" || !index.publish_copy.trim()) {
     throw new Error("publish_copy 不能为空");
   }
@@ -308,12 +314,22 @@ export function checkCourseRelease(indexPath, {
     throw new Error(`publish_copy 必须位于当前版本 ${version} 的发布目录并使用同版本文件名`);
   }
   const publishOutputFile = resolveRequiredArtifact(rootDir, "publish_output", index.publish_output);
-  const reviewOutputFile = typeof mediaVerifier === "function"
+  const reviewOutputFile = vibe || typeof mediaVerifier === "function"
     ? resolveRequiredArtifact(rootDir, "review_output", index.review_output)
     : null;
+  if (vibe) {
+    const hash = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+    const reviewSha = hash(reviewOutputFile);
+    if (!index.example && reviewSha !== index.review_approval.sha256) {
+      throw new Error("确认后的审片版发生变化，review_approval.sha256 哈希不匹配");
+    }
+    if (hash(publishOutputFile) !== reviewSha) {
+      throw new Error("Vibe发布版必须与已确认高清审片版完全一致");
+    }
+  }
   const coverFile = resolveRequiredArtifact(rootDir, "cover_output", index.cover_output);
-  if (Number(index.cover_embed?.duration_s) !== 0.5) {
-    throw new Error("cover_embed.duration_s 必须是 0.5 秒");
+  if (Number(index.cover_embed?.duration_s) !== (vibe ? 0 : 0.5)) {
+    throw new Error(vibe ? "Vibe独立封面cover_embed.duration_s必须为0" : "cover_embed.duration_s 必须是 0.5 秒");
   }
   const coverFrameThreshold = Number(index.cover_embed?.ssim_threshold ?? 0.97);
   if (!Number.isFinite(coverFrameThreshold)
@@ -327,7 +343,7 @@ export function checkCourseRelease(indexPath, {
   const currentContract = index.production_contract === "current";
   const videoSummaryRequired = currentContract || !episodeMatch || Number(episodeMatch[1]) >= 4;
   const tagsBeforeSummaryRequired = currentContract || !episodeMatch || Number(episodeMatch[1]) >= 9;
-  const outroTailRequired = currentContract || !episodeMatch || Number(episodeMatch[1]) >= 6;
+  const outroTailRequired = !vibe && (currentContract || !episodeMatch || Number(episodeMatch[1]) >= 6);
   const hasVideoSummary = publishCopyText.includes("【视频总结】");
   if (videoSummaryRequired && !hasVideoSummary) {
     throw new Error("发布文案缺少 【视频总结】");
@@ -354,11 +370,17 @@ export function checkCourseRelease(indexPath, {
       publishCopyText.indexOf("【视频总结】"),
     ).trim();
     const tags = new Set(tagsText.split(/\s+/u).filter(Boolean));
-    const requiredTags = ["#AI", "#AI基础", "#深度讲解"];
+    const requiredTags = vibe ? ["#Vibe知识大赏"] : ["#AI", "#AI基础", "#深度讲解"];
     const missingTags = requiredTags.filter((tag) => !tags.has(tag));
     if (missingTags.length) {
       throw new Error(`标签必须包含独立标签 ${requiredTags.join("、")}；缺少：${missingTags.join("、")}`);
     }
+  }
+  if (vibe) {
+    const title = publishCopyText.slice(publishCopyText.indexOf("【标题】") + 4, publishCopyText.indexOf("【发布文案】")).trim();
+    const prefix = `Vibe知识大赏｜${index.topic}：`;
+    if (!title.startsWith(prefix) || !title.slice(prefix.length).trim() || Array.from(title.slice(prefix.length)).length > 15)
+      throw new Error("Vibe标题须为栏目｜主题词：短句，冒号后含标点最多15个字符");
   }
   if (hasVideoSummary) {
     const publishBodyEndSection = tagsBeforeSummaryRequired ? "【标签】" : "【视频总结】";
@@ -379,7 +401,7 @@ export function checkCourseRelease(indexPath, {
     }
   }
   const actCount = index.acts?.length ?? 4;
-  if (![4, 6].includes(actCount)) throw new Error("制作索引必须包含 4 幕或 6 幕");
+  if (vibe ? actCount < 1 || actCount > 6 : ![4, 6].includes(actCount)) throw new Error("制作索引的分段数量无效");
   if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== actCount) {
     throw new Error(`chapter_titles 必须包含 ${actCount} 幕标题`);
   }
@@ -393,6 +415,7 @@ export function checkCourseRelease(indexPath, {
     throw new Error(`timeline_summary 文件不存在: ${index.timeline_summary}`);
   }
   const timeline = readJson(timelinePath);
+  if (vibe) assertVibeTimeline(timeline, actCount, index.publish_spec.duration_s);
   if (!Array.isArray(timeline.acts) || timeline.acts.length !== actCount) {
     throw new Error(`整期时间表必须包含 ${actCount} 幕`);
   }
@@ -472,7 +495,10 @@ export function checkCourseRelease(indexPath, {
     })
     : null;
   let cover = null;
-  if (typeof coverWindowVerifier === "function") {
+  if (vibe) {
+    cover = readPngDimensions(coverFile);
+    if (cover.width * 4 !== cover.height * 3) throw new Error("Vibe独立封面必须是3:4");
+  } else if (typeof coverWindowVerifier === "function") {
     cover = coverWindowVerifier({
       videoFile: publishOutputFile,
       coverFile,
@@ -499,16 +525,30 @@ if (isMain) {
     console.error("用法：node build/check_course_release.mjs <制作索引.json>");
     process.exitCode = 2;
   } else {
+    let absoluteIndexPath, index;
     try {
-      const absoluteIndexPath = path.resolve(indexPath);
-      const index = readJson(absoluteIndexPath);
-      checkCourseRelease(absoluteIndexPath, {
+      absoluteIndexPath = path.resolve(indexPath);
+      index = readJson(absoluteIndexPath);
+      const report = checkCourseRelease(absoluteIndexPath, {
         coverWindowVerifier: verifyEmbeddedCoverWindow,
         mediaVerifier: verifyPublishedMedia,
         outroTailVerifier: verifyEncodedCourseOutroTail,
       });
+      if (index.route === "vibe") {
+        const file = path.resolve(index.publish_output);
+        const checks = path.join(path.dirname(file), "release-check.json");
+        fs.writeFileSync(checks, JSON.stringify({ ...report, route: "vibe", video: index.publish_output,
+          sha256: createHash("sha256").update(fs.readFileSync(file)).digest("hex"),
+          example: Boolean(index.example), publicly_published: false }, null, 2) + "\n", { encoding: "utf8" });
+        index.publish_bundle = { complete: true, checks: path.relative(process.cwd(), checks).replaceAll("\\", "/") };
+        fs.writeFileSync(absoluteIndexPath, JSON.stringify(index, null, 2) + "\n", { encoding: "utf8" });
+      }
       console.log(`发布包检查通过：${index.episode} ${index.current_version}`);
     } catch (error) {
+      if (index?.route === "vibe") {
+        index.publish_bundle = null;
+        fs.writeFileSync(absoluteIndexPath, JSON.stringify(index, null, 2) + "\n", { encoding: "utf8" });
+      }
       console.error(`发布包检查失败：${error.message}`);
       process.exitCode = 1;
     }

@@ -15,6 +15,10 @@
     "publish:package": "node --env-file-if-exists=.env build/course_video.mjs publish",
     "check:release": "node --env-file-if-exists=.env build/check_course_release.mjs",
     "doctor": "node --env-file-if-exists=.env build/doctor.mjs",
+    "timeline:vibe": "node build/vibe_timeline.mjs",
+    "mix": "node --env-file-if-exists=.env build/mix_video_audio.mjs",
+    "preview:music": "node build/preview_video_audio.mjs",
+    "example:vibe": "node --env-file-if-exists=.env examples/vibe-knowledge/run.mjs",
     "example": "node --env-file-if-exists=.env examples/context-window/run.mjs"
   }
 }

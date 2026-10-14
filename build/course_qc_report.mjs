@@ -22,7 +22,8 @@ function escapeHtml(value) {
 }
 
 export function createQcSamples({ timeline, coverDurationS = 0.5, fps = 30 }) {
-  if (!Array.isArray(timeline?.acts) || ![4, 6].includes(timeline.acts.length)) {
+  if (!Array.isArray(timeline?.acts) || (timeline.route === "vibe"
+    ? timeline.acts.length < 1 || timeline.acts.length > 6 : ![4, 6].includes(timeline.acts.length))) {
     throw new Error("质检时间表必须包含 4 幕或 6 幕");
   }
   const totalDuration = Number(timeline.total_s);
@@ -45,6 +46,7 @@ export function createQcSamples({ timeline, coverDurationS = 0.5, fps = 30 }) {
       stem: "content-first",
     },
   ];
+  if (coverDurationS === 0) samples.splice(0, 3, { group: "开场", label: "正文第一帧", time_s: 0, stem: "content-first" });
   timeline.acts.forEach((act, index) => {
     samples.push({
       group: "幕中代表帧",
@@ -73,9 +75,9 @@ export function createQcSamples({ timeline, coverDurationS = 0.5, fps = 30 }) {
   samples.push(
     {
       group: "片尾收尾",
-      label: "最后一句结束后约 0.2 秒",
+      label: timeline.route === "vibe" ? "视频结束前约 0.8 秒" : "最后一句结束后约 0.2 秒",
       time_s: floorMilliseconds(totalDuration - 0.8),
-      stem: "outro-after-voice",
+      stem: timeline.route === "vibe" ? "outro-before-end-08" : "outro-after-voice",
     },
     {
       group: "片尾收尾",
@@ -90,7 +92,7 @@ export function createQcSamples({ timeline, coverDurationS = 0.5, fps = 30 }) {
   }));
 }
 
-function renderHtml(videoFile, samples) {
+function renderHtml(videoFile, samples, vibe = false) {
   const groups = [...new Set(samples.map((sample) => sample.group))];
   const sections = groups.map((group) => {
     const cards = samples
@@ -116,7 +118,7 @@ function renderHtml(videoFile, samples) {
     .progress{display:flex;gap:10px;flex-wrap:wrap}.progress span{border:1px solid var(--blue);padding:7px 11px;background:var(--card);font-size:13px;font-weight:700}
     .source{margin:14px 0 0;color:#615746;word-break:break-all}section{margin-top:42px}h2{font-size:24px;border-left:8px solid var(--red);padding-left:14px}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}.card{margin:0;background:var(--card);border:1px solid var(--line);box-shadow:7px 8px 0 rgba(31,78,121,.13)}
-    img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#ddd}figcaption{display:flex;justify-content:space-between;gap:16px;padding:14px 16px;border-top:2px solid var(--blue)}
+    img{display:block;width:100%;${vibe ? "height:auto;" : "aspect-ratio:3/4;object-fit:cover;"}background:#ddd}figcaption{display:flex;justify-content:space-between;gap:16px;padding:14px 16px;border-top:2px solid var(--blue)}
     code{color:var(--red);font-weight:700}@media(max-width:560px){main{width:min(100% - 24px,1440px);padding-top:24px}.grid{grid-template-columns:1fr 1fr;gap:12px}figcaption{display:block}code{display:block;margin-top:6px}}
   </style>
 </head>
@@ -124,7 +126,7 @@ function renderHtml(videoFile, samples) {
   <header>
     <div class="eyebrow">LOCAL QC / STATIC HTML</div>
     <h1>课程视频质检报告</h1>
-    <div class="progress"><span>✓ 抽帧完成</span><span>✓ 封面边界</span><span>✓ ${samples.filter(sample => sample.group === "幕中代表帧").length} 幕代表帧</span><span>✓ 幕间交界</span><span>✓ 片尾收尾</span></div>
+    <div class="progress"><span>✓ 抽帧完成</span><span>✓ ${vibe ? "开场" : "封面边界"}</span><span>✓ ${samples.filter(sample => sample.group === "幕中代表帧").length} 幕代表帧</span>${samples.some(sample => sample.group === "幕间交界") ? "<span>✓ 幕间交界</span>" : ""}<span>✓ 片尾收尾</span></div>
     <p class="source">视频：${escapeHtml(videoFile)}</p>
   </header>
   ${sections}
@@ -165,6 +167,6 @@ export function generateCourseQcReport({
     samples,
   };
   fs.writeFileSync(reportFile, `${JSON.stringify(report, null, 2)}\n`, { encoding: "utf8" });
-  fs.writeFileSync(htmlFile, renderHtml(videoFile, samples), { encoding: "utf8" });
+  fs.writeFileSync(htmlFile, renderHtml(videoFile, samples, timeline.route === "vibe"), { encoding: "utf8" });
   return { htmlFile, reportFile, samples };
 }

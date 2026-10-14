@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 用途：从已确认的四幕或六幕 WAV/timings 串行生成课程审片版或高清发布版。
+ * 用途：按教学WAV或Vibe视觉时间表串行生成审片版及高清发布包。
  * 运行：node build/course_video.mjs <review|publish> <制作索引.json> [--act N] [--check-only | --range 起秒:止秒]
  * 依赖：Node.js、Python、FFmpeg、模板内声明的 HyperFrames CLI。
  */
@@ -15,6 +15,7 @@ import { assertCourseOutroTailArtifacts } from "./course_outro_tail.mjs";
 import { generateCourseQcReport } from "./course_qc_report.mjs";
 import { injectCourseChapterProgressHtml } from "./course_chapter_progress.mjs";
 import { assertCourseEpisodeScriptLocation } from "./init_course_episode.mjs";
+import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline } from "./vibe_timeline.mjs";
 
 
 const BUILD_TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -103,8 +104,9 @@ export function extractCourseLayoutCheckTimes(sourceText) {
 }
 
 function assertIndex(index, selectedAct) {
-  if (!Array.isArray(index.acts) || ![4, 6].includes(index.acts.length)) {
-    throw new Error("制作索引 acts 必须包含 4 幕或 6 幕");
+  const vibe = index.route === "vibe";
+  if (!Array.isArray(index.acts) || (vibe ? index.acts.length < 1 || index.acts.length > 6 : ![4, 6].includes(index.acts.length))) {
+    throw new Error(vibe ? "Vibe制作索引acts必须包含1～6段" : "制作索引 acts 必须包含 4 幕或 6 幕");
   }
   const highlightFormats = new Set();
   let structuredHighlightCount = 0;
@@ -142,7 +144,7 @@ function assertIndex(index, selectedAct) {
       )) {
       throw new Error(`第 ${indexNumber + 1} 幕 allowed_warnings 必须是非负整数映射`);
     }
-    for (const key of ["audio", "timings", "visual_source"]) {
+    for (const key of vibe ? ["visual_timing", "visual_source"] : ["audio", "timings", "visual_source"]) {
       if (selectedAct && Number(act.act) !== selectedAct) continue;
       if (typeof act[key] !== "string" || !act[key].trim()) {
         throw new Error(`第 ${indexNumber + 1} 幕 ${key} 不能为空`);
@@ -186,6 +188,8 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     throw new Error("模式必须是 review 或 publish");
   }
   assertCourseEpisodeScriptLocation(rootDir);
+  if (index.route !== undefined && !["course", "vibe"].includes(index.route)) throw new Error("未知制作路线");
+  const vibe = index.route === "vibe";
   const actCount = index.acts?.length ?? 4;
   if (selectedAct !== undefined && (!Number.isInteger(selectedAct) || selectedAct < 1 || selectedAct > actCount)) {
     throw new Error(`--act 必须是 1 到 ${actCount} 的整数`);
@@ -196,7 +200,8 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     throw new Error("--range 必须配合 --act，使用递增的非负起秒:止秒，不能与 --check-only 合用");
   }
   assertIndex(index, selectedAct);
-  const quality = mode === "publish" ? "high" : "standard";
+  if (vibe && !index.example && !index.content_approval?.confirmed) throw new Error("Vibe画面制作前需要content_approval确认文稿与切分");
+  const quality = vibe || mode === "publish" ? "high" : "standard";
   const version = String(index.current_version ?? "").trim();
   const episode = String(index.episode ?? "").trim();
   if (!episode || !version) {
@@ -211,9 +216,10 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
   if (typeof index.timeline_summary !== "string" || !index.timeline_summary.trim()) {
     throw new Error("timeline_summary 不能为空");
   }
+  if (vibe && mode === "publish") return createVibePublishPlan(index, rootDir);
 
   let chapterProgress = null;
-  if (requiresEpisodeContract(index.episode, 23, index.production_contract === "current")) {
+  if (!vibe && requiresEpisodeContract(index.episode, 23, index.production_contract === "current")) {
     if (!Array.isArray(index.chapter_titles) || index.chapter_titles.length !== actCount
       || index.chapter_titles.some((title) => typeof title !== "string" || !title.trim())) {
       throw new Error(`新期次 chapter_titles 必须包含 ${actCount} 个非空章节标题`);
@@ -270,6 +276,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
   const acts = index.acts.filter((sourceAct) => !selectedAct || Number(sourceAct.act) === selectedAct).map((sourceAct) => {
     const actNumber = Number(sourceAct.act);
     const visualSource = absolute(rootDir, sourceAct.visual_source);
+    const visualTiming = vibe ? readVibeTiming(absolute(rootDir, sourceAct.visual_timing)) : null;
     if (chapterProgress) {
       const timing = JSON.parse(fs.readFileSync(absolute(rootDir, sourceAct.timings), { encoding: "utf8" }));
       const chapterAct = chapterProgress.acts[actNumber - 1];
@@ -338,17 +345,29 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
       });
     }
     if (mode === "review") {
+      const soundFile = vibe ? sourceAct.sfx : sourceAct.audio;
+      const duration = range ? range[1] - range[0] : visualTiming?.total_s;
+      let soundFilter = null;
+      if (vibe && soundFile) {
+        const probe = spawnSync("ffprobe", ["-v", "error", "-show_entries", "stream=channels", "-of", "json", absolute(rootDir, soundFile)], { encoding: "utf8", windowsHide: true });
+        if (probe.status !== 0) throw new Error(`动作声读取失败：${soundFile}`);
+        const channels = JSON.parse(probe.stdout).streams?.[0]?.channels;
+        if (![1, 2].includes(channels)) throw new Error("Vibe动作声只支持单声道或立体声");
+        soundFilter = `${channels === 1 ? 'pan=stereo|c0=c0|c1=c0,' : ''}apad,atrim=duration=${duration}`;
+      }
       steps.push({
         type: "mux-wav",
         act: actNumber,
         command: "ffmpeg",
         args: [
           "-y", "-i", silentFile,
-          ...(range ? ["-ss", String(range[0])] : []),
-          "-i", absolute(rootDir, sourceAct.audio),
+          ...(range && soundFile ? ["-ss", String(range[0])] : []),
+          ...(soundFile ? ["-i", absolute(rootDir, soundFile)] : ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]),
           "-map", "0:v:0", "-map", "1:a:0",
           "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-          "-ar", "48000", "-ac", "1", ...(range ? ["-t", String(range[1] - range[0])] : []), "-shortest", finalFile,
+          "-ar", "48000", "-ac", vibe ? "2" : "1",
+          ...(soundFilter ? ["-af", soundFilter] : []),
+          ...(vibe ? ["-t", String(duration)] : [...(range ? ["-t", String(range[1] - range[0])] : []), "-shortest"]), finalFile,
           "-loglevel", "error",
         ],
       });
@@ -372,8 +391,9 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     return {
       act: actNumber,
       source: visualSource,
-      audio: absolute(rootDir, sourceAct.audio),
-      timings: absolute(rootDir, sourceAct.timings),
+      audio: vibe ? sourceAct.sfx ? absolute(rootDir, sourceAct.sfx) : null : absolute(rootDir, sourceAct.audio),
+      timings: absolute(rootDir, vibe ? sourceAct.visual_timing : sourceAct.timings),
+      vibe,
       subtitleHighlights: sourceAct.subtitle_highlights,
       motionCheck: sourceAct.motion_check ?? null,
       allowedWarnings: sourceAct.allowed_warnings,
@@ -401,8 +421,9 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
         ...(sourceAct.visual_assets ?? []).map(file => absolute(rootDir, file)),
         ...(chapterProgress ? [chapterProgress.timelineFile] : []),
         ...(openingOverlay ? [absolute(rootDir, openingOverlay.video)] : []),
-        absolute(rootDir, sourceAct.audio),
-        absolute(rootDir, sourceAct.timings),
+        ...(vibe ? sourceAct.sfx ? [absolute(rootDir, sourceAct.sfx)] : [] : [absolute(rootDir, sourceAct.audio)]),
+        absolute(rootDir, vibe ? sourceAct.visual_timing : sourceAct.timings),
+        ...(vibe ? [path.join(BUILD_TOOLS_DIR, "vibe_timeline.mjs")] : []),
         absolute(rootDir, "templates/course-explainer-3x4/package.json"),
         absolute(rootDir, "templates/course-explainer-3x4/fonts/NotoSansSC-400.woff2"),
         absolute(rootDir, "templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2"),
@@ -424,7 +445,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     };
   });
 
-  let outputPath = index[mode + "_output"];
+  let outputPath = vibe ? null : index[mode + "_output"];
   if (!outputPath) {
     const slug = String(index.slug ?? "").trim();
     if (!slug) throw new Error("自动确定输出位置需要制作索引 slug");
@@ -443,6 +464,8 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     inputs: acts.map((act) => act.output),
     output: concatOutput,
     audio: mode === "review",
+    copyVideo: vibe,
+    channels: vibe ? 2 : 1,
   }];
   if (mode === "publish") {
     finalSteps.push({
@@ -521,6 +544,31 @@ function runCaptured(command, args, { cwd = process.cwd(), spawnSyncImpl = spawn
   return String(result.stdout ?? "");
 }
 
+function createVibePublishPlan(index, rootDir) {
+  if (!index.example && !index.review_approval?.confirmed) throw new Error("publish需要review_approval确认完整Vibe审片版");
+  const review = absolute(rootDir, index.review_output);
+  if (!index.example && index.review_approval.sha256 !== hashFile(review)) throw new Error("确认后的审片版发生变化，哈希不一致");
+  if (!index.cover_selection || !index.publish_copy) throw new Error("publish需要已选独立封面及publish_copy");
+  const version = index.current_version;
+  const output = `pipeline/output/course/${index.episode}_${index.slug}/${version}/course_${index.episode}_${index.slug}_${version}_publish.mp4`;
+  const finalOutput = absolute(rootDir, output);
+  const coverOutput = path.join(path.dirname(finalOutput), "cover.png");
+  if (finalOutput === review) throw new Error("发布输出不能覆盖审片版");
+  return {
+    mode: "publish", rootDir: path.resolve(rootDir), index, acts: [], partial: false,
+    requiredInputs: [review, absolute(rootDir, index.cover_output), absolute(rootDir, index.publish_copy), absolute(rootDir, index.timeline_summary)],
+    finalOutput, coverOutput,
+    finalSteps: [
+      { type: "copy-review", input: review, output: finalOutput },
+      { type: "copy-cover", input: absolute(rootDir, index.cover_output), output: coverOutput },
+      { type: "decode", command: "ffmpeg", args: ["-v", "error", "-xerror", "-i", finalOutput, "-f", "null", "-"] },
+      { type: "record-output" },
+      { type: "release-check", command: process.execPath, args: [path.join(BUILD_TOOLS_DIR, "check_course_release.mjs"), index.__indexPath ?? ""] },
+      { type: "qc-report", videoFile: finalOutput, outputDir: path.join(path.dirname(finalOutput), "qc"), timelineFile: absolute(rootDir, index.timeline_summary), coverDurationS: 0, fps: 30 },
+    ],
+  };
+}
+
 function copyRequired(source, target) {
   if (!fs.existsSync(source) || !fs.statSync(source).isFile()) {
     throw new Error(`所需文件不存在：${source}`);
@@ -533,7 +581,7 @@ export function prepareCourseAct(act, plan, { spawnSyncImpl = spawnSync } = {}) 
   const sourceText = fs.readFileSync(act.source, { encoding: "utf8" });
   if (act.range) {
     const timing = JSON.parse(fs.readFileSync(act.timings, { encoding: "utf8" }));
-    if (act.range[1] > Number(timing.total)) throw new Error("片段结束时间不能超过本幕 timings.total");
+    if (act.range[1] > Number(act.vibe ? timing.total_s : timing.total)) throw new Error("片段结束时间不能超过本幕时间表");
     if (/<(?:video|audio)\b|\bdata-composition-src\s*=/iu.test(sourceText)) {
       throw new Error("片段预览目前只支持单根 GSAP 画面和外置 WAV，不支持内嵌媒体或子合成");
     }
@@ -577,7 +625,7 @@ export function prepareCourseAct(act, plan, { spawnSyncImpl = spawnSync } = {}) 
       subtitleArgs.push("--highlights-json", JSON.stringify(act.subtitleHighlights));
     }
   }
-  const subtitles = runCaptured(PYTHON_COMMAND, subtitleArgs, {
+  const subtitles = act.vibe ? vibeSubtitleDeclaration(act.timings) : runCaptured(PYTHON_COMMAND, subtitleArgs, {
     cwd: plan.rootDir,
     spawnSyncImpl,
   });
@@ -716,6 +764,26 @@ export function verifyCourseVideoInputs(plan) {
       assertCourseVisualLayoutPolicy(sourceText, `第 ${act.act} 幕画面源`);
     }
   }
+  if (plan.index?.route === "vibe") {
+    const timeline = JSON.parse(fs.readFileSync(absolute(plan.rootDir, plan.index.timeline_summary), { encoding: "utf8" }));
+    assertVibeTimeline(timeline, plan.index.acts.length, plan.index.publish_spec.duration_s);
+    for (const act of plan.acts) {
+      const timing = readVibeTiming(act.timings);
+      const source = fs.readFileSync(act.source, { encoding: "utf8" });
+      const duration = Number(source.match(/\bconst\s+DUR\s*=\s*([\d.]+)/u)?.[1]);
+      if (Math.abs(duration - timing.total_s) > .002 || !Number.isFinite(duration)) throw new Error("Vibe画面DUR与时间表不一致");
+      const rootTag = source.match(/<[^>]+\bdata-composition-id\s*=\s*["']main["'][^>]*>/u)?.[0] ?? "";
+      const rootDuration = Number(rootTag.match(/data-duration\s*=\s*["']([\d.]+)["']/u)?.[1]);
+      if (!Number.isFinite(rootDuration) || Math.abs(rootDuration - timing.total_s) > .002) throw new Error("Vibe根data-duration与时间表不一致");
+      for (const field of ["width", "height"]) {
+        const actual = Number(rootTag.match(new RegExp(`data-${field}\\s*=\\s*["'](\\d+)["']`, 'u'))?.[1]);
+        if (actual !== plan.index.publish_spec[field]) throw new Error(`Vibe画面${field}与发布规格不一致`);
+      }
+      const boundary = timeline.acts[act.act - 1];
+      if (Math.abs(boundary.duration_s - timing.total_s) > .002) throw new Error("Vibe整期时间表已过期，请重新生成");
+    }
+    return;
+  }
   if (!requiresEpisodeContract(plan.index?.episode, 6, plan.index?.production_contract === "current")) return;
   const lastActNumber = plan.index?.acts?.length ?? 4;
   const lastAct = plan.acts.find((act) => Number(act.act) === lastActNumber);
@@ -770,6 +838,17 @@ function recordCourseVideoOutput(plan, { spawnSyncImpl = spawnSync } = {}) {
   const outputKey = plan.mode + "_output";
   const output = path.relative(plan.rootDir, plan.finalOutput).replaceAll("\\", "/");
   storedIndex[outputKey] = output;
+  if (storedIndex.route === "vibe") storedIndex.publish_bundle = null;
+  if (storedIndex.route === "vibe" && plan.mode === "review") {
+    storedIndex.review_base_output = output;
+    if (storedIndex.review_approval?.sha256 !== hashFile(plan.finalOutput)) storedIndex.review_approval = null;
+    storedIndex.audio_mix = null;
+  }
+  if (storedIndex.route === "vibe" && plan.mode === "publish") {
+    const cover = path.relative(plan.rootDir, plan.coverOutput).replaceAll("\\", "/");
+    if (!storedIndex.cover_upload_output || storedIndex.cover_upload_output === storedIndex.cover_output) storedIndex.cover_upload_output = cover;
+    storedIndex.cover_output = cover;
+  }
   const publishedFile = typeof storedIndex.publish_output === "string"
     ? absolute(plan.rootDir, storedIndex.publish_output) : null;
   const keepPublishedOutput = plan.mode === "review" && publishedFile
@@ -805,6 +884,10 @@ export function executeCourseStep(step, plan, {
     });
   },
 } = {}) {
+  if (step.type === "copy-review" || step.type === "copy-cover") {
+    if (path.resolve(step.input) !== path.resolve(step.output)) copyRequired(step.input, step.output);
+    return;
+  }
   if (step.type === "record-output") {
     recordCourseVideoOutput(plan, { spawnSyncImpl });
     return;
@@ -825,8 +908,8 @@ export function executeCourseStep(step, plan, {
       "-y", "-f", "concat", "-safe", "0",
       "-i", listFile,
       "-map", "0:v:0", ...(step.audio === false ? [] : ["-map", "0:a:0"]),
-      "-c:v", "h264_nvenc", "-preset", "p4", "-profile:v", "main", "-pix_fmt", "yuv420p",
-      ...(step.audio === false ? [] : ["-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "1"]),
+      ...(step.copyVideo ? ["-c:v", "copy"] : ["-c:v", "h264_nvenc", "-preset", "p4", "-profile:v", "main", "-pix_fmt", "yuv420p"]),
+      ...(step.audio === false ? [] : ["-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", String(step.channels ?? 1)]),
       "-movflags", "+faststart", step.output,
       "-loglevel", "error",
     ];

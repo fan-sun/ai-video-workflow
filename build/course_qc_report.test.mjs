@@ -106,3 +106,19 @@ test("任一抽帧失败时不生成误导性的质检报告", () => {
     fs.rmSync(outputDir, { recursive: true, force: true });
   }
 });
+
+test("Vibe质检页完整显示横屏帧，不标注不存在的封面或配音结束", t => {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "vibe-qc-"));
+  t.after(() => fs.rmSync(outputDir, { recursive: true, force: true }));
+  const result = generateCourseQcReport({
+    videoFile: "video.mp4", outputDir, coverDurationS: 0,
+    timeline: { route: "vibe", total_s: 4, acts: [{ act: 1, start_s: 0, end_s: 4 }] },
+    spawnSyncImpl(command, args) {
+      fs.writeFileSync(args.at(-1), "png", { encoding: "utf8" });
+      return { status: 0 };
+    },
+  });
+  const html = fs.readFileSync(result.htmlFile, { encoding: "utf8" });
+  assert.doesNotMatch(html, /aspect-ratio:3\/4|object-fit:cover/);
+  assert.doesNotMatch(html, /✓ 封面边界|最后一句结束后|outro-after-voice/);
+});

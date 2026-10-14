@@ -3,6 +3,8 @@
 
 > 本文负责讲解稿初稿完成后的内容审查。端到端顺序见 [`sop.md`](sop.md)，概念讲解结构见 [`script_writing_explainer.md`](script_writing_explainer.md)。
 
+下文的完整知识结构、四幕、固定开场和配音切分要求适用于教学路线。Vibe仅复用事实、因果与指代核验、整段和跨段顺读及单次润色；观看主线、点题方式、分段及用户改稿确认按[Vibe规则](vibe_workflow.md)执行。
+
 ## 一、审查目标
 
 内容审查回答四个问题：

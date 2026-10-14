@@ -1,6 +1,13 @@
-# AI Video Workflow · 教学视频制作流程
+# AI Video Workflow · AI知识视频制作流程
 
-把一个知识点、术语或当前热点词，制作成有旁白、图形讲解和字幕的 3:4 竖屏视频。采用四幕制作流程，输出审片版、高清发布版、两种尺寸的封面和发布文案。
+把一个知识点、术语或当前热点词制作成视频。仓库提供两条路线：
+
+| 路线 | 默认视频 | 制作重点 | 入口 |
+|---|---|---|---|
+| 教学 | 3:4竖屏，有旁白 | 理解并学会知识或操作，配音时间驱动画面 | [主SOP](course/docs/sop.md) |
+| Vibe知识讲解 | 16:9横屏，先无人声旁白 | 连续动画、完整屏幕文字、动作声与音乐，阅读和动作决定节奏 | [Vibe流程](course/docs/vibe_workflow.md) |
+
+两条路线输出审片版、高清发布视频、独立封面和发布文案。主题与路线分别选择，AI、历史、心理等内容不固定对应某条路线。
 
 这是 AI 助手按 SOP 执行的制作仓库。选题调研、写稿、事实核验及场景设计由助手完成；脚本负责切分、配音、时间轴、检查和渲染。内容、试听、风格、封面及审片确认仍由用户完成。
 
@@ -17,7 +24,9 @@ cd ai-video-workflow
 
 ### 1. 准备环境
 
-首版支持 **Windows + NVIDIA GPU**。需要 Node.js 22.9 以上、Git（含 Git Bash）、FFmpeg（含 ffprobe）、Chrome，以及安装了 CUDA 版 PyTorch 和 `voxcpm==2.0.3` 的 Python 3.10～3.12 环境。Node、Git 和 FFmpeg 应能从终端启动。
+首版支持 **Windows + NVIDIA GPU**。两条路线需要Node.js 22.9以上、Git（含Git Bash）、FFmpeg（含ffprobe）、Chrome及Python。教学配音另需Python 3.10～3.12、CUDA版PyTorch和`voxcpm==2.0.3`；只做无人声Vibe时不需要VoxCPM模型或参考声音。Node、Git和FFmpeg应能从终端启动。
+
+只做Vibe可直接按[通用环境](course/docs/setup.md)安装渲染依赖，运行`npm run doctor -- --route vibe`，再看下面的Vibe示例；后面的声音配置用于教学路线。
 
 按 [安装与配置](course/docs/setup.md) 安装 Python 依赖并下载完整的 VoxCPM2 模型；已有可用环境和模型可以直接复用。根项目无需运行 `npm install`，固定版本 HyperFrames CLI 的依赖在首次调用时下载。当前渲染还需联网加载固定版本 GSAP。
 
@@ -66,7 +75,40 @@ npm run example -- package
 
 示例台账独立，不占用正式第 1 期。它验证技术链路，不代表用户已试听、审片或公开发布；命令不上传到平台。重跑及输入变更的处理见 [示例说明](examples/context-window/README.md)。
 
-### 3. 制作自己选定的课程
+### 3. 跑通无旁白Vibe短示例
+
+示例固定为“沉没成本”，8秒、两段连续动画与屏幕文字、16:9视频和3:4独立封面。使用本地合成测试音，不需要声音克隆、音乐下载或API密钥。
+
+```bash
+npm run doctor -- --route vibe
+npm run example:vibe -- prepare
+npm run example:vibe -- video
+npm run example:vibe -- mix
+npm run example:vibe -- package
+```
+
+结果位于`.local/vibe-example/`，独立台账不会占用正式期号。完整路径、重跑边界及测试声音说明见[示例README](examples/vibe-knowledge/README.md)。示例验证工具链，动画质量与正式内容仍由用户审看。
+
+### 4. 制作自己的Vibe知识视频
+
+把主题和目标交给助手，例如：
+
+> 按course/docs/sop.md选择Vibe路线，制作一条讲解“我的主题”的知识短片。先说明观看主线并写稿，确认后安排视觉时间，再逐幕制作。
+
+也可以让助手选一个适合的主题并说明选择。实际流程及用户确认点见[Vibe制作规则](course/docs/vibe_workflow.md)，动作、运镜、背景与字幕要求见[动态画面设计](course/docs/vibe_motion_design.md)。常用入口：
+
+```bash
+npm run init:episode -- 03-topic-slug --topic "主题词" --route vibe
+npm run timeline:vibe -- course/episodes/03-topic-slug/制作索引.json
+npm run review -- course/episodes/03-topic-slug/制作索引.json
+npm run preview:music -- course/episodes/03-topic-slug/制作索引.json
+npm run mix -- course/episodes/03-topic-slug/制作索引.json
+npm run publish:package -- course/episodes/03-topic-slug/制作索引.json
+```
+
+这些命令依次使用已经确认的稿件、实际视觉时间表、画面源及音量比例，不自动选题写稿。没有BGM时省略试听和混音。发布前需要用户确认最终完整审片版、选定独立封面并生成同版发布TXT；发布入口直接复用高清画面，通过路线验收后登记本地发布包，不上传平台。
+
+### 5. 制作自己选定的教学视频
 
 选题由用户决定，可以是基础知识、术语或近期受关注的热点概念。把主题及已有资料交给编码助手，例如：
 
@@ -109,7 +151,8 @@ ai-video-workflow/
 │   └── published-videos.json 已公开发布台账（初始为空）
 ├── pipeline/02_audio/        VoxCPM 调用脚本、术语读音映射
 ├── templates/                正文合成模板、A/B/C 固定开场、字体
-├── examples/context-window/  短示例源码及运行器
+├── examples/context-window/  教学短示例源码及运行器
+├── examples/vibe-knowledge/  无旁白Vibe短示例源码及运行器
 ├── voices/README.md          用户参考声音的准备说明
 ├── .agents/skills/           助手使用的本地技能与辅助工具
 └── tests/                    Python 测试及夹具
