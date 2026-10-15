@@ -1,6 +1,6 @@
 # 助手入口
 
-先读取中文 [CLAUDE.md](CLAUDE.md)，再按 [主 SOP](course/docs/sop.md) 选择路线。教学路线让观众学会知识；[Vibe路线](course/docs/vibe_workflow.md)用连续动画、屏幕文字和声音推动观看。主题类型与表达路线分别记录，用户已有选择直接沿用。
+先读取中文 [CLAUDE.md](CLAUDE.md)，再按 [主 SOP](course/docs/sop.md) 选择路线。教学路线让观众学会知识；[Vibe路线](course/docs/vibe/sop.md)用连续动画、屏幕文字和声音推动观看。主题类型与表达路线分别记录，用户已有选择直接沿用。
 
 使用 Bash 命令和 `/` 路径分隔符，文件读写显式指定 UTF-8。修改仅限任务所需内容。开发追踪放在 `specs/<功能名>/`，生产规范放在 `course/docs/`。
 

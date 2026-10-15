@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 
-MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "build" / "inject_course_subs.py"
+MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "build" / "common" / "inject_course_subs.py"
 
 
 class InjectCourseSubsTests(unittest.TestCase):

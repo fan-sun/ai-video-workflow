@@ -13,7 +13,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "build" / "timings_to_subs.py"
+MODULE_PATH = ROOT / "build" / "teaching" / "timings_to_subs.py"
 
 
 def load_module():

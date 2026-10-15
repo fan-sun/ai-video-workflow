@@ -11,7 +11,7 @@ class RepositoryLayoutTests(unittest.TestCase):
     def test_教学文档的本地链接完整(self):
         missing = []
         sources = [ROOT / "README.md", ROOT / "AGENTS.md", ROOT / "CLAUDE.md",
-                   *(ROOT / "course/docs").glob("*.md"),
+                   *(ROOT / "course/docs").rglob("*.md"),
                    *(ROOT / "examples").rglob("*.md"),
                    *(ROOT / ".agents/skills").rglob("*.md")]
         for source in sources:
@@ -31,7 +31,7 @@ class RepositoryLayoutTests(unittest.TestCase):
         self.assertEqual([name for name in sorted(references) if not (skill / name).is_file()], [])
 
     def test_生产代码的模型与配音环境路径由配置指定(self):
-        for directory in [ROOT / "build", ROOT / "pipeline/02_audio"]:
+        for directory in [ROOT / "build/common", ROOT / "build/teaching", ROOT / "build/vibe", ROOT / "pipeline/02_audio"]:
             for source in directory.iterdir():
                 if source.suffix not in (".py", ".mjs") or source.name.endswith(".test.mjs"):
                     continue
@@ -39,7 +39,7 @@ class RepositoryLayoutTests(unittest.TestCase):
                 self.assertIsNone(re.search(r"[A-Za-z]:[/\\](?:My_project|Environment[/\\]Anaconda)", text), source.name)
 
     def test_教学流程不路由到事件热点写法(self):
-        for source in (ROOT / "course/docs").glob("*.md"):
+        for source in (ROOT / "course/docs").rglob("*.md"):
             text = source.read_text(encoding="utf-8")
             self.assertNotIn("hotspot_explainer", text, source.name)
             self.assertNotIn("热点讲解适配规则", text, source.name)

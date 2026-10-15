@@ -5,8 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
-import {initCourseEpisode} from '../../build/init_course_episode.mjs';
-import {writeVibeTimeline} from '../../build/vibe_timeline.mjs';
+import {initCourseEpisode} from '../../build/common/init_course_episode.mjs';
+import {writeVibeTimeline} from '../../build/vibe/vibe_timeline.mjs';
 import {makeVisual,coverHtml} from './visuals.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const WORK=path.resolve(process.env.VIBE_EXAMPLE_DIR||path.join(ROOT,'.local/vibe-example'));
@@ -23,7 +23,7 @@ function run(command,args){const r=spawnSync(command,args,{cwd:WORK,stdio:'inher
 async function prepare(){
   fs.mkdirSync(WORK,{recursive:true});
   fs.mkdirSync(path.join(WORK,'build'),{recursive:true});
-  for(const name of fs.readdirSync(path.join(ROOT,'build')))if(/\.(mjs|py)$/u.test(name)&&!name.endsWith('.test.mjs'))fs.copyFileSync(path.join(ROOT,'build',name),path.join(WORK,'build',name));
+  fs.cpSync(path.join(ROOT,'build'),path.join(WORK,'build'),{recursive:true,filter:source=>fs.statSync(source).isDirectory()?path.basename(source)!=='__pycache__':/\.(mjs|py)$/u.test(source)});
   fs.cpSync(path.join(ROOT,'templates/course-explainer-3x4'),path.join(WORK,'templates/course-explainer-3x4'),{recursive:true});
   initCourseEpisode(WORK,'01-sunk-cost',{topic:'沉没成本',route:'vibe'});
   const index=read();
@@ -46,7 +46,7 @@ async function prepare(){
   write(coverDir+'/index.html',coverHtml);
   fs.cpSync(path.join(ROOT,'templates/course-explainer-3x4/fonts'),path.join(WORK,coverDir,'fonts'),{recursive:true});
   const cover=path.join(WORK,coverDir,'cover.png');
-  run(process.execPath,['build/check_course_cover.mjs',coverDir+'/index.html','--out',coverDir+'/qc']);
+  run(process.execPath,['build/common/check_course_cover.mjs',coverDir+'/index.html','--out',coverDir+'/qc']);
   fs.copyFileSync(path.join(WORK,coverDir,'qc/index.png'),cover);
   index.cover_output=coverDir+'/cover.png';index.cover_upload_output=index.cover_output;
   index.cover_selection={method:'code',technical_example:true};
@@ -58,13 +58,13 @@ async function prepare(){
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))try{
   const stage=process.argv[2];
   if(stage==='prepare')await prepare();
-  else if(stage==='video')run(process.execPath,['build/course_video.mjs','review',INDEX]);
-  else if(stage==='mix')run(process.execPath,['build/mix_video_audio.mjs',INDEX]);
+  else if(stage==='video')run(process.execPath,['build/common/course_video.mjs','review',INDEX]);
+  else if(stage==='mix')run(process.execPath,['build/vibe/mix_video_audio.mjs',INDEX]);
   else if(stage==='package'){
     const index=read();
     if(!index.audio_mix)throw new Error('先完成mix阶段');
     index.publish_copy='pipeline/output/course/ep01_sunk-cost/v1/course_ep01_sunk-cost_v1.txt';
     write(index.publish_copy,'【标题】\nVibe知识大赏｜沉没成本：钱回不来，时间还能选\n\n【发布文案】\n钱已经花掉，下一段时间还可以选择。\n\n【标签】\n#Vibe知识大赏 #沉没成本\n\n【视频总结】\n沉没成本是已经付出且无法收回的钱、时间和精力。判断要不要继续时，需要考虑接下来还要付出什么，以及还能获得什么。过去的投入可以解释舍不得，却不能独自决定未来的选择。\n\n【视频章节】\n00:00–00:04　第一幕 · 收不回的钱\n00:04–00:08　第二幕 · 还能选的时间\n');
-    write(INDEX,index);run(process.execPath,['build/course_video.mjs','publish',INDEX]);
+    write(INDEX,index);run(process.execPath,['build/common/course_video.mjs','publish',INDEX]);
   }else throw new Error('阶段必须为prepare、video、mix或package');
 }catch(error){console.error(error.message);process.exitCode=1;}

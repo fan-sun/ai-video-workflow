@@ -29,6 +29,6 @@ npm run example:vibe -- package
 - `course_ep01_sunk-cost_v1_publish.mp4`、同版TXT、`cover.png`与`release-check.json`：高清发布及验收。
 - `qc/report.html`：实际导出关键帧质检；封面在工作区`course/episodes/01-sunk-cost/cover/cover.png`。
 
-测试音由FFmpeg生成，无下载、密钥、VoxCPM或个人参考声音；不把它当成正式音乐或动作音色。封面采用代码方式验证共同交付，正式项目可按[路线规则](../../course/docs/vibe_workflow.md)选择AI生图。
+测试音由FFmpeg生成，无下载、密钥、VoxCPM或个人参考声音；不把它当成正式音乐或动作音色。封面采用代码方式验证共同交付，正式项目可按[路线规则](../../course/docs/vibe/sop.md)选择AI生图。
 
 输出保留在隔离目录，不修改正式两份台账。四步可重复运行；已有成片时prepare只同步通用工具，保留制作数据。需要验证修改后的示例文字或画面源时，用`VIBE_EXAMPLE_DIR`指定新的工作区，再按四步运行，保留旧结果。修改通用工具后可重新prepare，再执行受影响的后续阶段。

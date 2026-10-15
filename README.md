@@ -5,7 +5,7 @@
 | 路线 | 默认视频 | 制作重点 | 入口 |
 |---|---|---|---|
 | 教学 | 3:4竖屏，有旁白 | 理解并学会知识或操作，配音时间驱动画面 | [主SOP](course/docs/sop.md) |
-| Vibe知识讲解 | 16:9横屏，先无人声旁白 | 连续动画、完整屏幕文字、动作声与音乐，阅读和动作决定节奏 | [Vibe流程](course/docs/vibe_workflow.md) |
+| Vibe知识讲解 | 16:9横屏，先无人声旁白 | 连续动画、完整屏幕文字、动作声与音乐，阅读和动作决定节奏 | [Vibe流程](course/docs/vibe/sop.md) |
 
 两条路线输出审片版、高清发布视频、独立封面和发布文案。主题与路线分别选择，AI、历史、心理等内容不固定对应某条路线。
 
@@ -26,9 +26,9 @@ cd ai-video-workflow
 
 首版支持 **Windows + NVIDIA GPU**。两条路线需要Node.js 22.9以上、Git（含Git Bash）、FFmpeg（含ffprobe）、Chrome及Python。教学配音另需Python 3.10～3.12、CUDA版PyTorch和`voxcpm==2.0.3`；只做无人声Vibe时不需要VoxCPM模型或参考声音。Node、Git和FFmpeg应能从终端启动。
 
-只做Vibe可直接按[通用环境](course/docs/setup.md)安装渲染依赖，运行`npm run doctor -- --route vibe`，再看下面的Vibe示例；后面的声音配置用于教学路线。
+只做Vibe可直接按[通用环境](course/docs/common/setup.md)安装渲染依赖，运行`npm run doctor -- --route vibe`，再看下面的Vibe示例；后面的声音配置用于教学路线。
 
-按 [安装与配置](course/docs/setup.md) 安装 Python 依赖并下载完整的 VoxCPM2 模型；已有可用环境和模型可以直接复用。根项目无需运行 `npm install`，固定版本 HyperFrames CLI 的依赖在首次调用时下载。当前渲染还需联网加载固定版本 GSAP。
+按 [安装与配置](course/docs/common/setup.md) 安装 Python 依赖并下载完整的 VoxCPM2 模型；已有可用环境和模型可以直接复用。根项目无需运行 `npm install`，固定版本 HyperFrames CLI 的依赖在首次调用时下载。当前渲染还需联网加载固定版本 GSAP。
 
 准备自己的参考录音 `voices/reference.wav` 和逐字对应的 UTF-8 文本 `voices/reference.txt`。复制 `.env.example` 为 `.env`，填写本机配置；已有 `.env` 时直接检查配置，不要覆盖：
 
@@ -95,7 +95,7 @@ npm run example:vibe -- package
 
 > 按course/docs/sop.md选择Vibe路线，制作一条讲解“我的主题”的知识短片。先说明观看主线并写稿，确认后安排视觉时间，再逐幕制作。
 
-也可以让助手选一个适合的主题并说明选择。实际流程及用户确认点见[Vibe制作规则](course/docs/vibe_workflow.md)，动作、运镜、背景与字幕要求见[动态画面设计](course/docs/vibe_motion_design.md)。常用入口：
+也可以让助手选一个适合的主题并说明选择。实际流程及用户确认点见[Vibe制作规则](course/docs/vibe/sop.md)，动作、运镜、背景与字幕要求见[动态画面设计](course/docs/vibe/motion_design.md)。常用入口：
 
 ```bash
 npm run init:episode -- 03-topic-slug --topic "主题词" --route vibe
@@ -123,7 +123,7 @@ npm run topic:check -- --topic "主题词" --summary "核心问题和讲解角�
 npm run init:episode -- 01-topic-slug --topic "主题词"
 ```
 
-`SILICONFLOW_API_KEY` 只用于可选的语义相关提醒。缺少 Key 时，查重命令退出码为 `3`：精确查重和 BM25 已执行，语义提醒未执行；记录缺项后可继续。重复主题退出码为 `2`，须先处理重复。完整规则见 [选题与标准路径](course/docs/topic_selection.md)。
+`SILICONFLOW_API_KEY` 只用于可选的语义相关提醒。缺少 Key 时，查重命令退出码为 `3`：精确查重和 BM25 已执行，语义提醒未执行；记录缺项后可继续。重复主题退出码为 `2`，须先处理重复。完整规则见 [选题与标准路径](course/docs/common/topic_selection.md)。
 
 配音和画面齐备、SOP 前置确认完成后：
 
@@ -133,7 +133,7 @@ npm run publish:package -- course/episodes/01-topic-slug/制作索引.json
 npm run check:release -- course/episodes/01-topic-slug/制作索引.json
 ```
 
-`review` 和 `publish:package` 处理画面及视频，不会自动写稿或生成配音。正式配音命令见 [配音流程](course/docs/voiceover.md)。`publish:package` 已包含验收，单独的 `check:release` 用于后续复查。正式成片存放在 `pipeline/output/course/epNN_slug/vK/`；对外发布由用户另行授权。
+`review` 和 `publish:package` 处理画面及视频，不会自动写稿或生成配音。正式配音命令见 [配音流程](course/docs/teaching/voiceover.md)。`publish:package` 已包含验收，单独的 `check:release` 用于后续复查。正式成片存放在 `pipeline/output/course/epNN_slug/vK/`；对外发布由用户另行授权。
 
 ## 项目结构
 
@@ -144,9 +144,12 @@ ai-video-workflow/
 ├── .env.example              本机配置模板
 ├── package.json              npm 命令入口
 ├── requirements-tts.txt      配音依赖版本
-├── build/                    跨期通用工具和 Node 测试
+├── build/                    跨期制作工具
+│   ├── common/               共用工具
+│   ├── teaching/             教学路线工具
+│   └── vibe/                 Vibe路线工具
 ├── course/
-│   ├── docs/                 主 SOP、各阶段规则、风格目录
+│   ├── docs/                 SOP导航，common/、teaching/、vibe/分组规则
 │   ├── episodes.json         正式制作台账（初始为空）
 │   └── published-videos.json 已公开发布台账（初始为空）
 ├── pipeline/02_audio/        VoxCPM 调用脚本、术语读音映射
@@ -155,7 +158,7 @@ ai-video-workflow/
 ├── examples/vibe-knowledge/  无旁白Vibe短示例源码及运行器
 ├── voices/README.md          用户参考声音的准备说明
 ├── .agents/skills/           助手使用的本地技能与辅助工具
-└── tests/                    Python 测试及夹具
+└── tests/                    Python测试及fixtures/夹具，node/存放Node测试
 ```
 
 使用后会新增以下本地目录；它们由 Git 忽略，不属于分发源码：
@@ -180,4 +183,4 @@ npm test
 npm run test:python
 ```
 
-遇到依赖问题先运行 `npm run doctor`，再查 [安装与配置](course/docs/setup.md)；制作规则和返工起点查 [主 SOP](course/docs/sop.md)。
+遇到依赖问题先运行 `npm run doctor`，再查 [安装与配置](course/docs/common/setup.md)；制作规则和返工起点查 [主 SOP](course/docs/sop.md)。

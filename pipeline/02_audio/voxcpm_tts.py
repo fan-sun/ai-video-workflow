@@ -1,10 +1,10 @@
 # 用途：用 VoxCPM 逐句合成课程旁白，四幕批量任务只加载一次模型。
 # 运行：npm run voiceover -- --job <正式脚本JSON> <原始音频目录>，可重复指定四幕。
-# 依赖：VoxCPM 环境、模型、配对参考音与文本；详细配置见 course/docs/setup.md。
+# 依赖：VoxCPM 环境、模型、配对参考音与文本；详细配置见 course/docs/common/setup.md。
 # -*- coding: utf-8 -*-
 """
 输入正式 JSON 的 segments，输出 <音频目录>/<id>.wav。
-后续由 build/course_audio.mjs 裁切、拼接、变速并生成同步 timings。
+后续由 build/teaching/course_audio.mjs 裁切、拼接、变速并生成同步 timings。
 
 单幕示例（在仓库根目录执行，NN-slug 替换为本期目录）：
   npm run voiceover -- --script pipeline/01_script/NN-slug/course_epNN_act1.json --out pipeline/02_audio/NN-slug/course_epNN_act1_voxcpm_raw
@@ -14,7 +14,7 @@
   npm run voiceover -- --apply-mappings-only --script pipeline/01_script/NN-slug/course_epNN_actN.json
 
 音频后处理：
-  node --env-file-if-exists=.env build/course_audio.mjs <JSON> <原始音频目录> actN --out-dir <正式音频目录> --speed 1.15
+  node --env-file-if-exists=.env build/teaching/course_audio.mjs <JSON> <原始音频目录> actN --out-dir <正式音频目录> --speed 1.15
 """
 import sys
 # 避开 GBK 终端的编码坑：输出强制 UTF-8
@@ -361,7 +361,7 @@ def main():
     print("下一步（阶段2，需 ffmpeg）:", flush=True)
     for job in jobs:
         print(
-            "  node build/course_audio.mjs %s %s <out_name> --speed 1.15"
+            "  node build/teaching/course_audio.mjs %s %s <out_name> --speed 1.15"
             % (job["script_path"], job["out_dir"]),
             flush=True,
         )

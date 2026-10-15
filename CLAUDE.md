@@ -6,11 +6,11 @@
 
 后续制作规则和新增路线在本仓库维护：通用顺序与门禁更新 `course/docs/sop.md`，具体规则更新所属阶段文档，配套工具更新 `build/`；新增路线继续复用共用的配音、渲染与验收工具。
 
-首次配置先读 `course/docs/setup.md`，按路线执行doctor；无人声Vibe使用`npm run doctor -- --route vibe`。教学配音的模型、参考音及精确配对文本由用户提供，路径放在被忽略的 `.env`。不写死个人磁盘路径，不把参考音、模型和密钥提交到 Git。
+首次配置先读 `course/docs/common/setup.md`，按路线执行doctor；无人声Vibe使用`npm run doctor -- --route vibe`。教学配音的模型、参考音及精确配对文本由用户提供，路径放在被忽略的 `.env`。不写死个人磁盘路径，不把参考音、模型和密钥提交到 Git。
 
 教学路线顺序：选题查重与登记 → 写稿、自检、单次润色 → 内容和切分确认 → 四幕连续配音与试听 → 片尾和时间表 → 风格与封面选择 → 画面与审片 → 发布包验收 → 授权公开发布和归档。
 
-Vibe路线读取course/docs/vibe_workflow.md及vibe_motion_design.md：选题与观看主线 → 稿件和切分确认 → 阅读与动作时间表 → 风格确认与逐幕动画、动作声 → 分轨配乐试听及混音 → 完整审片确认 → 独立封面、短标题与发布验收。先做无旁白版本，不要求声音克隆；可选人声另议。初始化明确使用--route vibe，正式时间表填写visual_timing，不伪造TTS文件。
+Vibe路线读取course/docs/vibe/sop.md及course/docs/vibe/motion_design.md：选题与观看主线 → 稿件和切分确认 → 阅读与动作时间表 → 风格确认与逐幕动画、动作声 → 分轨配乐试听及混音 → 完整审片确认 → 独立封面、短标题与发布验收。先做无旁白版本，不要求声音克隆；可选人声另议。初始化明确使用--route vibe，正式时间表填写visual_timing，不伪造TTS文件。
 
 所有新制作索引保留 `production_contract: "current"`，按route执行对应验收：教学线沿用章节栏、片尾静音与嵌入封面；Vibe线验证完整字幕、视觉时间表、音轨与独立封面。新期次只能通过初始化入口登记；已有索引不得覆盖，路径只登记真实生成的文件。
 

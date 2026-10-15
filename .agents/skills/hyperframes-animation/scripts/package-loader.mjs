@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { basename, delimiter, dirname, join, parse, resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { HYPERFRAMES_VERSION } from "../../../../build/hyperframes_hidden.mjs";
+import { HYPERFRAMES_VERSION } from "../../../../build/common/hyperframes_hidden.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const BOOTSTRAP_ENV = "HYPERFRAMES_SKILL_DEPS_BOOTSTRAPPED";

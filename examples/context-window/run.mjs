@@ -6,10 +6,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { initCourseEpisode } from "../../build/init_course_episode.mjs";
-import { extractActNarration, splitNarrationText, buildSegments } from "../../build/course_act_split_preview.mjs";
-import { createCourseOpenings } from "../../build/create_course_openings.mjs";
-import { resolveChromeExecutable, readPngDimensions } from "../../build/check_course_cover.mjs";
+import { initCourseEpisode } from "../../build/common/init_course_episode.mjs";
+import { extractActNarration, splitNarrationText, buildSegments } from "../../build/teaching/course_act_split_preview.mjs";
+import { createCourseOpenings } from "../../build/teaching/create_course_openings.mjs";
+import { resolveChromeExecutable, readPngDimensions } from "../../build/common/check_course_cover.mjs";
 import { makeActHtml } from "./visuals.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -58,9 +58,7 @@ function prepare() {
   for (const dir of ["build", "templates", "pipeline/02_audio"]) {
     fs.mkdirSync(path.join(WORK, dir), { recursive: true });
   }
-  for (const file of fs.readdirSync(path.join(ROOT, "build"))) {
-    if (/\.(?:mjs|py)$/u.test(file) && !file.endsWith(".test.mjs")) fs.copyFileSync(path.join(ROOT, "build", file), path.join(WORK, "build", file));
-  }
+  fs.cpSync(path.join(ROOT, "build"), path.join(WORK, "build"), { recursive: true, filter: source => fs.statSync(source).isDirectory() ? path.basename(source) !== "__pycache__" : /\.(?:mjs|py)$/u.test(source) });
   for (const template of ["course-explainer-3x4", "course-opening-3x4"]) {
     fs.cpSync(path.join(ROOT, "templates", template), path.join(WORK, "templates", template), { recursive: true });
   }
@@ -112,14 +110,14 @@ function audio() {
     act.audio = `${out}/act${act.act}.wav`;
     act.timings = `${out}/act${act.act}_timings.json`;
     if (!fs.existsSync(path.join(WORK, act.audio)) && !fs.existsSync(path.join(WORK, act.timings))) {
-      node("build/course_audio.mjs", [act.script, `${out}_raw`, `act${act.act}`, "--out-dir", out, "--speed", "1.15"]);
+      node("build/teaching/course_audio.mjs", [act.script, `${out}_raw`, `act${act.act}`, "--out-dir", out, "--speed", "1.15"]);
     }
     run("ffmpeg", ["-v", "error", "-i", act.audio, "-f", "null", "-"]);
     if (read(act.timings).speed !== 1.15) throw new Error("示例音频必须使用 1.15 倍速");
   }
-  node("build/course_outro_tail.mjs", [index.acts[3].audio, index.acts[3].timings]);
+  node("build/teaching/course_outro_tail.mjs", [index.acts[3].audio, index.acts[3].timings]);
   index.timeline_summary = `course/episodes/${EPISODE}/整期时间表.json`;
-  node("build/course_timeline_summary.mjs", ["--out", index.timeline_summary, ...index.acts.map(act => act.timings)]);
+  node("build/teaching/course_timeline_summary.mjs", ["--out", index.timeline_summary, ...index.acts.map(act => act.timings)]);
   index.publish_spec.duration_s = read(index.timeline_summary).total_s;
   write(INDEX, index);
   console.log("四幕技术音频完成，用户试听状态未登记。");
@@ -133,7 +131,7 @@ function video() {
   const openings = createCourseOpenings({ templateRoot: path.join(WORK, "templates/course-opening-3x4"), episodeDir: path.join(WORK, `course/episodes/${EPISODE}`), topic: "上下文窗口", audioPath: path.join(WORK, openingAudio), topicStart: first.subtitle_units[1].start });
   const openingDir = path.dirname(openings.outputs[0].source);
   const openingVideo = path.join(openingDir, "opening.mp4");
-  if (!fs.existsSync(openingVideo)) node("build/hyperframes_hidden.mjs", ["render", openingDir, "--output", openingVideo, "--workers", "2", "--browser-gpu", "--gpu"]);
+  if (!fs.existsSync(openingVideo)) node("build/common/hyperframes_hidden.mjs", ["render", openingDir, "--output", openingVideo, "--workers", "2", "--browser-gpu", "--gpu"]);
   index.selected_style = { id: "A", template: "templates/course-opening-3x4/a/index.html", source: "技术示例固定预设" };
   index.acts.forEach(act => {
     const timings = read(act.timings);
@@ -150,7 +148,7 @@ function video() {
   const cover = `course/episodes/${EPISODE}/cover-options/a.html`;
   const coverSource = fs.readFileSync(path.join(ROOT, "examples/context-window/cover.html"), "utf8");
   write(cover, coverSource);
-  node("build/check_course_cover.mjs", [cover, "--out", `course/episodes/${EPISODE}/cover-qc`]);
+  node("build/common/check_course_cover.mjs", [cover, "--out", `course/episodes/${EPISODE}/cover-qc`]);
   const qc = read(`course/episodes/${EPISODE}/cover-qc/a.json`);
   index.cover_output = `course/episodes/${EPISODE}/cover.png`;
   fs.copyFileSync(qc.screenshot, path.join(WORK, index.cover_output));
@@ -160,7 +158,7 @@ function video() {
   if (size.width !== 2160 || size.height !== 2880) throw new Error("平台封面像素尺寸错误");
   index.cover_selection = { id: "A", source: "技术示例固定配置，不代表用户确认" };
   write(INDEX, index);
-  node("build/course_video.mjs", ["review", INDEX]);
+  node("build/common/course_video.mjs", ["review", INDEX]);
   console.log(`审片样例：${path.join(WORK, read(INDEX).review_output)}`);
 }
 
@@ -172,7 +170,7 @@ function packageVideo() {
   const chapters = timeline.acts.map((act, i) => `${formatClock(act.start_s)}–${formatClock(act.end_s)}　${labels[i]} · ${TITLES[i]}`).join("\n");
   write(index.publish_copy, `【标题】\n上下文窗口是什么\n\n【发布文案】\n用一张工作台理解上下文窗口：输入占空间，输出也要留位置。\n\n【标签】\n#AI #AI基础 #深度讲解\n\n【视频总结】\n上下文窗口限定一次请求可处理的信息范围。问题、历史对话和参考资料都可能占用容量，回答也需要预留空间。具体上限以模型说明为准，窗口增大不保证理解提升，实际使用时仍需清楚组织关键信息。\n\n【视频章节】\n${chapters}\n`);
   write(INDEX, index);
-  node("build/course_video.mjs", ["publish", INDEX]);
+  node("build/common/course_video.mjs", ["publish", INDEX]);
   console.log(`技术发布包：${path.join(WORK, read(INDEX).publish_output)}`);
 }
 

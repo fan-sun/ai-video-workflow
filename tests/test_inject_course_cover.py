@@ -5,7 +5,7 @@ import re
 import unittest
 
 
-MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "build" / "inject_course_cover.py"
+MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "build" / "teaching" / "inject_course_cover.py"
 
 
 def load_module():
