@@ -15,7 +15,7 @@ import { assertCourseOutroTailArtifacts } from "../teaching/course_outro_tail.mj
 import { generateCourseQcReport } from "./course_qc_report.mjs";
 import { injectCourseChapterProgressHtml } from "../teaching/course_chapter_progress.mjs";
 import { assertCourseEpisodeScriptLocation } from "./init_course_episode.mjs";
-import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline } from "../vibe/vibe_timeline.mjs";
+import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline, assertVibeContent } from "../vibe/vibe_timeline.mjs";
 
 
 const BUILD_TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -424,6 +424,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
         ...(vibe ? sourceAct.sfx ? [absolute(rootDir, sourceAct.sfx)] : [] : [absolute(rootDir, sourceAct.audio)]),
         absolute(rootDir, vibe ? sourceAct.visual_timing : sourceAct.timings),
         ...(vibe ? [path.join(BUILD_TOOLS_DIR, "../vibe/vibe_timeline.mjs")] : []),
+        ...(vibe ? [path.join(BUILD_TOOLS_DIR, "../teaching/course_act_split_preview.mjs")] : []),
         absolute(rootDir, "templates/course-explainer-3x4/package.json"),
         absolute(rootDir, "templates/course-explainer-3x4/fonts/NotoSansSC-400.woff2"),
         absolute(rootDir, "templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2"),
@@ -765,6 +766,8 @@ export function verifyCourseVideoInputs(plan) {
     }
   }
   if (plan.index?.route === "vibe") {
+    assertVibeContent(plan.index, { rootDir: plan.rootDir, checkPreview: true, acts: plan.mode === "publish"
+      ? plan.index.acts : plan.acts.map(act => ({ act: act.act, visual_timing: act.timings })) });
     const timeline = JSON.parse(fs.readFileSync(absolute(plan.rootDir, plan.index.timeline_summary), { encoding: "utf8" }));
     assertVibeTimeline(timeline, plan.index.acts.length, plan.index.publish_spec.duration_s);
     for (const act of plan.acts) {

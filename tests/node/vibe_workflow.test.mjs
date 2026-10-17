@@ -69,6 +69,7 @@ test('Vibe视觉时间表拒绝缺字、重叠字幕和不匹配的重点',async
 
 test('Vibe输入预检拒绝根时长不一致和过期的整期边界',t=>{
   const {root,index}=fixture(t);
+  index.example={technical_only:true};
   index.acts=index.acts.slice(0,1);index.timeline_summary='timeline.json';index.publish_spec.duration_s=3;
   const source=path.join(root,'visual.html'),timings=path.join(root,'timing.json');
   const html=duration=>`<div data-composition-id="main" data-width="1920" data-height="1080" data-duration="${duration}"></div><script>const DUR=3;</script>`;
@@ -161,7 +162,7 @@ test('重复混音保留未变化的确认，改变比例使当前发布验收�
   assert.equal(JSON.parse(fs.readFileSync(file,{encoding:'utf8'})).publish_bundle.complete,true);
 });
 
-test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首帧封面或片尾静音',t=>{
+test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首帧封面或片尾静音',async t=>{
   const {root,file,index}=fixture(t);
   const folder='pipeline/output/course/ep01_demo/v1';
   fs.mkdirSync(path.join(root,folder),{recursive:true});
@@ -190,8 +191,20 @@ test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首�
   fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
   assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/确认.*变化|哈希/);
   index.review_approval.sha256=createHash('sha256').update('media').digest('hex');
+  index.script='course/scripts/01-demo.md';index.split_preview='course/episodes/01-demo/旁白切分预览.json';
+  index.content_approval={confirmed:true,statement:'测试夹具确认'};
+  index.acts[0].visual_timing='timing.json';
+  fs.writeFileSync(path.join(root,index.script),'## 第一幕\n旁白：票钱回不来。\n',{encoding:'utf8'});
+  fs.writeFileSync(path.join(root,index.split_preview),JSON.stringify({act1:['票钱回不来。']}),{encoding:'utf8'});
+  const timing={total_s:3,source_text:'票钱回不来。',captions:[{id:'a',start:0,end:3,text:'票钱回不来。'}]};
+  fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify(timing),{encoding:'utf8'});
   fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
+  const {bindVibeContentApproval}=await import('../../build/vibe/vibe_timeline.mjs');
+  index.content_approval.source_sha256=bindVibeContentApproval(file,{rootDir:root});
   assert.equal(checkCourseRelease(file,{rootDir:root}).ok,true);
+  fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify({...timing,source_text:'回不来',captions:[{id:'a',start:0,end:3,text:'回不来'}]}),{encoding:'utf8'});
+  assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/第1幕.*正文/);
+  fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify(timing),{encoding:'utf8'});
   fs.writeFileSync(path.join(root,index.publish_output),'changed',{encoding:'utf8'});
   assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/发布版.*审片版/);
   fs.writeFileSync(path.join(root,index.publish_output),'media',{encoding:'utf8'});

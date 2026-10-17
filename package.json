@@ -16,6 +16,7 @@
     "check:release": "node --env-file-if-exists=.env build/common/check_course_release.mjs",
     "doctor": "node --env-file-if-exists=.env build/common/doctor.mjs",
     "timeline:vibe": "node build/vibe/vibe_timeline.mjs",
+    "split:vibe": "node build/vibe/vibe_caption_split.mjs",
     "mix": "node --env-file-if-exists=.env build/vibe/mix_video_audio.mjs",
     "preview:music": "node build/vibe/preview_video_audio.mjs",
     "example:vibe": "node --env-file-if-exists=.env examples/vibe-knowledge/run.mjs",

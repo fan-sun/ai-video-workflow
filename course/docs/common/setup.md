@@ -4,6 +4,8 @@
 
 无旁白的 Vibe 路线还需要可运行的 Python，但不需要安装 VoxCPM、下载声音模型或准备参考录音。可以跳过下面的配音环境，配置 `COURSE_PYTHON` 为自己的 Python 路径，运行 `npm run doctor -- --route vibe`，再按 [Vibe SOP](../vibe/sop.md) 制作。下面的声音克隆配置用于有旁白的教学路线。
 
+Vibe正式制作还需要按[固定配乐配置](../vibe/sop.md#4-固定背景音乐与混音)准备本地音乐；音乐不随仓库分发，doctor也不检查该文件。技术示例使用测试音，只验证链路，不代表正式音乐已准备好。
+
 ## 配音环境
 
 使用独立的 Python 3.10～3.12 环境，安装与 GPU/驱动匹配的 CUDA 版 PyTorch，再安装本项目固定的 VoxCPM 版本。已有可用环境可直接复用。

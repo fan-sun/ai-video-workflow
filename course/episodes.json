@@ -19,6 +19,78 @@
       "narrative_mode": "workflow_tutorial",
       "duration_s": 650.97,
       "dashboard_status": "待发布"
+    },
+    {
+      "ep": 2,
+      "type": "concept_explainer",
+      "topic": "沉没成本",
+      "topic_terms": [
+        "沉没成本",
+        "沉没成本效应",
+        "sunk cost effect"
+      ],
+      "slug": "sunk-cost-love",
+      "status": "高清发布视频、文案及独立封面已交付",
+      "publish_status": "未发布",
+      "version": "release-v1",
+      "script": "course/scripts/02-sunk-cost-love.md",
+      "output": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "selection_note": "用户授权未指定主题时由AI选择、说明后继续；AI选择沉没成本，以恋爱中已投入多年的场景解释过去投入对未来判断的影响。",
+      "notes": "用户确认完整配乐版并授权本地发布版本。release-v1与确认底片字节一致，1080p30，动作音效100%、音乐25%，配套发布文案已生成。用户已确认3:4独立封面并复制到发布目录；视频保持16:9。未登记课程线门禁通过或公开发布。",
+      "narrative_mode": "vibe_knowledge_trial",
+      "duration_s": 126,
+      "active_preview": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "active_preview_version": "release-v1",
+      "script_version": "rebuild-v1",
+      "previous_output": "pipeline/output/course/ep02_sunk-cost-love/full-background-v2-bgm25/沉没成本_高清成片_动作100_音乐25_2分06秒.mp4",
+      "active_preview_duration_s": 126,
+      "cover": "pipeline/output/course/ep02_sunk-cost-love/release-v1/cover.png"
+    },
+    {
+      "ep": 3,
+      "type": "concept_explainer",
+      "topic": "选择过载",
+      "topic_terms": [
+        "选择过载",
+        "选择超载",
+        "choice overload",
+        "overchoice"
+      ],
+      "slug": "choice-overload",
+      "status": "v4本地发布包已通过验收，待公开发布",
+      "publish_status": "未发布",
+      "version": "v4",
+      "script": "course/scripts/03-choice-overload.md",
+      "output": "pipeline/output/course/ep03_choice-overload/v4/course_ep03_choice-overload_v4_publish.mp4",
+      "selection_note": "用户明确指定选择过载主题及Vibe知识讲解路线；2026-10-15精确查重、BM25与语义提醒均已执行，未发现重复。",
+      "notes": "第四幕结尾v4与整期音乐版获用户确认“可以，没问题。”；抽象视觉生图封面v2获用户确认“可以没问题”。视频为107.7秒，固定背景音乐25%；发布包采用已确认媒体，按Vibe路线验收。",
+      "route": "vibe",
+      "narrative_mode": "vibe_knowledge",
+      "active_preview": "pipeline/output/course/ep03_choice-overload/complete-visual-v3/选择过载_整期画面v3_107.7秒_sfx100_bgm25.mp4",
+      "active_preview_version": "complete-visual-v3-bgm25",
+      "active_preview_duration_s": 107.7,
+      "planned_duration_s": 107.7,
+      "duration_s": 107.7,
+      "dashboard_status": "待发布"
+    },
+    {
+      "ep": 4,
+      "type": "concept_explainer",
+      "topic": "聚光灯效应",
+      "topic_terms": [
+        "聚光灯效应",
+        "Spotlight Effect"
+      ],
+      "slug": "spotlight-effect",
+      "status": "v2三幕画面审看不通过，退回连续事件与主体动作编排",
+      "publish_status": "未发布",
+      "version": "v2",
+      "script": "course/scripts/04-spotlight-effect.md",
+      "output": "pipeline/output/course/ep04_spotlight-effect/v2/course_ep04_spotlight-effect_v2_sfx100_bgm25.mp4",
+      "selection_note": "用户明确指定聚光灯效应及Vibe知识大赏路线；2026-10-16精确查重、BM25与语义提醒均已执行，未发现重复。",
+      "notes": "用户原话：没问题。三段正文及七组语义预览已同步并绑定。三幕画面时间表初排96.5秒，共32屏。第一幕20.5秒及第二幕07—23秒实际高清配乐小样已生成，1920×1080、30fps；字幕、反向定位、完整解码和音轨检查通过，并查看当前实际导出关键帧。人物与动作风格、正常速度审看待用户确认；完整第二幕、第三幕、封面及整片尚未完成。固定音乐沿用25%增益。 2026-10-16后续反馈：自行添加的系列名与期号角标已从画面源删除；开场缺少具体情境，内容审查撤回通过结论，正文保留待具体修改确认。已导出MP4尚未重做，不代表更新后效果。 本轮用户同意“讲解稿也可以改”，已将展示的具体两段开场写入修订v3并重新绑定原文，三幕96.5秒、七组语义预览和33屏字幕同步通过。第一幕源码浏览器核验9屏通过，系列名和期号角标已移除；旧MP4未重新导出，风格及整片审看仍未确认。无用角标问题登记于specs/vibe流程复查/发现问题.md第06条，未修改正式SOP。 已按修复后的正式SOP运行Vibe专用初切，生成28屏候选（7/9/12）；7项提示逐条记录复核理由，最终33屏（9/9/15）与现有时间表一致。逐屏预览由timeline:vibe同源导出并登记caption_preview，画面生成脚本不再维护独立字幕数组；正文确认版本未变，未生成新审片认可。 2026-10-17用户否定末幕教学式总结与讲述姿态；已撤回内容审查中末幕收束的通过结论，第三幕S05—S07整体待返工，非仅替换末句。流程偏向与执行责任记录在specs/vibe流程复查/发现问题.md第08条；正式SOP和讲解稿未改。 2026-10-17用户否定候选v4的餐馆收尾：缺少上下文、主题落点和共鸣。现有SOP规则已足够，属于执行失败。已生成同一次口误延续到夜间回想的v5候选；Vibe分句函数初切30屏，经人工复核为35屏（9/10/16），每屏最多14字，明确待确认及未排时间，未替换正式稿。 2026-10-17用户确认末幕候选v5及35屏切分并明确要求生成画面；正式稿和语义预览已同步，旧画面小样保留撤回状态，新画面另存v2。 2026-10-17已按确认的v5正文生成三幕v2画面，96.5秒、35屏；固定配乐25%，实际MP4完整解码、音轨、字号、正反定位及抽帧核验完成，风格与连续审片待用户确认。 用户审看指出三幕均偏静态PPT、固定画面不断弹出元素。助手对照现行SOP及实际源码确认编排、实现和验收未落实连续事件要求；v2画面判定不通过，正式v5正文及35屏切分确认保留，三幕待从连续动作编排返工。",
+      "route": "vibe",
+      "duration_s": 96.5
     }
   ],
   "backlog_captured_at": null,

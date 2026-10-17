@@ -161,17 +161,18 @@ export function splitByPrimaryPunctuation(text) {
   return chunks;
 }
 
-function splitSecondaryPieces(sentence) {
+export function splitSecondaryPieces(sentence, { separators = SECONDARY_END, preserveDoubleQuotes = false } = {}) {
   const pieces = [];
   const closers = [];
   let buf = "";
 
   for (const ch of Array.from(sentence)) {
     buf += ch;
-    if (PAIRED_MARKS[ch]) closers.push(PAIRED_MARKS[ch]);
-    else if (closers.at(-1) === ch) closers.pop();
+    if (closers.at(-1) === ch) closers.pop();
+    else if (PAIRED_MARKS[ch]) closers.push(PAIRED_MARKS[ch]);
+    else if (preserveDoubleQuotes && ch === '"') closers.push('"');
 
-    if (SECONDARY_END.includes(ch) && closers.length === 0) {
+    if (separators.includes(ch) && closers.length === 0) {
       pieces.push(buf);
       buf = "";
     }

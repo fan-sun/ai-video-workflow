@@ -10,7 +10,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { readPngDimensions } from "./check_course_cover.mjs";
-import { assertVibeTimeline } from "../vibe/vibe_timeline.mjs";
+import { assertVibeTimeline, assertVibeContent } from "../vibe/vibe_timeline.mjs";
 
 import {
   assertCourseOutroTailTiming,
@@ -326,6 +326,7 @@ export function checkCourseRelease(indexPath, {
     if (hash(publishOutputFile) !== reviewSha) {
       throw new Error("Vibe发布版必须与已确认高清审片版完全一致");
     }
+    assertVibeContent(index, { rootDir, checkPreview: true });
   }
   const coverFile = resolveRequiredArtifact(rootDir, "cover_output", index.cover_output);
   if (Number(index.cover_embed?.duration_s) !== (vibe ? 0 : 0.5)) {

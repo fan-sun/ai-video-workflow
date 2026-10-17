@@ -10,7 +10,11 @@
 
 教学路线顺序：选题查重与登记 → 写稿、自检、单次润色 → 内容和切分确认 → 四幕连续配音与试听 → 片尾和时间表 → 风格与封面选择 → 画面与审片 → 发布包验收 → 授权公开发布和归档。
 
-Vibe路线读取course/docs/vibe/sop.md及course/docs/vibe/motion_design.md：选题与观看主线 → 稿件和切分确认 → 阅读与动作时间表 → 风格确认与逐幕动画、动作声 → 分轨配乐试听及混音 → 完整审片确认 → 独立封面、短标题与发布验收。先做无旁白版本，不要求声音克隆；可选人声另议。初始化明确使用--route vibe，正式时间表填写visual_timing，不伪造TTS文件。
+Vibe路线读取course/docs/vibe/sop.md及course/docs/vibe/motion_design.md：选题与观看主线 → 稿件和切分确认 → 阅读与动作时间表 → 风格确认与逐幕动画、动作声 → 固定背景音乐与混音 → 完整审片确认 → 独立封面、短标题与发布验收。背景音乐沿用SOP已确认的《千年之后》氛围版及25%线性增益，长度不足时循环，不每期重问选曲和比例。先做无旁白版本，不要求声音克隆；可选人声另议。初始化明确使用--route vibe，正式时间表填写visual_timing，不伪造TTS文件。
+
+Vibe实现与审片时再读`course/docs/vibe/visual_review.md`，分别核对连续发展、动作解释和视觉表现；封面阶段读`course/docs/vibe/cover_workflow.md`。正文与切分确认后按SOP绑定原文版本，时间表、review和发布检查对照同一来源，不以时间表自带的原文代替正式稿。
+
+Vibe字幕先运行`npm run split:vibe -- <制作索引.json>`初切，再人工复核并填入各幕画面时间表；`timeline:vibe`统一导出逐屏预览。用户索要字幕切分时交付`caption_preview`，不以`split_preview`所指的正文段落替代。画面不默认添加系列名、期号角标或无内容作用的栏目装饰。
 
 所有新制作索引保留 `production_contract: "current"`，按route执行对应验收：教学线沿用章节栏、片尾静音与嵌入封面；Vibe线验证完整字幕、视觉时间表、音轨与独立封面。新期次只能通过初始化入口登记；已有索引不得覆盖，路径只登记真实生成的文件。
 
