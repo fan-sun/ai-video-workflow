@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { initCourseEpisode } from "../../build/common/init_course_episode.mjs";
+import { episodeOutputPath } from "../../build/common/output_paths.mjs";
 import { extractActNarration, splitNarrationText, buildSegments } from "../../build/teaching/course_act_split_preview.mjs";
 import { createCourseOpenings } from "../../build/teaching/create_course_openings.mjs";
 import { resolveChromeExecutable, readPngDimensions } from "../../build/common/check_course_cover.mjs";
@@ -165,7 +166,7 @@ function video() {
 function packageVideo() {
   const index = read(INDEX);
   const timeline = read(index.timeline_summary);
-  index.publish_copy = "pipeline/output/course/ep01_context-window/v1/course_ep01_context-window_v1.txt";
+  index.publish_copy = episodeOutputPath(index, "review").replace(/\.mp4$/u, ".txt");
   const labels = ["第一幕", "第二幕", "第三幕", "第四幕"];
   const chapters = timeline.acts.map((act, i) => `${formatClock(act.start_s)}–${formatClock(act.end_s)}　${labels[i]} · ${TITLES[i]}`).join("\n");
   write(index.publish_copy, `【标题】\n上下文窗口是什么\n\n【发布文案】\n用一张工作台理解上下文窗口：输入占空间，输出也要留位置。\n\n【标签】\n#AI #AI基础 #深度讲解\n\n【视频总结】\n上下文窗口限定一次请求可处理的信息范围。问题、历史对话和参考资料都可能占用容量，回答也需要预留空间。具体上限以模型说明为准，窗口增大不保证理解提升，实际使用时仍需清楚组织关键信息。\n\n【视频章节】\n${chapters}\n`);

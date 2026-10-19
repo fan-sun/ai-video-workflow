@@ -16,6 +16,7 @@ import { generateCourseQcReport } from "./course_qc_report.mjs";
 import { injectCourseChapterProgressHtml } from "../teaching/course_chapter_progress.mjs";
 import { assertCourseEpisodeScriptLocation } from "./init_course_episode.mjs";
 import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline, assertVibeContent, assertVibeTopicReveal } from "../vibe/vibe_timeline.mjs";
+import { episodeOutputPath, episodeOutputRoot } from "./output_paths.mjs";
 
 
 const BUILD_TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -189,6 +190,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
   }
   assertCourseEpisodeScriptLocation(rootDir);
   if (index.route !== undefined && !["course", "vibe"].includes(index.route)) throw new Error("未知制作路线");
+  episodeOutputRoot(index);
   const vibe = index.route === "vibe";
   const actCount = index.acts?.length ?? 4;
   if (selectedAct !== undefined && (!Number.isInteger(selectedAct) || selectedAct < 1 || selectedAct > actCount)) {
@@ -450,11 +452,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
   if (!outputPath) {
     const slug = String(index.slug ?? "").trim();
     if (!slug) throw new Error("自动确定输出位置需要制作索引 slug");
-    const name = episode + "_" + slug;
-    outputPath = path.posix.join(
-      "pipeline/output/course", name, version,
-      "course_" + name + "_" + version + (mode === "publish" ? "_publish" : "") + ".mp4",
-    );
+    outputPath = episodeOutputPath(index, mode);
   }
   const finalOutput = absolute(rootDir, outputPath);
   const concatOutput = mode === "publish"
@@ -550,8 +548,7 @@ function createVibePublishPlan(index, rootDir) {
   const review = absolute(rootDir, index.review_output);
   if (!index.example && index.review_approval.sha256 !== hashFile(review)) throw new Error("确认后的审片版发生变化，哈希不一致");
   if (!index.cover_selection || !index.publish_copy) throw new Error("publish需要已选独立封面及publish_copy");
-  const version = index.current_version;
-  const output = `pipeline/output/course/${index.episode}_${index.slug}/${version}/course_${index.episode}_${index.slug}_${version}_publish.mp4`;
+  const output = episodeOutputPath(index, "publish");
   const finalOutput = absolute(rootDir, output);
   const coverOutput = path.join(path.dirname(finalOutput), "cover.png");
   if (finalOutput === review) throw new Error("发布输出不能覆盖审片版");

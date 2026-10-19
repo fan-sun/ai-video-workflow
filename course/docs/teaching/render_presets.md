@@ -15,7 +15,7 @@
 审片版用于检查内容、字幕、配音、画面、动效和场景顺序：
 
 ```text
-pipeline/output/course/epNN_<slug>/vK/course_epNN_<slug>_vK.mp4
+pipeline/output/teaching/epNN_<slug>/vK/course_epNN_<slug>_vK.mp4
 ```
 
 它必须保持 1080×1440、30fps 和 48kHz 音频，但重点是快速、稳定地完成审阅。用户未确认具体 `vK` 前，不生成发布母版。
@@ -25,7 +25,7 @@ pipeline/output/course/epNN_<slug>/vK/course_epNN_<slug>_vK.mp4
 用户确认审片版本后，从相同版本的 HTML、WAV、timings 或高质量分幕源重新输出：
 
 ```text
-pipeline/output/course/epNN_<slug>/vK/course_epNN_<slug>_vK_publish.mp4
+pipeline/output/teaching/epNN_<slug>/vK/course_epNN_<slug>_vK_publish.mp4
 ```
 
 推荐参数：
@@ -50,7 +50,7 @@ ffmpeg -i <高质量视频源> -i <48kHz正式整轨音频> \
   -c:v libx264 -preset slow -crf 16 -profile:v high -pix_fmt yuv420p \
   -c:a aac -b:a 192k -ar 48000 -ac 1 \
   -movflags +faststart -shortest \
-  pipeline/output/course/epNN_<slug>/vK/course_epNN_<slug>_vK_publish.mp4
+  pipeline/output/teaching/epNN_<slug>/vK/course_epNN_<slug>_vK_publish.mp4
 ```
 
 命令只表示 CPU 备用编码基准，不能在当前生产机静默替代 NVENC。实际输入应为该版本的高质量源。不得把低码率审片 MP4 简单提高目标码率后当作高清母版，因为已经丢失的细节无法恢复。

@@ -15,11 +15,11 @@
 - 用具体场景说明用途，给出观众可执行的起点。
 - 说明适用条件、局限和证据边界。
 
-主干、四幕承接及资料覆盖按 [讲解稿规范](script_writing_explainer.md) 和 [内容审查](../common/script_content_review.md) 检查。
+主干、四幕承接及资料覆盖按 [讲解稿规范](script_writing_explainer.md) 和 [内容审查](script_content_review.md) 检查。
 
 ## 事实与表达
 
-优先使用原始论文、官方文档和直接资料，区分已确认事实、来源主张与推断。涉及当前讨论、产品能力或数据时，保留来源和采集日期。
+资料采集按[共同选题规则](../common/topic_selection.md)，事实、来源主张和推断的处理按[共同事实核验](../common/script_content_review.md#核验与来源)。
 
 语气平实、客观，准确陈述事实。标题和旁白避免夸张词、营销腔、煽情、emoji 堆砌及无关互动话术。
 

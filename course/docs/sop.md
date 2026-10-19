@@ -1,6 +1,6 @@
 # 视频制作端到端 SOP
 
-按制作目标选择路线，再读取对应的完整流程。两条路线共用环境、选题登记和部分检查规范，各自的制作规则在对应目录维护。
+按制作目标选择路线，再读取对应的完整流程。先执行[共用执行规则](common/execution.md)，各阶段再读取所引用的共同方法和路线专属要求。共同规则只在 common 维护，路线规则只在所属目录维护。
 
 | 路线 | 默认形式与目标 | 完整流程 |
 |---|---|---|
@@ -11,4 +11,6 @@
 
 用户已经指定路线时沿用，主题类型与表达路线分别选择。已有确认在内容未变化时继续有效。
 
-共用入口：[安装与配置](common/setup.md)、[选题与登记](common/topic_selection.md)、[内容审查与润色](common/script_content_review.md)、[浏览器视觉评审](common/browser_visual_review.md)、[渲染验收](common/render_verification.md)、[发布交付](common/release_delivery.md)、[发布后保留与清理](common/published_cleanup.md)。各文档保留原有适用范围，教学专属条款按路线区分。
+共用入口：[安装](common/setup.md)、[选题登记](common/topic_selection.md)、[事实核验与单次润色](common/script_content_review.md)、[合成契约](common/visual_contract.md)、[视觉检查方法](common/visual_review.md)、[渲染工具与技术验收](common/render_verification.md)、[封面实际图片检查](common/cover_verification.md)、[发布交付](common/release_delivery.md)、[清理规则](common/published_cleanup.md)。按阶段读取，不把共同方法当成第三条制作路线。
+
+各路线的运行命令和默认成片目录在所属 SOP 声明；共用的[输出路径与历史兼容](common/output_paths.md)负责目录组织及已有期次处理。

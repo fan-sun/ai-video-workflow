@@ -28,7 +28,7 @@ cd ai-video-workflow
 
 只做Vibe可直接按[通用环境](course/docs/common/setup.md)安装渲染依赖，运行`npm run doctor -- --route vibe`，再看下面的Vibe示例；后面的声音配置用于教学路线。
 
-按 [安装与配置](course/docs/common/setup.md) 安装 Python 依赖并下载完整的 VoxCPM2 模型；已有可用环境和模型可以直接复用。根项目无需运行 `npm install`，固定版本 HyperFrames CLI 的依赖在首次调用时下载。当前渲染还需联网加载固定版本 GSAP。
+按 [教学配音配置](course/docs/teaching/voxcpm_integration.md#安装与模型配置) 安装 Python 依赖并下载完整的 VoxCPM2 模型；已有可用环境和模型可以直接复用。根项目无需运行 `npm install`，固定版本 HyperFrames CLI 的依赖在首次调用时下载。当前渲染还需联网加载固定版本 GSAP。
 
 准备自己的参考录音 `voices/reference.wav` 和逐字对应的 UTF-8 文本 `voices/reference.txt`。复制 `.env.example` 为 `.env`，填写本机配置；已有 `.env` 时直接检查配置，不要覆盖：
 
@@ -67,7 +67,7 @@ npm run example -- package
 
 | 产物 | 路径（相对于仓库根目录） |
 |---|---|
-| 审片版 | `.local/context-window/pipeline/output/course/ep01_context-window/v1/course_ep01_context-window_v1.mp4` |
+| 审片版 | `.local/context-window/pipeline/output/teaching/ep01_context-window/v1/course_ep01_context-window_v1.mp4` |
 | 高清发布版 | 同一目录下的 `course_ep01_context-window_v1_publish.mp4` |
 | 发布文案 | 同一目录下的 `course_ep01_context-window_v1.txt` |
 | 视频封面 / 平台封面 | `.local/context-window/course/episodes/01-context-window/cover.png` / `cover-2x.png` |
@@ -98,12 +98,12 @@ npm run example:vibe -- package
 也可以让助手选一个适合的主题并说明选择。实际流程及用户确认点见[Vibe制作规则](course/docs/vibe/sop.md)，动作、运镜、背景与字幕要求见[动态画面设计](course/docs/vibe/motion_design.md)。常用入口：
 
 ```bash
-npm run init:episode -- 03-topic-slug --topic "主题词" --route vibe
+npm run vibe:init -- 03-topic-slug --topic "主题词"
 npm run timeline:vibe -- course/episodes/03-topic-slug/制作索引.json
-npm run review -- course/episodes/03-topic-slug/制作索引.json
-npm run preview:music -- course/episodes/03-topic-slug/制作索引.json
-npm run mix -- course/episodes/03-topic-slug/制作索引.json
-npm run publish:package -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:preview-music -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:mix -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:publish -- course/episodes/03-topic-slug/制作索引.json
 ```
 
 这些命令依次使用已经确认的稿件、实际视觉时间表、画面源及音量比例，不自动选题写稿。没有BGM时省略试听和混音。发布前需要用户确认最终完整审片版、选定独立封面并生成同版发布TXT；发布入口直接复用高清画面，通过路线验收后登记本地发布包，不上传平台。
@@ -120,7 +120,7 @@ npm run publish:package -- course/episodes/03-topic-slug/制作索引.json
 
 ```bash
 npm run topic:check -- --topic "主题词" --summary "核心问题和讲解角度"
-npm run init:episode -- 01-topic-slug --topic "主题词"
+npm run teaching:init -- 01-topic-slug --topic "主题词"
 ```
 
 `SILICONFLOW_API_KEY` 只用于可选的语义相关提醒。缺少 Key 时，查重命令退出码为 `3`：精确查重和 BM25 已执行，语义提醒未执行；记录缺项后可继续。重复主题退出码为 `2`，须先处理重复。完整规则见 [选题与标准路径](course/docs/common/topic_selection.md)。
@@ -128,12 +128,12 @@ npm run init:episode -- 01-topic-slug --topic "主题词"
 配音和画面齐备、SOP 前置确认完成后：
 
 ```bash
-npm run review -- course/episodes/01-topic-slug/制作索引.json
-npm run publish:package -- course/episodes/01-topic-slug/制作索引.json
-npm run check:release -- course/episodes/01-topic-slug/制作索引.json
+npm run teaching:review -- course/episodes/01-topic-slug/制作索引.json
+npm run teaching:publish -- course/episodes/01-topic-slug/制作索引.json
+npm run teaching:check-release -- course/episodes/01-topic-slug/制作索引.json
 ```
 
-`review` 和 `publish:package` 处理画面及视频，不会自动写稿或生成配音。正式配音命令见 [配音流程](course/docs/teaching/voiceover.md)。`publish:package` 已包含验收，单独的 `check:release` 用于后续复查。正式成片存放在 `pipeline/output/course/epNN_slug/vK/`；对外发布由用户另行授权。
+两条路线的 review 和 publish 命令处理画面及视频，不会自动写稿或生成配音。正式配音命令见 [配音流程](course/docs/teaching/voiceover.md)。路线 publish 已包含验收，check-release 用于后续复查。新建教学成片在 `pipeline/output/teaching/epNN_slug/vK/`，新建 Vibe 成片在 `pipeline/output/vibe/epNN_slug/vK/`；历史期次沿用原路径，详见[共用输出规则](course/docs/common/output_paths.md)；对外发布由用户另行授权。
 
 ## 项目结构
 
@@ -183,4 +183,4 @@ npm test
 npm run test:python
 ```
 
-遇到依赖问题先运行 `npm run doctor`，再查 [安装与配置](course/docs/common/setup.md)；制作规则和返工起点查 [主 SOP](course/docs/sop.md)。
+遇到依赖问题按所选路线执行 doctor，再查 [安装与配置](course/docs/common/setup.md)；制作规则和返工起点查 [主 SOP](course/docs/sop.md)。

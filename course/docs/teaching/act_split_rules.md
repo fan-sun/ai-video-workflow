@@ -109,7 +109,7 @@ VoxCPM 每个 segment 都会重新起音。按逗号、短语、引号词或字�
 
 ## 六、生成和审阅
 
-讲解稿按 [内容审查与单次润色](../common/script_content_review.md) 完成审查、润色及事实、整幕顺读连贯性与可解析性复核后，AI 必须立即执行本步骤，不停下来要求用户审稿。先在终端检查单幕，不写文件：
+讲解稿按 [内容审查与单次润色](script_content_review.md) 完成审查、润色及事实、整幕顺读连贯性与可解析性复核后，AI 必须立即执行本步骤，不停下来要求用户审稿。先在终端检查单幕，不写文件：
 
 ```bash
 node --env-file-if-exists=.env build/teaching/course_act_split_preview.mjs \

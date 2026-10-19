@@ -15,8 +15,8 @@
         "HyperFrames"
       ],
       "source_index": "course/episodes/01-video-workflow-overview/制作索引.json",
-      "publish_copy": "pipeline/output/course/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21.txt",
-      "publish_output": "pipeline/output/course/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
+      "publish_copy": "pipeline/output/teaching/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21.txt",
+      "publish_output": "pipeline/output/teaching/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
       "publication_confirmation": {
         "confirmed_on": "2026-10-17",
         "source": "用户在本次对话明确确认已公开发布",
@@ -37,8 +37,8 @@
         "未来收益"
       ],
       "source_index": "course/episodes/02-sunk-cost-love/制作索引.json",
-      "publish_copy": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.txt",
-      "publish_output": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "publish_copy": "pipeline/output/vibe/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.txt",
+      "publish_output": "pipeline/output/vibe/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
       "publication_confirmation": {
         "confirmed_on": "2026-10-17",
         "source": "用户在本次对话明确确认已公开发布",

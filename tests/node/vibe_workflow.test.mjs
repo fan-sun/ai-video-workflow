@@ -164,7 +164,7 @@ test('重复混音保留未变化的确认，改变比例使当前发布验收�
 
 test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首帧封面或片尾静音',async t=>{
   const {root,file,index}=fixture(t);
-  const folder='pipeline/output/course/ep01_demo/v1';
+  const folder='pipeline/output/vibe/ep01_demo/v1';
   fs.mkdirSync(path.join(root,folder),{recursive:true});
   index.example={technical_only:true};
   index.chapter_titles=['判断'];index.acts=index.acts.slice(0,1);

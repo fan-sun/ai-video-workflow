@@ -512,7 +512,7 @@ test("首次 review 路径为空时只计算目标位置，不预填索引", () 
   const before = structuredClone(index);
   const plan = createCourseVideoPlan(index, "review", { rootDir: process.cwd() });
 
-  assert.equal(plan.finalOutput, path.resolve(fixtureIndex().review_output));
+  assert.equal(plan.finalOutput, path.resolve("pipeline/output/teaching/ep04_prompt/v1/course_ep04_prompt_v1.mp4"));
   assert.deepEqual(index, before);
 });
 
@@ -658,6 +658,7 @@ test("同版本已有正式发布输出时，重跑 review 不回退台账发布
   fs.copyFileSync(fixture.video, publishedFile);
   const stored = JSON.parse(fs.readFileSync(fixture.indexPath, { encoding: "utf8" }));
   stored.publish_output = published;
+  fixture.index.publish_output = published;
   stored.publish_spec.duration_s = 0.4;
   fs.writeFileSync(fixture.indexPath, JSON.stringify(stored), { encoding: "utf8" });
   const ledger = JSON.parse(fs.readFileSync(fixture.ledgerPath, { encoding: "utf8" }));

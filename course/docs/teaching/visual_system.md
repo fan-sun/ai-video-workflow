@@ -11,13 +11,13 @@
 - 配音先行，画面、字幕和场景边界读取正式 `actN_timings.json`；
 - 每幕使用独立源 HTML、独立构建目录和独立音频；
 - 每幕先渲染无声视频，再 mux 对应整轨音频；
-- 每幕使用浏览器 GPU 绘制和 GPU H.264 编码，默认 `workers` 为 2，四幕禁止并行渲染；
+- 渲染资源按[共同 GPU 规则](../common/render_verification.md#gpu-与资源使用)执行；
 - 字幕必须清晰、无遮挡、无越界，画面必须对应当前旁白；
 - 默认随旁白逐步构建主体与关系，先完成含首次可见状态的 [语义节拍表](visual_workflow.md#四把一句画面点子拆成场景设计)；完整画面先行仅限该流程规定的讲解例外，不能用强调或装饰运动代替信息首次出现；
-- HyperFrames 时间轴必须可 seek、可重复渲染，同一时间点产生相同画面；
+- 时间轴实现按[共用合成契约](../common/visual_contract.md)；
 - 每幕必须通过静态检查、时间检查和抽帧验收，不能只看 render 返回 0；
 - 本仓库所有新期次正文顶部显示[视频内章节进度条](video_chapter_progress.md)，红叶随进度移动；固定开场保留母版品牌标识；
-- 成片和中间输出必须包含期号与版本，禁止覆盖上一期或上一版。
+- 版本和真实文件登记按[共同执行规则](../common/execution.md)。
 
 ## 二、从固定目录选择视频风格
 
@@ -45,6 +45,8 @@ course/docs/assets/video-style-presets/
 - 与旁白对应的入场、状态变化和转场节奏；
 - 不改变主视觉识别的局部强调色、纸张纹理和装饰强度。
 
+**可选配色建议：** 在保持所选风格和文字可读性的前提下，可为卡片、流程节点或对象适当加入少量低饱和辅助色，帮助区分内容；同类内容尽量保持同色。已有配色清楚协调时直接沿用，无需逐屏补色或凑足颜色数量。此建议不新增色板交付、用户确认或验收门禁，也不因未增加颜色而要求返工或阻断制作。
+
 切换到另一套固定视频风格必须更新 `selected_style`；新增固定风格必须先更新共享母版与永久预设目录。视觉版本变化不得改变已经冻结的旁白、正式 WAV、timings 和字幕文本，除非该版本明确包含内容修改。
 
 ## 四、画面分层
@@ -61,7 +63,7 @@ course/docs/assets/video-style-presets/
 
 场景画面应优先表达关系和变化，例如“裁判→教练”“做→检查→调整→再做”，而不是把旁白逐字搬到卡片上。
 
-承担解释作用的具体对象必须有可识别形象，名称标签不能代替物件。汽车、工作台、人物等按 [对象与素材规则](visual_workflow.md#具体对象的形象与素材) 制作，并通过 [对象可识别性验收](../common/render_verification.md#对象可识别性验收)。此约束适用于所有视觉风格。
+教学主体在[视觉节拍表](visual_workflow.md#具体对象的形象与素材)登记并执行[共用对象检查](../common/visual_review.md#对象可识别性验收)。
 
 公开画面的信息边界：
 
@@ -88,42 +90,11 @@ course/docs/assets/video-style-presets/
 发布无声视频   pipeline/build/course_epNN_actN_vK_publish/actN_silent_high.mp4
 ```
 
-## 六、HTML 合成契约
+## 六、教学合成参数
 
-渲染入口支持四幕或六幕，`acts`、`chapter_titles` 和整期时间表的章节数必须一致；单幕制作只要求该幕画面已就绪，片尾检查作用于最后一幕。需要真实截图或成片片段时，在 `acts[].visual_assets` 中登记相对仓库路径数组，构建入口将它们按原文件名复制到 `assets/`，同时纳入输入签名。素材文件名须彼此不同，HTML 用 `assets/<文件名>` 引用。
+写源 HTML 前读取[共用合成、素材及确定性契约](../common/visual_contract.md)。教学画幅为1080×1440，data-duration 和 DUR 取正式 timings.total；工具支持四幕或六幕，acts、chapter_titles 与时间表章节数一致，单幕制作只要求该幕就绪，片尾作用于实际末幕。
 
-每个 `course/acts/epNN_<slug>/actN.html` 是可长期保留的画面源，至少满足：
-
-1. `<body>` 下直接存在独立合成根节点，不用 `<template>` 包裹；
-2. 根节点具有唯一 `data-composition-id`，当前课程幕统一使用 `main`；
-3. 根节点具有明确的 `data-width="1080"`、`data-height="1440"` 和 `data-duration`；
-4. 根节点和祖先链具有可解析的宽高，避免内容塌缩到左上角；
-5. `data-duration` 与 `const DUR` 均等于对应 `timings.total`；
-6. HTML 中只有一个 `/*__SUBS__*/` 字幕注入点；
-7. 使用 `gsap.timeline({ paused: true })` 同步创建时间轴；
-8. 注册到 `window.__timelines["main"]`，键名必须与根 `data-composition-id` 完全一致；
-9. 时间轴必须在 `SUBS.forEach` 注册字幕前创建；
-10. 所有场景运动都能由时间轴 seek，不依赖播放历史。
-11. 固定开场按原母版保留品牌标识；本仓库所有新期次正文红叶由构建入口注入，源 HTML 不再另设固定的 `.course-brand-mark`。
-
-## 七、确定性渲染规则
-
-- 背景随机布局必须使用固定种子的 PRNG，禁止用未设种子的 `Math.random()`；
-- 禁止使用 `Date.now()`、`performance.now()` 或真实时钟驱动画面；
-- 禁止用 `setTimeout`、Promise、异步回调或事件监听构建正式时间轴；
-- 禁止无限循环 `repeat: -1`，循环次数必须有限并限制在本幕时长内；
-- 禁止用 `display` 或 `visibility` 做关键动画，使用 opacity 和 transform；
-- 不要让多个时间轴同时修改同一元素的同一属性；
-- 动态正文自然换行，不使用 `<br>` 强行切行；短标题需要明确设计时可以例外；
-- 会缩放、回弹或越界的徽章与装饰要按峰值尺寸预留空间；
-- 装饰元素不参与布局审计时使用 `data-layout-ignore`；确需越界的动画使用 `data-layout-allow-overflow`。
-
-### 初始可见状态
-
-- 计划延后入场的内容，必须在首帧前通过 CSS 的 `opacity: 0` 或等效的确定性时间轴初态隐藏，并用显式起止值在计划时刻显示；布局占位不等于对观众可见。
-- `fromTo(..., { immediateRender: false })` 只推迟应用 tween，不会自动把默认可见的 DOM 元素提前隐藏。不得仅因写了入场 tween，就认定元素在此前不可见。
-- 父场景淡入后，尚未轮到的子元素仍须独立隐藏；标题中的后半句、卡片内部数值、连线和选择标记也要按各自的信息时间处理，不能随父容器一起提前露出。
-- 直接跳到中间时刻、顺序播放、从片尾倒退到同一时刻，均应得到相同可见状态；不能依赖只执行一次的回调或播放历史。首次可见与成片复核按 [渲染验收](../common/render_verification.md#5-连续时间与语义推进检查) 执行。
+固定开场保留母版品牌，正文红叶由构建入口注入，源 HTML 不另设固定 .course-brand-mark。教学动态正文自然换行，不用 br 强行断行；短标题可按明确设计换行。
 
 ## 八、字幕生成与注入
 
@@ -153,104 +124,16 @@ PYTHONUTF8=1 python -B build/teaching/timings_to_subs.py \
 
 每幕字幕重点写入制作索引的 `acts[].subtitle_highlights`。每期使用结构化定点格式。`course_video.mjs` 每次从 timings 重新生成 `subs.txt`，不能复用来源不明的旧构建字幕。
 
-## 九、构建、检查、渲染和 mux
+## 九、教学构建与验收入口
 
-正式生产由 AI 运行统一入口：
+字幕注入后进入[教学渲染验收](render_verification.md)，按其教学声音与封面流程执行；预检、局部预览、缓存、GPU 和完整解码只按[共用渲染规范](../common/render_verification.md)维护。首次可见、对象识别及实际片段检查在该阶段调用[共用视觉方法](../common/visual_review.md)。
 
-```bash
-node --env-file-if-exists=.env build/common/course_video.mjs review course/episodes/NN-<slug>/制作索引.json
-node --env-file-if-exists=.env build/common/course_video.mjs publish course/episodes/NN-<slug>/制作索引.json
-```
+教学专属复核：时长对应 WAV/timings，画面解释当前旁白；语义节拍表有信息首次可见依据；正文章节栏和品牌正确，无内部期号、幕号、制作标签、调试信息。通过后按教学 SOP 拼接并审片。
 
-review 只在四幕完整配音试听确认、视频风格与封面分别选定且四幕画面源完成后运行；publish 只在审片版确认、已选正式封面复核仍有效且同版本文案就绪后运行。publish 的第一幕构建版由 `inject_course_cover.py` 幂等注入封面，正式画面源不需要为每个版本手工修改。以下逐幕命令仅用于定位故障，不再作为默认生产入口。
+## 十一、失败定位
 
-每次使用全新的临时构建目录：
+时间轴、布局、提前显现、随机状态及拼接问题按[共同失败信号](../common/render_verification.md#常见失败信号)定位；教学音画不同步时检查 WAV、timings.total、DUR 和合音边界。
 
-```bash
-mkdir -p pipeline/build/course_epNN_actN_vK_<mode>
-cp -a templates/course-explainer-3x4/. pipeline/build/course_epNN_actN_vK_<mode>/
-```
+## 十二、保留与返工
 
-将源 HTML 注入字幕后写为构建目录的 `index.html`，然后在该构建目录执行：
-
-```bash
-npm run check
-npm run render -- \
-  --output actN_silent.mp4 \
-  --quality standard \
-  --workers 2 \
-  --browser-gpu \
-  --gpu
-```
-
-模板中的 `npm run check` 依次执行 HyperFrames lint、validate 和 inspect。审片版渲染必须在三项检查无错误后进行；布局 warning 也要人工判断，不能直接忽略。首次可见状态须另按 [渲染验收](../common/render_verification.md#5-连续时间与语义推进检查) 检查，三项检查通过不代表未讲到的信息没有提前显示。
-
-`--browser-gpu` 只负责 Chromium/WebGL 绘制，`--gpu` 才负责 FFmpeg 的 H.264 硬件编码。当前课程制作默认要求两者同时启用。四幕按 1→4 串行执行；一幕渲染、mux、探测和解码全部通过后，才能启动下一幕。用户确认审片版本后，高清发布版把 `--quality standard` 改为 `--quality high`，其余 GPU 与 2 worker 参数不变。
-
-无声视频通过检查后 mux 对应整轨音频：
-
-```bash
-ffmpeg -y \
-  -i pipeline/build/course_epNN_actN_vK_review/actN_silent_standard.mp4 \
-  -i pipeline/02_audio/<NN-slug>/course_epNN_actN_voxcpm/actN.wav \
-  -map 0:v:0 -map 1:a:0 \
-  -c:v copy -c:a aac -b:a 192k -shortest \
-  pipeline/build/course_epNN_actN_vK_review/actN_final_standard.mp4
-```
-
-具体路径必须替换为本期真实路径；禁止直接照抄占位符并覆盖已有版本。
-
-## 十、逐幕验收
-
-按 [`render_verification.md`](../common/render_verification.md) 执行，至少检查：
-
-- 分幕视频时长接近对应 `timings.total`；
-- 开头、场景中段、转场和结尾帧均有有效画面；
-- 当前画面与当前旁白一致；
-- 首次可见状态符合节拍表，已核对正常推进和倒退跳转，完整画面先行的例外有对应旁白依据；
-- 字幕无越界、无遮挡，关键词高亮正确；
-- 顶部课程条内容正确；
-- 没有任何内部期号、幕号、项目编号或调试信息；
-- 没有黑帧、白帧、纯背景或时间轴静默失效；
-- 全幕 FFmpeg 解码返回 0。
-
-所有分幕验收通过后，才进入 [`sop.md`](../sop.md) 的最终 concat 和成片验收。
-
-## 十一、常见失败信号
-
-| 现象 | 优先检查 |
-|---|---|
-| render 返回 0，但只有背景 | 时间轴是否同步创建并注册；`const tl` 是否位于字幕注册前 |
-| 内容堆在左上角 | 根节点和祖先链是否有明确宽高 |
-| 字幕或卡片越界 | `npm run check` 的 inspect 结果、安全区、字体大小和容器尺寸 |
-| 第二幕中心规则卡遮住后方节点 | 层级 `z-index` 和中心元素占位，保留对应回归测试 |
-| 场景开始就显示全部内容，讲到时又动一下 | 初始 CSS 是否已隐藏延后入场元素；父场景淡入是否暴露子元素；是否误把 `immediateRender: false` 当作隐藏 |
-| 画面提前讲后面的内容 | 对照 timings 和节拍表核对元素首次可见时间，不能只检查场景切换时间 |
-| 同一时间点重复渲染画面不同 | 是否使用真实时钟、未设种子的随机数或异步状态 |
-| mp4 比音频短或长 | HTML `data-duration`、`DUR`、timings.total 和 WAV 时长 |
-
-## 十二、长期保留与临时产物
-
-长期保留：
-
-```text
-course/episodes/NN-<slug>/制作索引.json
-course/docs/teaching/video_style_presets.html 与制作索引中的 `selected_style`
-course/episodes/NN-<slug>/cover.png
-course/acts/epNN_<slug>/actN.html
-正式 actN.wav
-正式 actN_timings.json
-已验收的版本成片
-```
-
-以下仅为重建候选，成片验收不等于删除验证。按[发布后清理规则](../common/published_cleanup.md)核对完整依赖及独立重建前保留，不能整目录直接删除：
-
-```text
-pipeline/build/course_epNN_actN_vK_<review|publish>/
-subs.txt
-无声视频
-已拼接进入版本成片的临时分幕视频
-抽帧检查目录
-```
-
-如果准备制作视觉 V2，先保留 V1 版本成片；V2 继续复用正式音频和 timings，在新的 HTML 版本或新构建目录中调整视觉，不覆盖 V1。
+输入依赖按[教学重建输入](published_cleanup.md)保留，版本处理按[共同执行规则](../common/execution.md#版本与修改)。仅修改画面时可继续使用未变化的正式音频与 timings，在新版本重新验收受影响范围。

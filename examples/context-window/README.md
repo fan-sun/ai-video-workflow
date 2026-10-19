@@ -2,7 +2,7 @@
 
 这个短示例用于验证制作流程：自带教学稿、四幕图形与固定封面，配音由你提供的参考声音生成。示例使用模型官方说明中的一般概念；真实课程仍须按 SOP 调研和用户确认。
 
-先按 [安装说明](../../course/docs/common/setup.md) 填写 `.env`，然后从仓库根目录依次运行：
+先按 [教学配音配置](../../course/docs/teaching/voxcpm_integration.md#安装与模型配置) 填写 `.env`，然后从仓库根目录依次运行：
 
 ```bash
 npm run example -- prepare

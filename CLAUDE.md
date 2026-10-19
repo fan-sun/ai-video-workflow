@@ -6,22 +6,24 @@
 
 后续制作规则和新增路线在本仓库维护：通用顺序与门禁更新 `course/docs/sop.md`，具体规则更新所属阶段文档，配套工具更新 `build/`；新增路线继续复用共用的配音、渲染与验收工具。
 
-首次配置先读 `course/docs/common/setup.md`，按路线执行doctor；无人声Vibe使用`npm run doctor -- --route vibe`。教学配音的模型、参考音及精确配对文本由用户提供，路径放在被忽略的 `.env`。不写死个人磁盘路径，不把参考音、模型和密钥提交到 Git。
+首次配置读取 `course/docs/common/setup.md`，再进入所选路线配置；执行与确认统一读取 `course/docs/common/execution.md`。
 
 教学路线顺序：选题查重与登记 → 写稿、自检、单次润色 → 内容和切分确认 → 四幕连续配音与试听 → 片尾和时间表 → 风格与封面选择 → 画面与审片 → 发布包验收 → 授权公开发布和归档。
 
-Vibe路线读取course/docs/vibe/sop.md及course/docs/vibe/motion_design.md：选题与观看主线 → 稿件和语义切分确认 → 连续画面编排与风格确认 → 配合事件落实逐屏字幕和时间 → 逐幕动画、动作声与联动复查 → 固定背景音乐与混音 → 完整审片确认 → 独立封面、短标题与发布验收。背景音乐沿用SOP已确认的《千年之后》氛围版及25%线性增益，长度不足时循环，不每期重问选曲和比例。先做无旁白版本，不要求声音克隆；可选人声另议。初始化明确使用--route vibe，正式时间表填写visual_timing，不伪造TTS文件。
+Vibe路线读取course/docs/vibe/sop.md及course/docs/vibe/motion_design.md：选题与观看主线 → 稿件和语义切分确认 → 连续画面编排与风格确认 → 配合事件落实逐屏字幕和时间 → 逐幕动画、动作声与联动复查 → 固定背景音乐与混音 → 完整审片确认 → 独立封面、短标题与发布验收。背景音乐沿用SOP已确认的《千年之后》氛围版及25%线性增益，长度不足时循环，不每期重问选曲和比例。先做无旁白版本，不要求声音克隆；可选人声另议。初始化使用vibe:init，正式时间表填写visual_timing，不伪造TTS文件。
 
 Vibe画面编排先读`course/docs/vibe/visual_methods.md`，在`course/episodes/NN-slug/画面编排.md`维护唯一的当前方案，生成后由索引顶层`visual_plan`指向它。先统筹全片与幕间接续，再展开当前幕的起点、触发、过程、结果、表现和验收点，随后落实字幕时间及动画；实现与审片时再读`course/docs/vibe/visual_review.md`，用实际连续小样对照计划并分别核对连续发展、动作解释和视觉表现，不仅登记方法或风格名称。封面阶段读`course/docs/vibe/cover_workflow.md`。正文与切分确认后按SOP绑定原文版本，时间表、review和发布检查对照同一来源，不以时间表自带的原文代替正式稿。
 
-Vibe由画面事件与关系承担主要解释，字幕辅助点明含义；教学仍由讲解与配音主导。Vibe运行`npm run split:vibe -- <制作索引.json>`所得初切先作草稿，连续画面编排成立后再调整分屏、填写时间；`timeline:vibe`统一导出逐屏预览，小样修改节奏后同步重导。不得用初切屏数或阅读估时锁死场景和动作时长。前三秒建立与主题有关的观看理由；首次点题完成必须在全片16～19秒（含边界），索引topic_reveal登记start_s/complete_s并由时间表导出与预检核对。无字幕动画段合法，但须有内容发展；登记时间合格不能替代实际画面审看。用户索要字幕切分时交付`caption_preview`，不以`split_preview`所指的正文段落替代。画面不默认添加系列名、期号角标或无内容作用的栏目装饰。
+Vibe由画面事件与关系承担主要解释，字幕辅助点明含义；教学仍由讲解与配音主导。Vibe运行`npm run split:vibe -- <制作索引.json>`所得初切先作草稿，连续画面编排成立后再调整分屏、填写时间；`timeline:vibe`统一导出逐屏预览，小样修改节奏后同步重导。不得用初切屏数或阅读估时锁死场景和动作时长。前三秒建立与主题有关的观看理由；首次点题完成必须在全片16～19秒（含边界），索引topic_reveal登记start_s/complete_s并由时间表导出与预检核对。知识点主视觉完整落定后保留1秒阅读停留，按Vibe动态规范落实编排、时间和实际审看，不扩大为每句字幕固定停顿。无字幕动画段合法，但须有内容发展；登记时间合格不能替代实际画面审看。用户索要字幕切分时交付`caption_preview`，不以`split_preview`所指的正文段落替代。画面不默认添加系列名、期号角标或无内容作用的栏目装饰。
 
 所有新制作索引保留 `production_contract: "current"`，按route执行对应验收：教学线沿用章节栏、片尾静音与嵌入封面；Vibe线验证完整字幕、视觉时间表、音轨与独立封面。新期次只能通过初始化入口登记；已有索引不得覆盖，路径只登记真实生成的文件。
 
-`build/` 只放跨期工具。本期制作脚本放在 `course/episodes/NN-slug/`，画面源放在 `course/acts/epNN_slug/`。开发计划和追踪文档放在 `specs/<功能名>/`，读者文档不插入任务进度表。
+文件位置统一按 `course/docs/common/topic_selection.md`；开发计划和追踪放在 `specs/<功能名>/`，生产规则在 `course/docs/`。
 
-写稿时必须读取本地 `.agents/skills/copy-editing/SKILL.md`，仅执行一次默认润色。画面阶段按 SOP 渐进构建，首次可见、主体运动、对象可识别性和语义对位检查不能由测试代替。
+写稿按 `course/docs/common/script_content_review.md` 的单次润色及所属路线审查；画面实现读取 `common/visual_contract.md`，检查方法读取 `common/visual_review.md`，路线专属判退要求仍由对应 SOP 维护（路径均相对 `course/docs/`）。
 
 示例是固定内容的技术验收，不创建用户确认或公开发布事实。`publish:package` 只输出本地发布包，不上传到平台；外部公开发布另需用户明确授权。
 
 修改后运行相关 Node/Python 测试，必要时真实渲染。失败明确报错，不吞异常、不静默换配音或编码引擎。完成后说明产物、运行方式、验证结果和实际副作用。
+
+正式制作按路线使用 teaching:init/review/publish/check-release 或 vibe:init/review/publish/check-release；Vibe 混音用 vibe:mix。新建期次输出根目录由所属路线 SOP 声明，路径计算与历史兼容统一读取 course/docs/common/output_paths.md。既有视频不因命令更新自动搬迁。

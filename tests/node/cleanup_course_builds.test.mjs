@@ -15,11 +15,11 @@ function writeText(filePath, text = "x") {
   fs.writeFileSync(filePath, text, { encoding: "utf8" });
 }
 
-function createFixture({ episode = 2, publishStatus = "已发布", withOutput = true } = {}) {
+function createFixture({ episode = 2, publishStatus = "已发布", withOutput = true, outputFolder = "course" } = {}) {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "cleanup-course-builds-"));
   const padded = String(episode).padStart(2, "0");
   const episodeDir = path.join(rootDir, "course", "episodes", `${padded}-demo`);
-  const publishOutput = `pipeline/output/course/ep${padded}_demo/v1/final.mp4`;
+  const publishOutput = `pipeline/output/${outputFolder}/ep${padded}_demo/v1/final.mp4`;
 
   writeText(path.join(rootDir, "course", "episodes.json"), `${JSON.stringify({
     episodes: [{ ep: episode, publish_status: publishStatus }],
@@ -35,6 +35,19 @@ function createFixture({ episode = 2, publishStatus = "已发布", withOutput = 
   writeText(path.join(rootDir, "pipeline", "build", "course_ep10_act1_v1_review", "index.html"));
 
   return { rootDir, courseTarget, auxiliaryTarget };
+}
+
+for (const outputFolder of ["teaching", "vibe"]) {
+  test(`${outputFolder}输出目录仍可预览候选，且不允许执行删除`, t => {
+    const fixture = createFixture({ outputFolder });
+    t.after(() => fs.rmSync(fixture.rootDir, { recursive: true, force: true }));
+    const frame = path.join(fixture.rootDir, `pipeline/output/${outputFolder}/ep02_demo/v1/frames/one.png`);
+    writeText(frame);
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    assert.ok(plan.targets.includes(frame));
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /独立重建验证/u);
+    assert.ok(fs.existsSync(frame));
+  });
 }
 
 test("期数参数支持范围和逗号组合，并去重排序", () => {

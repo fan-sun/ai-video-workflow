@@ -22,7 +22,7 @@ npm run example:vibe -- package
 - mix使用正式混音入口，以动作100%、测试音乐25%验证增益、起止、视频编码数据不变及无削波。这是固定技术参数，不伪造用户选择。
 - package生成同版发布TXT，使用正式publish入口复制高清视频并检查视频、独立封面、文案、章节和台账。
 
-默认工作区`.local/vibe-example/`，输出位于其`pipeline/output/course/ep01_sunk-cost/v1/`：
+默认工作区`.local/vibe-example/`，输出位于其`pipeline/output/vibe/ep01_sunk-cost/v1/`：
 
 - `course_ep01_sunk-cost_v1.mp4`：无BGM审片底片。
 - `course_ep01_sunk-cost_v1_sfx100_bgm25.mp4`：已混测试音乐的审片版。
@@ -32,3 +32,5 @@ npm run example:vibe -- package
 测试音由FFmpeg生成，无下载、密钥、VoxCPM或个人参考声音；不把它当成正式音乐或动作音色。封面采用代码方式验证共同交付，正式项目可按[路线规则](../../course/docs/vibe/sop.md)选择AI生图。
 
 输出保留在隔离目录，不修改正式两份台账。四步可重复运行；已有成片时prepare只同步通用工具，保留制作数据。需要验证修改后的示例文字或画面源时，用`VIBE_EXAMPLE_DIR`指定新的工作区，再按四步运行，保留旧结果。修改通用工具后可重新prepare，再执行受影响的后续阶段。
+
+上述为新工作区默认位置；已生成的旧示例继续沿用索引中的历史目录，不自动迁移。

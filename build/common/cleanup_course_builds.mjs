@@ -81,7 +81,12 @@ function sourceDependencies(rootDir) {
 }
 
 function intermediateFiles(rootDir, indexPath, publishOutput) {
-  const outputRoot = path.join(rootDir, "pipeline/output/course");
+  const outputRoot = ["course", "teaching", "vibe"].map(folder => path.join(rootDir, "pipeline/output", folder))
+    .find(candidate => {
+      const relative = path.relative(candidate, publishOutput);
+      return relative && relative !== ".." && !relative.startsWith(".." + path.sep) && !path.isAbsolute(relative);
+    });
+  if (!outputRoot) throw new Error("正式成片不在已支持的 output 目录，拒绝扩展清理");
   const outputName = path.relative(outputRoot, publishOutput).split(path.sep)[0];
   const episode = path.basename(path.dirname(indexPath)).split("-")[0];
   if (!outputName.startsWith(`ep${episode}_`)) throw new Error("正式成片不在本期 output 目录，拒绝扩展清理");

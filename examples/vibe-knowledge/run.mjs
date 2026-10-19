@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {initCourseEpisode} from '../../build/common/init_course_episode.mjs';
+import {episodeOutputPath} from '../../build/common/output_paths.mjs';
 import {writeVibeTimeline} from '../../build/vibe/vibe_timeline.mjs';
 import {makeVisual,coverHtml} from './visuals.mjs';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -63,7 +64,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   else if(stage==='package'){
     const index=read();
     if(!index.audio_mix)throw new Error('先完成mix阶段');
-    index.publish_copy='pipeline/output/course/ep01_sunk-cost/v1/course_ep01_sunk-cost_v1.txt';
+    index.publish_copy=episodeOutputPath(index,'review').replace(/\.mp4$/u,'.txt');
     write(index.publish_copy,'【标题】\nVibe知识大赏｜沉没成本：钱回不来，时间还能选\n\n【发布文案】\n钱已经花掉，下一段时间还可以选择。\n\n【标签】\n#Vibe知识大赏 #沉没成本\n\n【视频总结】\n沉没成本是已经付出且无法收回的钱、时间和精力。判断要不要继续时，需要考虑接下来还要付出什么，以及还能获得什么。过去的投入可以解释舍不得，却不能独自决定未来的选择。\n\n【视频章节】\n00:00–00:04　第一幕 · 收不回的钱\n00:04–00:08　第二幕 · 还能选的时间\n');
     write(INDEX,index);run(process.execPath,['build/common/course_video.mjs','publish',INDEX]);
   }else throw new Error('阶段必须为prepare、video、mix或package');

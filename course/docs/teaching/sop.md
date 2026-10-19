@@ -1,35 +1,20 @@
-# 视频制作端到端 SOP
+# 教学视频制作 SOP
 
+本路线让观众理解并学会知识或操作，以讲解稿和配音驱动画面。选择其他路线返回[总 SOP](../sop.md)。开始和恢复任务先执行[共同执行规则](../common/execution.md)，本期脚本和路径按[登记规范](../common/topic_selection.md)。
 
-> 本文是制作路线的统一入口。先按表达目标选择教学或Vibe，详细规则由对应阶段文档维护。
+新建教学期次的成片与发布文案默认保存在 `pipeline/output/teaching/epNN_slug/vK/`。历史期次沿用已登记位置，规则见[共用输出与兼容](../common/output_paths.md)。本路线使用 `teaching:init`、`teaching:review`、`teaching:publish` 和 `teaching:check-release`。
 
-## 先选择制作路线
+## 教学登记与专属产物
 
-| 路线 | 目标和默认形式 | 执行入口 |
-|---|---|---|
-| 教学 course | 让观众理解并学会知识或操作；3:4、有旁白，配音时间驱动画面 | 本文后续教学流程 |
-| Vibe vibe | 让观众在连续观看中产生共鸣、反差与发现；16:9、先无人声，阅读和动作决定时间，3:4独立封面 | [Vibe完整流程](../vibe/sop.md)、[动态画面要求](../vibe/motion_design.md) |
+先执行共同查重与登记。教学 concept_explainer 选题明确受众认知缺口、机制、用途和边界；登记后交付五项简短概要：主题、受众与认知缺口、四幕各一句且分行、原资料主干、预计时长。用户确认后写稿。
 
-用户指定路线时直接沿用，不能仅因主题是AI、历史或心理就自动选线。主题未指定时，AI选择、说明并按选题规则继续；具体文稿仍需用户确认。选择Vibe后执行其完整流程，不套用下面教学线的配音、固定开场、片尾静音与0.5秒封面要求。
+```bash
+npm run teaching:init -- NN-topic-slug --topic "主题词"
+```
 
-下面的阶段表、示例命令和课程专属契约适用于教学路线；文件位置、真实确认、失败处理、版本保留和公开发布授权两条路线共用。
+教学初始化创建四幕空索引。切分预览为 course/episodes/NN-slug/旁白切分预览.json；正式分幕 JSON 为 pipeline/01_script/NN-slug/course_epNN_actN.json；原始逐句音频为 pipeline/02_audio/NN-slug/course_epNN_actN_voxcpm_raw/；正式 WAV 与 timings 位于对应 course_epNN_actN_voxcpm/。每幕登记 script、audio、timings、visual_source、subtitle_highlights 和 allowed_warnings。
 
-
-## 执行方式
-
-
-1. 新选题开始时，先按 [选题规则](../common/topic_selection.md#选题与查重) 检查完整主题词；未重复后再预留期号。恢复已有期次时，先读本文、`course/episodes.json` 和本期 `制作索引.json`，根据实际产物与已有确认记录定位当前阶段。
-2. 进入每个阶段前，必须读取该阶段列出的子文档；不能只凭本文摘要执行，也不需要开工时一次读完所有技术文档。
-3. 每步完成后更新本期索引的真实路径和验收事实；未生成的文件填 `null`。已有用户确认在内容未变化时继续有效，不重复询问。
-4. 表中用户门禁之外的正常生成、技术检查及可自行修复问题由 AI 连续完成；明确报错，不吞异常，不静默降级。关键参数缺失、规则冲突或无法修复时再说明问题并询问。长任务完成后以独立命令核对产物，不以运行中的进度显示判断完成。
-5. 主 SOP 管顺序与用户门禁，子文档管详细规则；修改规则时更新所属文档及受影响摘要，不复制整段到多个入口。历史案例不能覆盖现行规则。
-6. 精简只合并重复说明，不省略“输入 → 动作 → 可检查产物 → 通过条件”。移动规则时须保留阶段入口和验收路径，不能仅凭链接仍存在就认定行为等价。
-
-## 本期制作脚本与路径检查
-
-- `build/` 放跨期共用的制作入口、检查器和通用工具。只服务本期的生成或修复脚本放在 `course/episodes/NN-<slug>/`，例如 `generate_visuals.py`；需要保留独立版本时放在其 `vK/` 子目录。
-- 优先复用已有工具，不要求每期创建生成器。本期专用脚本随本期产物本地归档，使用现有 Git 忽略规则；跨期共用工具按仓库代码管理。
-- 本仓库从第一期起在初始化和 review/publish 入口按文件名检查本期脚本位置；编辑器仍可创建文件，但错误位置会在制作开始前被阻断。
+固定视频风格目录、双尺寸封面、正式配音和字幕重点的具体契约由对应阶段文件维护；公共目录不在这里重复列出。首次制作先完成[教学配音配置](voxcpm_integration.md#安装与模型配置)。
 
 ## 全流程与用户门禁
 
@@ -49,15 +34,15 @@
 
 | 阶段 | 前置条件与 AI 动作 | 交付物与完成条件 | 用户门禁 | 本阶段必读 |
 |---|---|---|---|---|
-| 0. 登记与选题 | 先运行完整主题词查重和相关往期提醒；精确主题未重复后，结合 BM25 与语义结果检查讲解角度，再预留期号与 slug，登记 `topic_terms`，初始化目录及索引；收集资料，明确受众、核心问题、写法和边界，提交简短的选题确认概要 | 精确主题词未命中；相关往期结果已查看，或已明确记录因缺少 Key 未执行语义提醒；台账中的主题词、索引、原始资料及选择依据可追溯；概要按[固定格式](../common/topic_selection.md#阶段-0-选题确认概要)写明主题、受众与认知缺口、四幕各一句且分行、原资料主干和大致时长 | 依据概要确认主题、受众和讲解大方向，已明确则复用 | [选题、登记与路径](../common/topic_selection.md) |
-| 1. 写稿与自检 | 按已确认写法编排四个制作分段；教学第一句固定为“今天要学习的是 XX”，内容审查不通过则重写，通过后单次 copy-editing，再复核事实、整幕顺读连贯性和可解析性 | Markdown 讲解稿、资料覆盖与四幕逻辑摘要；直接进入切分 | 无单独审稿门禁 | [教学与热点词写稿](script_writing_explainer.md)，以及 [内容审查与润色](../common/script_content_review.md) |
+| 0. 登记与选题 | 先运行完整主题词查重和相关往期提醒；精确主题未重复后，结合 BM25 与语义结果检查讲解角度，再预留期号与 slug，登记 `topic_terms`，初始化目录及索引；收集资料，明确受众、核心问题、写法和边界，提交简短的选题确认概要 | 精确主题词未命中；相关往期结果已查看，或已明确记录因缺少 Key 未执行语义提醒；台账中的主题词、索引、原始资料及选择依据可追溯；概要按[教学概要](#教学登记与专属产物)写明主题、受众与认知缺口、四幕各一句且分行、原资料主干和大致时长 | 依据概要确认主题、受众和讲解大方向，已明确则复用 | [选题、登记与路径](../common/topic_selection.md) |
+| 1. 写稿与自检 | 按已确认写法编排四个制作分段；教学第一句固定为“今天要学习的是 XX”，内容审查不通过则重写，通过后单次 copy-editing，再复核事实、整幕顺读连贯性和可解析性 | Markdown 讲解稿、资料覆盖与四幕逻辑摘要；直接进入切分 | 无单独审稿门禁 | [教学与热点词写稿](script_writing_explainer.md)，以及 [内容审查与润色](script_content_review.md) |
 | 2. 内容与切分确认 | 生成整期切分预览；按需检查往期推荐；确认后固定四幕正式 JSON；代码应用 TTS 映射并保留未映射原文，AI 复核发音形式 | 同轮交付讲解稿、审查摘要、整期预览；预览长期保留且不得用于配音 | 同时确认内容是否讲对、讲全、讲顺及切分是否合适 | [切分与正式化](act_split_rules.md) |
 | 3. 正式配音 | 一次加载模型连续生成四幕，内部检查后拼接整轨，统一执行 1.15 倍速并按成品实际时长同步缩放 timings；技术检查后统一交付 | 同一消息提供整期预览及四份 1.15 倍速 WAV 路径；试听确认后再为第四幕追加 1 秒片尾静音并生成整期时间表 | 四幕完整音频逐幕试听确认；不先等第一幕再生成后三幕 | [配音、片尾与时间表](voiceover.md) |
 | 4. 视频风格与封面确认 | 四幕试听已确认、时间表已就绪；直接复用长期固定的 A/B/C 视频风格目录，不生成按期开场候选；按三个固定方向生成本期封面并完成真实渲染验收；选定后从同一 HTML 分别渲染视频封面与 2 倍像素密度的平台上传封面 | 固定视频风格目录、本期三个封面候选与封面对比页、`1080×1440` 的 `cover.png`、`2160×2880` 的 `cover-2x.png`；两张正式封面构图一致，制作索引记录两个独立选择 | 同轮选择视频风格与封面，允许跨组；本期较早已明确的视频选择直接复用 | [固定视频风格](style_preview_workflow.md)、[封面流程](cover_workflow.md) |
-| 5. 画面与审片 | 通读正式旁白与 timings，保存含初始状态、首次可见时间和待隐藏内容的语义节拍表；概念讲解开场按旁白边界完成主题词旋转与定格；其余画面按已选风格随讲解逐步构建，检查首次可见状态，选择整期 6～10 个字幕知识锚点；本仓库所有新期次在 review 前将四个简短章节标题写入制作索引，并核对整期时间表 | 视觉节拍表及首次可见复核记录、审片版 vK、静态与主体停滞报告；逐段核对信息出现和动作跟随旁白，另检查正文章节栏后通过 | 通看并确认具体审片版本 vK | 依次读 [画面制作](visual_workflow.md)、[视觉与字幕契约](visual_system.md)、[视频内章节进度条](video_chapter_progress.md)、[渲染验收](../common/render_verification.md) |
-| 6. 封面复核与文案 | 审片 vK 已确认；核对主题、标题和视觉方向是否仍与已选封面一致，未变化则直接复用两张同源封面；生成同版本文案 | `cover.png` 用于视频首帧和发布包验收，`cover-2x.png` 用于平台单独上传，含标签/总结/章节的文案就绪 | 无新增确认；只有审片修改使主题、标题或视觉方向失效时，才重新生成并选择封面 | [封面流程](cover_workflow.md)、[发布交付](../common/release_delivery.md) |
-| 7. 高清输出与发布包验收 | 封面和文案就绪，运行 publish，同步待发布状态、输出同版高清并验收 | 高清视频、封面、同版本文案、索引和台账一致，发布包检查通过 | 无新增制作确认；失败由 AI 修复后重跑 | [渲染验收](../common/render_verification.md)、[发布交付](../common/release_delivery.md) |
-| 8. 公开发布与归档 | 发布包通过后，按用户授权公开发布；平台单独上传封面时使用阶段 4 已验收的 `cover-2x.png`；确认成功后登记已发布课程 | 发布状态与已发布目录更新；冻结版本，按清单清理可重建中间物 | 外部公开发布须有明确授权；成功事实确认后才登记已发布 | [发布交付](../common/release_delivery.md) |
+| 5. 画面与审片 | 通读正式旁白与 timings，保存含初始状态、首次可见时间和待隐藏内容的语义节拍表；概念讲解开场按旁白边界完成主题词旋转与定格；其余画面按已选风格随讲解逐步构建，检查首次可见状态，选择整期 6～10 个字幕知识锚点；本仓库所有新期次在 review 前将四个简短章节标题写入制作索引，并核对整期时间表 | 视觉节拍表及首次可见复核记录、审片版 vK、静态与主体停滞报告；逐段核对信息出现和动作跟随旁白，另检查正文章节栏后通过 | 通看并确认具体审片版本 vK | 依次读 [画面制作](visual_workflow.md)、[视觉与字幕契约](visual_system.md)、[视频内章节进度条](video_chapter_progress.md)、[渲染验收](render_verification.md) |
+| 6. 封面复核与文案 | 审片 vK 已确认；核对主题、标题和视觉方向是否仍与已选封面一致，未变化则直接复用两张同源封面；生成同版本文案 | `cover.png` 用于视频首帧和发布包验收，`cover-2x.png` 用于平台单独上传，含标签/总结/章节的文案就绪 | 无新增确认；只有审片修改使主题、标题或视觉方向失效时，才重新生成并选择封面 | [封面流程](cover_workflow.md)、[发布交付](release_delivery.md) |
+| 7. 高清输出与发布包验收 | 封面和文案就绪，运行 publish，同步待发布状态、输出同版高清并验收 | 高清视频、封面、同版本文案、索引和台账一致，发布包检查通过 | 无新增制作确认；失败由 AI 修复后重跑 | [渲染验收](render_verification.md)、[发布交付](release_delivery.md) |
+| 8. 公开发布与归档 | 发布包通过后，按用户授权公开发布；平台单独上传封面时使用阶段 4 已验收的 `cover-2x.png`；确认成功后登记已发布课程 | 发布状态与已发布目录更新；冻结版本，按清单清理可重建中间物 | 外部公开发布须有明确授权；成功事实确认后才登记已发布 | [发布交付](release_delivery.md) |
 
 视频风格指全片的背景、配色、字体层级、图形语言和运动节奏。A“纸本机械”、B“技术路线”、C“明亮模块”是长期固定的三套视觉系统，统一展示于 `course/docs/teaching/video_style_presets.html`，每期直接选择，不重新生成三个候选视频。选择 A、B 或 C 同时确定“对应固定开头 + 对应风格正文”：第一幕前几秒必须原样复用所选共享开场母版；开头结束后，其控制台、框架、状态栏、刻度尺、模块位置和场景结构不得继续充当正文模板。正文只继承所选方向的配色、字体、材质、图形语言和运动节奏，并根据本期对象、关系和旁白顺序重新设计。封面仍是可独立上传的本期设计，A/B/C 分别继承同字母固定风格并独立选择；默认推荐成套，也允许“视频 A、封面 B”等跨组组合，封面选择不改变视频开头和正文风格。
 
@@ -65,7 +50,7 @@
 
 ## 生产入口与完成边界
 
-**画面对象要求：** 写稿的画面点子、封面语义元素和正式场景均须把承担解释作用的具体对象画成可识别形象，不能用名称方框替代。画面制作前在视觉节拍表记录主体及素材或绘制方式；交付前检查遮住名称后能否认出对象及其动作。详细执行见 [对象与素材规则](visual_workflow.md#具体对象的形象与素材) 和 [对象可识别性验收](../common/render_verification.md#对象可识别性验收)，与已有技术验收共同决定是否通过。
+**画面对象要求：** 写稿的画面点子、封面语义元素和正式场景均须把承担解释作用的具体对象画成可识别形象，不能用名称方框替代。画面制作前在视觉节拍表记录主体及素材或绘制方式；交付前检查遮住名称后能否认出对象及其动作。详细执行见 [对象与素材规则](visual_workflow.md#具体对象的形象与素材) 和 [对象可识别性验收](../common/visual_review.md#对象可识别性验收)，与已有技术验收共同决定是否通过。
 
 以下命令由 AI 从项目根目录运行，替换为本期真实参数。完整参数、失败处理与检查细项见阶段子文档。
 
@@ -82,33 +67,33 @@ node --env-file-if-exists=.env build/common/check_course_topic_duplicate.mjs \
 未发现重复后再初始化目录：
 
 ```bash
-node --env-file-if-exists=.env build/common/init_course_episode.mjs NN-slug --topic "候选主题"
+npm run teaching:init -- NN-slug --topic "候选主题"
 ```
 
 画面制作与局部返工时，先检查或预览受影响幕；具体区间按旁白与修改范围选择：
 
 ```bash
-node --env-file-if-exists=.env build/common/course_video.mjs review course/episodes/NN-<slug>/制作索引.json --act 2 --check-only
-node --env-file-if-exists=.env build/common/course_video.mjs review course/episodes/NN-<slug>/制作索引.json --act 2 --range 39:43
-node --env-file-if-exists=.env build/common/course_video.mjs review course/episodes/NN-<slug>/制作索引.json --act 2
+npm run teaching:review -- course/episodes/NN-<slug>/制作索引.json --act 2 --check-only
+npm run teaching:review -- course/episodes/NN-<slug>/制作索引.json --act 2 --range 39:43
+npm run teaching:review -- course/episodes/NN-<slug>/制作索引.json --act 2
 ```
 
 单幕定稿后由同一入口登记验收缓存；四幕齐备且前置门禁通过后，复用有效分幕生成审片版：
 
 ```bash
-node --env-file-if-exists=.env build/common/course_video.mjs review course/episodes/NN-<slug>/制作索引.json
+npm run teaching:review -- course/episodes/NN-<slug>/制作索引.json
 ```
 
 审片版本和正式封面已确认、文案就绪后，运行一次高清发布入口：
 
 ```bash
-node --env-file-if-exists=.env build/common/course_video.mjs publish course/episodes/NN-<slug>/制作索引.json
+npm run teaching:publish -- course/episodes/NN-<slug>/制作索引.json
 ```
 
 publish 已包含发布包验收；后续修正文案或配套产物时，再独立执行：
 
 ```bash
-node --env-file-if-exists=.env build/common/check_course_release.mjs course/episodes/NN-<slug>/制作索引.json
+npm run teaching:check-release -- course/episodes/NN-<slug>/制作索引.json
 ```
 
 公开发布成功并完成登记后，只读预览已发布期次的候选。按“宁可少删”的规则，独立重建验证未完成前保留文件；未发布期次自动跳过：
@@ -117,13 +102,13 @@ node --env-file-if-exists=.env build/common/check_course_release.mjs course/epis
 node build/common/cleanup_course_builds.mjs --published --intermediates
 ```
 
-当前非空计划的自动删除已暂停。保留范围、复核方法和已知影响见[发布后清理规则](../common/published_cleanup.md)。
+当前非空计划的自动删除已暂停。保留范围、复核方法和已知影响见[教学重建输入](published_cleanup.md)。
 
 - review/publish 只处理配音确认后的画面链路，不生成 VoxCPM 配音，不绕过试听、视频风格或封面选择门禁。
 - `--check-only` 与 `--range` 只产出独立检查/片段预览，不登记整幕或整期完成；分幕与整期必须共用正式字幕和构建入口，避免重复渲染。缓存条件与片段限制见渲染验收文档。
-- 审片与发布使用同一个 vK；发布版增加已确认的前 0.5 秒封面，不改变旁白、总时长和章节边界。默认浏览器 GPU + NVENC、每幕 2 worker、四幕串行。
+- 审片与发布使用同一个 vK；发布版增加已确认的前 0.5 秒封面，不改变旁白、总时长和章节边界。渲染资源按[共同渲染规范](../common/render_verification.md#gpu-与资源使用)。
 - “内容制作完成 / 待发布”表示审片版已确认、正式封面仍有效且同版本文案已就绪，并由 publish 入口同步状态；“发布包就绪”还要求高清输出及完整门禁通过；“已发布”必须有公开发布成功事实。确认公开发布成功后，由助手同步台账的公开发布状态和详细状态。字段职责见发布交付文档。
-- 首次输出路径可以填 `null`，入口计算目标位置，生成并检查后再登记；登记不替代用户审片确认。
+- 首次输出与确认状态按[共同发布协议](../common/release_delivery.md#四高清输出与状态)。
 - MP4 存在不代表完成；发布包必须检查通过。静态质检 HTML 可直接交付，这不豁免真实渲染及媒体验收。
 
 ## 修改后从哪里重新开始

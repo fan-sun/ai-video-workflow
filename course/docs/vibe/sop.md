@@ -8,6 +8,10 @@
 
 本路线按“观看推进 → 连续事件与对象关系 → 镜头与视觉重心 → 实际画面验收”四层组织制作，贯穿下面的写稿、时间规划、实现和审片步骤。四层不是四幕，详细标准统一维护在[动态画面要求](motion_design.md)，不新增一套文档或用户审批。
 
+开始、恢复、真实确认及版本处理先读[共用执行规则](../common/execution.md)，路径和脚本位置按[共用登记规则](../common/topic_selection.md)。
+
+新建 Vibe 期次的成片与发布文案默认保存在 `pipeline/output/vibe/epNN_slug/vK/`。使用 `vibe:init`、`vibe:review`、`vibe:mix`、`vibe:publish` 和 `vibe:check-release`；历史期次按[共用输出与兼容](../common/output_paths.md)沿用原位置。
+
 ## 从这里开始
 
 用户已经指定路线或主题时直接沿用。用户未指定主题时，AI先按选题规则检查重复，选择一个合适主题，说明选择与讲解角度，再继续；不要每次都要求用户从词表中选择。主题确认和后续具体稿件确认分别记录。
@@ -15,12 +19,12 @@
 ```bash
 npm run doctor -- --route vibe
 npm run topic:check -- --topic "主题词" --summary "观看入口与讲解角度"
-npm run init:episode -- 03-topic-slug --topic "主题词" --route vibe
+npm run vibe:init -- 03-topic-slug --topic "主题词"
 ```
 
 查重缺少可选语义Key时沿用[选题规则](../common/topic_selection.md)，如实记录未执行项。初始化建立`route: "vibe"`、`production_contract: "current"`的索引，不能用历史契约或假配音绕过检查。没有`route`字段的已有课程继续使用教学路线；初始化不把旧期次自动切换。
 
-环境需要Node、Python、FFmpeg、Chrome及可用NVENC，与教学路线复用现有渲染依赖。Vibe的doctor只检查Python可运行，不检查VoxCPM、模型或参考声音。按[安装文档](../common/setup.md)准备通用环境即可。
+环境需要Node、Python、FFmpeg、Chrome及可用NVENC，与教学路线复用现有渲染依赖。Vibe的doctor只检查Python可运行，不检查VoxCPM、模型或参考声音。按[安装文档](../common/setup.md)准备通用环境；技术链路使用[无人声短示例](../../../examples/vibe-knowledge/README.md)验证。
 
 正式制作开始前还要按[固定配乐](#4-固定背景音乐与混音)确认本地音乐文件已准备；doctor不检查这份音乐，干净仓库也不附带它。技术短示例使用自己的测试音，不代表正式配乐已经就绪。
 
@@ -46,7 +50,7 @@ npm run init:episode -- 03-topic-slug --topic "主题词" --route vibe
 
 ### 切分前的主线审查
 
-完整初稿形成后，先从观众角度通读：哪里想继续看，哪里难懂、重复或失去兴趣，结尾有没有接住前文。再集中处理实际采用内容的事实、因果与指代问题，按[共用文档的Vibe适用范围](../common/script_content_review.md#vibe适用范围)执行一次`copy-editing`润色，增强清晰度、节奏、画面感和情绪表达。修改后连读受影响部分及前后接点即可，不另起多轮完整审查。
+完整初稿形成后，先从观众角度通读：哪里想继续看，哪里难懂、重复或失去兴趣，结尾有没有接住前文。再集中处理实际采用内容的事实、因果与指代问题，按[共同事实核验与单次润色](../common/script_content_review.md)执行一次润色；本路线保留已审查的实际分段与观看问题，增强画面感、反差及情绪感染力，不补成固定四幕或按知识覆盖表判退，不逐句要求证明修辞，也不机械套用技能的逐项举证、专家评分或循环复审。修改后连读受影响部分及前后接点即可，不另起多轮完整审查。
 
 开场没有观看理由、展开持续重述同一意思、关键解释让人无法理解，或结尾与前文脱节时，先修选材与组织，再进入切分。若问题跨越整幕，应重排相应内容，不能只替换末句或增加过渡语。必要停留和有意义的回响可以保留；资料完整、措辞保险、技术检查通过均不能替代观看体验。后续画面按[结尾收束](motion_design.md#结尾收束)兑现正文建立的联系。
 
@@ -107,7 +111,7 @@ npm run timeline:vibe -- course/episodes/03-topic-slug/制作索引.json --bind-
 
 根据上述编排粗排全片的动作、揭示、阅读与停留时间，检查是否过长、重复或主题出现太晚；在制作索引的`topic_reveal`填写`start_s`与`complete_s`，均为相对正片0秒的累计秒数；开始不得晚于完成，完成必须在16～19秒内（含边界）且不超出整片。按[首次点题时间](motion_design.md#首次点题时间)编排后再逐幕实现并审看，程序将这两个时刻原样导出到整期时间表。四幕总时长是本期设计结果，不以每句字数、参考片重拍点或TTS读完速度机械决定。
 
-场景、镜头和视觉阶段不设最短时长；首次点题的16～19秒是已确认的全片事件窗口，不是镜头时长下限。除此以外，额外时长限制只设上限，并按[时长与计时口径](motion_design.md#时长只设上限)在已有时间表说明约束对象及连续起止，不把换字幕或局部高亮当作重新计时。没有确认依据时不自行添加统一场景秒数阈值。
+场景、镜头和视觉阶段不设统一最短时长；首次点题的16～19秒窗口及[展示完成后的1秒阅读停留](motion_design.md#知识点展示后的阅读停留)分别按专门规则执行，不推成镜头时长下限。除此以外，额外时长限制只设上限，并按[时长与计时口径](motion_design.md#时长只设上限)在已有时间表说明约束对象及连续起止，不把换字幕或局部高亮当作重新计时。没有确认依据时不自行添加统一场景秒数阈值。
 
 讲解不必铺满时间轴。字幕可以在仍有阅读或情绪作用时保留，也可以清除，让动画独立推进情境、动作或关系；未来加入人声也允许无讲解的空段。前文提前讲完而点题窗口未到时，应由有内容发展的画面承接，不冻结旧字幕、慢放或循环凑秒数；这一原则适用于全片。字幕之间留空不等于漏稿，已确认正文仍须完整覆盖。
 
@@ -146,7 +150,7 @@ npm run timeline:vibe -- course/episodes/03-topic-slug/制作索引.json
 
 实现前读取索引`visual_plan`对应的当前编排，按第2步形成的连续事件、字幕与时间安排进入实现；实际小样发现节奏或阅读冲突时，联动调整受影响的编排、字幕断点和时间，再重新导出预览，不把粗排时长当成不可变约束。
 
-主题登场按[主题登场与特效选择](motion_design.md#主题登场与特效选择)结合本期知识点、具体旁白及前后画面设计，保留有效的呈现方式并加强揭示瞬间；不套用固定特效模板或复制已认可小样。点题后的纯展示停留、后续接续及选效依据统一按该节落实到本期编排、时间表和实际审片。
+主题登场按[主题登场与特效选择](motion_design.md#主题登场与特效选择)结合本期知识点、具体旁白及前后画面设计，保留有效的呈现方式并加强揭示瞬间；不套用固定特效模板或复制已认可小样。选效依据落实到本期编排；知识点主视觉按[阅读停留规则](motion_design.md#知识点展示后的阅读停留)在完整落定后保留1秒。编排时安排阅读窗口，时间表记录完成、停留结束与接续时刻，实现时保持重点可读，交付前核对实际视频，不能只按代码时长判定通过。
 
 制作时对照编排实现主体过程及任务接续，按[动作表现方法](motion_design.md#动作怎样产生表现力)安排起动、响应、速度和落定，并按[动作标注与解释](motion_design.md#动作标注与解释)让必要名称、数字和解释贴近对应主体、随动作同步。按[方法实施要求](visual_methods.md#接入当前制作方式)用本期内容和实际整幕源码先做连续小样；在已有验收记录中对照计划中的状态与结果，检查任务转换、动作力度、标注移动中途和缩小状态。若只实现了局部动画而未实现组织变化，修实现或退回编排，不用新增装饰、切镜或运镜替代，也不先批量扩展同一未验证方案。小样需要调整时间时回到第2节同步时间表及预览，不强行拉伸装饰动作凑字幕时间。
 
@@ -154,23 +158,18 @@ npm run timeline:vibe -- course/episodes/03-topic-slug/制作索引.json
 
 文字按已确认的[手机观看字号](motion_design.md#手机观看字号)制作：1920×1080基准下，主字幕80px，观众必须读清的场景文字至少64px；仅表现有字而无需阅读的细节可更小。编排时区分文字用途，实现及审片时检查阅读时段内缩放后的实际大小；空间不足先调整分屏、构图或必要双行，不缩字塞入。字体风格可随本期设计，字号标准直接沿用，不重复询问。
 
-画面源保存在`course/acts/epNN_slug/`，索引填写`visual_source`、`visual_assets`及可选`sfx`。HTML使用现有HyperFrames契约：
+画面源保存在`course/acts/epNN_slug/`，索引填写`visual_source`、`visual_assets`及可选`sfx`。实现前读取[共用 HTML、素材与确定性契约](../common/visual_contract.md)。本路线根画幅按本节规格，DUR 与 visual_timing.total_s 对齐；主字幕使用时间表导出的 SUBS，在稳定阅读区显示。制作中执行[共用视觉检查](../common/visual_review.md)，路线专属语义和表现仍按下方 Vibe 验收执行。
 
-- 根元素标明`data-composition-id="main"`、`data-start="0"`、画幅和时长。
-- 单个暂停GSAP时间轴注册到`window.__timelines["main"]`，正向和反向定位一致。
-- 放置唯一`/*__SUBS__*/`，用注入后的`SUBS`更新主字幕，文字层保持稳定阅读区。
-- 使用本仓库字体路径；外置素材通过`visual_assets`进入构建，参考[技术示例](../../../examples/vibe-knowledge/README.md)。
-
-动作声可以是单声道或立体声。没有动作声的分段让`sfx`为空，渲染器使用实际静音音轨完成拼接；它不是伪造配音，也不会填入`audio`或`timings`。有意裁切只声明最小局部元素，沿用布局、首现、解码和运动检查，不能豁免整幕。
+动作声可以是单声道或立体声。没有动作声的分段让`sfx`为空，渲染器使用实际静音音轨完成拼接；它不是伪造配音，也不会填入`audio`或`timings`。布局声明、首现和媒体检查按[共同渲染验收](../common/render_verification.md)。
 
 ```bash
-npm run review -- course/episodes/03-topic-slug/制作索引.json --act 1 --check-only
-npm run review -- course/episodes/03-topic-slug/制作索引.json --act 1 --range 0:6
-npm run review -- course/episodes/03-topic-slug/制作索引.json --act 1
-npm run review -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1 --check-only
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1 --range 0:6
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json
 ```
 
-Vibe审片直接输出high质量，浏览器GPU、NVENC、每幕2个worker、分幕串行；有效分幕沿用现有哈希缓存。局部预览不登记整幕完成，其他有效幕不用重渲染。每次交付对应视频、正式稿及索引`caption_preview`所指的逐屏字幕路径，注明版本与范围；需要解释正文结构时另给语义预览并标明用途。按用户安排逐幕审看，合并前检查全局起伏与所有幕间接点。
+Vibe审片直接输出high质量；资源、局部预览和缓存按[共同渲染规范](../common/render_verification.md)，本节只规定路线交付顺序。每次交付对应视频、正式稿及索引`caption_preview`所指的逐屏字幕路径，注明版本与范围；需要解释正文结构时另给语义预览并标明用途。按用户安排逐幕审看，合并前检查全局起伏与所有幕间接点。
 
 交付前按[Vibe实际画面验收](visual_review.md)对照正文、《画面编排.md》与实际视频，连续复查整幕及相邻接点，并在正常速度、约360～480px宽的实际MP4中核对动作与解释能否同时看懂。结构停滞、任务变化或视觉表现未兑现、结尾结果未完成收束、必要标注遮挡或读不清时必须返工，具体起止和原因记入已有验收记录；技术检查通过或最新局部修好不能抵消这些失败，也不新增用户审批节点。
 
@@ -212,13 +211,13 @@ ffmpeg -hide_banner -y -stream_loop -1 \
 已有系列确认可以沿用，不要求每期重新试听批准配乐；完整最终视频仍须按原审片节点确认。只有用户要求试听或调整时，才生成分轨试听页：
 
 ```bash
-npm run preview:music -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:preview-music -- course/episodes/03-topic-slug/制作索引.json
 ```
 
 试听页引用未混音乐的`review_base_output`，避免双重叠加；暂停和拖动时音乐同步。先准备够长的原音乐或循环音轨，再打开试听。页面上的滑杆或上次浏览器保存值不自动改变正式索引；用户明确要求的新比例才更新对应设置。所有增益均为线性比例，不自动归一化、压低原声或加淡入淡出。
 
 ```bash
-npm run mix -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:mix -- course/episodes/03-topic-slug/制作索引.json
 ```
 
 命令复制视频编码数据，另存配乐版并检查解码、声道、起止、时长和削波，保留底片与原音乐。先核验临时候选，通过后才替换输出；失败不覆盖已有配乐版。混音版更新`review_output`，需要审看这份完整最终视频；默认配乐未完成时，不将无BGM底片视为完整最终视频。
@@ -234,15 +233,15 @@ npm run mix -- course/episodes/03-topic-slug/制作索引.json
 - 标题为`Vibe知识大赏｜主题词：短问题或反差`，冒号后含标点最多15个字符，通常10～12个汉字即可，不为凑长度加词。
 - 正文简短展开同一个矛盾，结尾保留一个有力的问题，避免重复反问。只改发布文案不自动改讲解稿或视频。
 - 标签包含`#Vibe知识大赏`及与主题相关的标签；不强制`#AI基础`或`#深度讲解`。
-- 总结50～200个非空白字符，独立解释核心认识和必要边界，不照抄发布正文。
-- 章节使用索引中的短标题，按正式整期时间表四舍五入到整秒，不提前估计。
+- 总结内容解释核心认识和必要边界；长度、禁用内容及独立性按[共同文案格式](../common/release_delivery.md#二发布文案格式)。
+- 发布章节按[共同章节规则](../common/release_delivery.md#三章节标题与时间)生成；不要求视频覆盖栏。
 
 ## 6. 确认高清审片版，生成并验收发布包
 
 完整最终视频获用户确认后，助手在`review_approval`保存`confirmed: true`、用户原话与该文件的SHA256。发布入口拒绝确认后变动的文件；示例例外只表示技术核验，不创建用户认可。
 
 ```bash
-npm run publish:package -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:publish -- course/episodes/03-topic-slug/制作索引.json
 ```
 
 发布入口直接复制已确认的high审片版，将选定的独立封面复制为同目录`cover.png`，保留同版文案，并执行路线发布检查。它核对文件、版本、规格、时长、章节、文案、音轨一致、3:4封面和台账；不要求片尾静音或首帧嵌入封面。通过后保存`release-check.json`，真实登记`publish_bundle.complete`。
@@ -250,7 +249,11 @@ npm run publish:package -- course/episodes/03-topic-slug/制作索引.json
 修改文案、封面或索引后独立复查：
 
 ```bash
-npm run check:release -- course/episodes/03-topic-slug/制作索引.json
+npm run vibe:check-release -- course/episodes/03-topic-slug/制作索引.json
 ```
 
-输出仍在`pipeline/output/course/epNN_slug/vK/`。公开上传须按用户授权另行执行，不把本地交付写成已公开发布。生成视频、用户声音、音乐、模型、密钥和个人路径继续本地忽略；生产规则和通用工具随仓库分发。
+新期次输出在`pipeline/output/vibe/epNN_slug/vK/`；历史目录兼容按共用输出规则。公开上传须按用户授权另行执行，不把本地交付写成已公开发布。生成视频、用户声音、音乐、模型、密钥和个人路径继续本地忽略；生产规则和通用工具随仓库分发。
+
+## 7. 发布后的重建输入
+
+按[Vibe重建输入](published_cleanup.md)核对画面、动作声、音乐及确认原件，删除条件只执行[共同清理规范](../common/published_cleanup.md)，不按版本号整目录删除。

@@ -19,12 +19,12 @@ course/scripts/NN-<slug>.md
 - 认知缺口和核心比喻已经确定；
 - 正文按四幕、分场景编排；
 - 每个场景包含一行旁白和一个粗画面点子；
-- 讲解稿已经通过 [`script_content_review.md`](../common/script_content_review.md) 的内容审查；
+- 讲解稿已经通过 [`script_content_review.md`](script_content_review.md) 的内容审查；
 - 全部旁白已经使用项目本地 `.agents/skills/copy-editing/SKILL.md` 单次润色；
 - 旁白文本已经复核事实边界、知识顺序、整幕顺读连贯性和可解析性；
 - 文件结构能被 `build/teaching/course_act_split_preview.mjs` 正确读取。
 
-讲解稿初稿完成后，必须按 [内容审查与单次润色](../common/script_content_review.md) 完成内容审查、不通过时重写、通过后单次润色及事实、整幕顺读连贯性与可解析性复核；不得跳过内容审查直接润色。随后立即进入 [切分预演](act_split_rules.md)，由用户同轮确认讲解内容与切分，确认后才固定正式 JSON 并配音。视频风格在四幕配音试听确认后选择，写稿阶段只写粗画面意图。
+讲解稿初稿完成后，必须按 [内容审查与单次润色](script_content_review.md) 完成内容审查、不通过时重写、通过后单次润色及事实、整幕顺读连贯性与可解析性复核；不得跳过内容审查直接润色。随后立即进入 [切分预演](act_split_rules.md)，由用户同轮确认讲解内容与切分，确认后才固定正式 JSON 并配音。视频风格在四幕配音试听确认后选择，写稿阶段只写粗画面意图。
 
 ## 二、动笔前先定两件事
 

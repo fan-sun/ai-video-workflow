@@ -3,6 +3,7 @@
   "episodes": [
     {
       "ep": 1,
+      "route": "course",
       "type": "concept_explainer",
       "topic": "AI 教学视频制作流程（上）",
       "topic_terms": [
@@ -13,7 +14,7 @@
       "publish_status": "已发布",
       "version": "v21",
       "script": "course/scripts/01-video-workflow-overview.md",
-      "output": "pipeline/output/course/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
+      "output": "pipeline/output/teaching/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
       "selection_note": "用户已确认上下两期分工、上期六章、面向小白、评论与成片开场及主页群聊引导。",
       "notes": "上期六章结构、B 视频与 B 封面已确认，按章制作。第一幕新版四段口播与配音已获用户确认：16 句组、28 个字幕单元、58.830375 秒；重配 15 组，复用 1 组。第一幕 v2 成片完成：58.830 秒，1080×1440、30fps；配音一致性、完整解码、首现、主体运动与关键帧复核通过。第二至第六幕稿件、配音、timings 和字幕设置均未修改，仍待制作画面；第六幕保留 1 秒静音。当前六章时间表总时长 550.246 秒。旧版第一幕审片文件保留，本版见制作索引 acts[0].review_output；用户第一幕审片、后五幕视频、整期拼接和发布验收待执行。 用户反馈开场节奏后，另存 v3 画面候选：0～7.626 秒前两句成片顺序展示预览已生成。左侧先播，第二句右侧接过播放，左侧保留末帧；原配音、timings 及 v2 整幕基线不变。候选检查通过，用户开场审片和整幕重渲染待处理。 用户指出第二句图形一下全出现后，另存 v4 候选：复用 MCP 成片图形源，按手机、耳机、相机、充电口、连线逐步建立，前两句预览已渲染并实际抽帧复核；第一句素材和已确认声音不变，v2/v3 文件保留。 用户确认 v4 前两句开场并要求接入第一幕；已以同一画面源完整渲染第一幕 v4，实测 58.830 秒。开场接入工具答案的推页已复核，完整解码、配音一致性、首现、主体停滞与 37 张成片关键帧复核通过；完整第一幕待用户审片，其余五幕未改动。 已核对 g13 新旧输入、原始裁切和成片音轨，问题定位在生成环节，具体漏读触发未确认。按用户授权采用已试听的新 g13；其余声音逐采样保留。第一幕 v5 59.760 秒，整期时间表 551.176 秒；字幕和后续画面同步，技术及 24 张实际关键帧复核通过，整幕待用户审片。 用户认可完整第一幕 v5，进入第二幕讲解稿复核；整期视频仍未完成。 第二幕五处修改及 17 个新切分已确认；重配 9 组、复用 8 组，1.15 倍速整轨 78.266250 秒，37 个字幕单元，技术检查通过，待整幕试听；第一幕及其他四幕正式素材未改。 第二幕 v6 配音已确认，78.266 秒整幕成片完成；GPU 编码、完整解码、音轨一致性、45 组首现和倒退、主体运动及 36 张实际成片关键帧复核通过，等待用户审片。当前整期时间表 547.474 秒；第三至第六幕画面、整期拼接和发布验收待执行。 第二幕 v7 已确认资料处理方式及 18 个配音句组；重配 5 组、复用 13 组，1.15 倍速整轨 78.61827083333333 秒，技术检查通过，等待用户试听后更新画面。 第二幕 v7 配音已确认，78.266 秒整幕成片完成；GPU 编码、完整解码、音轨一致性、48 组首现和倒退、主体运动及 40 张实际成片关键帧复核通过，等待用户审片。当前整期时间表 547.826 秒；第三至第六幕画面、整期拼接和发布验收待执行。 第二幕 v8 画面已完成，声音沿用已确认 v7；真实 Agent 成片片段接到读取小票、金额入账和状态更新，编程细节展开为文件读取、工具调用和状态保存。完整解码、音轨一致性、58 组首现和倒退、主体运动及 44 张实际成片关键帧复核通过，等待用户审片。整期时间表仍为 547.826 秒。 第二幕 v9 新稿已确认并授权先配音；重配 6 组、复用 16 组，整轨 95.057 秒，S08 局部试听 31.973 秒，22 个配音句组、47 个字幕单元；完整解码、信号及时间轴检查通过，等待用户试听，尚未生成新版画面。 第二幕 v9 配音已确认，S08 局部预览 31.973 秒；任务读取、入账、进度记录分项推进，三项编程细节按口播依次出现。GPU 编码、完整解码、音轨对齐、首现及局部运动检查通过，已查看 24 张实际预览关键帧；完整第二幕和整期视频尚未渲染。 第二幕 v9 画面已完成，声音沿用已确认 v9；真实 Agent 成片片段接到读取小票、信息入账和进度记录，编程细节展开为文件读取、工具调用和进度保存逐项呈现。完整解码、音轨一致性、64 组首现和倒退、主体运动及 64 张实际成片关键帧复核通过，等待用户审片。当前六章时间表为 564.265 秒，整期视频尚未完成。 第三幕 v10 讲解稿及 24 个配音句组已确认；重配 22 组、复用 2 组，整轨 116.891521 秒，57 个字幕单元。完整解码、信号、文本与时间轴、原素材哈希检查通过，等待整幕试听；新版第三幕画面尚未制作。 第三幕 v10 成片已完成，116.892 秒；写稿、小票进度、画面说明、自然句组、完整音轨对应多条字幕、返工后果及确认交接逐步呈现。GPU 编码、完整解码、音轨一致性、76 组首现与倒退、主体运动和 156 张实际关键帧复核通过，等待用户整幕审片。当前六章时间表为 583.683 秒，整期视频尚未完成。 第四幕 v11 切分已同步；重配 5 组、复用 13 组，18 个配音句组、37 个字幕单元，1.15 倍速整轨 78.439958 秒。完整解码、格式、信号、文本与时间表、复用和原素材哈希检查通过，等待整幕试听；新版第四幕画面尚未制作。 第四幕 v11 成片已完成，78.440 秒；VoxCPM 真实页面、参考录音及配套文本、替代配音方式、试听定位、真实句组时间表及声音字幕对象配合逐步呈现。GPU 编码、完整解码、音轨一致性、62 组首现与倒退、主体运动和 123 张实际关键帧复核通过，等待用户整幕审片。当前六章时间表为 588.29 秒，整期视频尚未完成。 第四幕 v12 成片已完成，81.04 秒；恢复原版过渡句与定稿旁白生成音频画面，VoxCPM 真实页面、参考录音及配套文本、替代配音方式、试听定位、真实句组时间表及声音字幕对象配合逐步呈现。GPU 编码、完整解码、音轨一致性、66 组首现与倒退、主体运动和 133 张实际关键帧复核通过，等待用户整幕审片。当前六章时间表为 590.89 秒，整期视频尚未完成。 第四幕 v13 保留第三幕收尾正文后进入 VoxCPM；配音、字幕时间及原第一至第三幕素材保持一致，三个连续交界预览待用户审看。 第一到第二幕 v14：修复生成稿纸遮挡选题，将文稿放大并在下方逐张展开；连续预览延长至第二幕完整首场景，声音、字幕时间和后续场景保持一致，等待用户审看。 用户确认第一到第二幕 v14 修订预览，进入第五幕讲解稿检查；正式第五幕现有配音 129.037 秒，修改建议尚未应用。 流程纠正：第四幕讲解稿及第三到第四幕衔接已确认，补回首句后的完整第四幕尚待审片；第五幕建议未应用。 用户明确确认完整第四幕 v13，继续第五幕；第五幕讲解稿建议尚未应用。 第五幕 v15 三段改稿已确认；重配 11 组、复用 19 组，133.926 秒，配音按授权直接进入画面。第五幕与 21 秒第四到第五幕连续预览的技术及关键帧检查通过，用户成片审看待确认；整期时间表 595.779 秒。 第五幕 v16 按用户确认修改 S21：保留需要二字，AI 从预设示例推荐，用户可选示例中的另一套。S22 原开头保留，不重复过渡；讲解稿与 31 句组预览已同步，v15 声音、画面及衔接文件保留，新版配音和画面未生成。 第五幕 v16 继续按用户确认缩短 S22：只交代小票、账本和记录本及各自用途，待确认动作留在 S24 演示；切分同步为 30 个句组，新版配音和画面未生成。 第五幕 v17 已应用确认的 S21～S23 连贯稿；重配 10 组、复用 19 组，133.630 秒。前半段 49.084 秒及接入 S24 的 13 秒预览通过技术与实际抽帧复核，用户局部审看待确认；S24 以后内容与已确认其他幕保留，新版整幕未渲染，整期时间表 595.483 秒。 第五、六幕 v18 按用户确认补充 S21 封面独立选择、S22 素材来源、S29 检查分工、S31 发布顺序、S32 仓库规则作用。新版第五幕 32 句组、第六幕 30 句组，切分检查通过；本轮仅改文字，正式配音和画面保留旧版，新版未生成。 第五幕 v18 新配 3 组、复用 29 组，32 句组、72 字幕单元、150.184 秒；完整成片及 65.667 秒前半段、13 秒 S23 接入 S24 预览通过技术与实际抽帧复核，用户成片审看待确认；第六幕新稿未配音。 第五幕画面 v19 修复 S23 资料交给助手与代码安排动作两句；复用 v18 配音与字幕时间，完整成片及 19.733 秒局部预览检查通过，待用户审看。 用户确认第五幕 v19 的 S23 两句局部修订并继续第六幕；第五幕完整成片 150.184 秒已渲染并复核。第六幕现稿内容、衔接、事实与 30 句组切分检查通过，按用户条件授权直接配音，未改讲稿。 第六幕 v20 讲解稿复核无问题，未改文字；新配 11 组、复用 19 组，30 句组、61 字幕单元，1.15 倍速整轨 130.347 秒。完整解码、格式、信号、文本与时间及辅助转写核对通过；用户试听待确认，片尾一秒和正式六章时间表在确认后同步，第六幕画面未制作。 第六幕 v21 按用户确认修改 S33、S34：最近抖音上很火的 Vibe 知识大赏、下期实操与制作规则调整、两条路线和按需修改、主页群聊及评论引导；删除 Windows/NVIDIA 说明，结尾为我都会帮你解答。仅修改讲稿与切分，旧音频保留，新版配音和画面未生成。 第六幕 v21 配音与画面完成：重配 10 组、复用 23 组，33 句组、70 字幕单元，含一秒片尾共 148.036 秒。GPU 完整成片、77 组首现与倒退、75 个布局时点、音轨一致性和实际关键帧复核通过；五到六幕 13.5 秒衔接及 57.263 秒结尾预览也已检查。用户正常速度审片待确认，整期未拼接。 六幕整期 v21 已合并，章节进度栏按 650.970 秒时间表统一，完整解码、音轨对照、五处交界和一秒片尾检查通过；实际关键帧复核通过，整期用户审片待确认。 用户于 2026-10-10 确认整期 v21 和新封面，授权生成高清发布包；已核验发布版、同源 2 倍封面和同版本文案，未上传平台。 用户已通过视频状态看板确认本期已公开发布。",
       "narrative_mode": "workflow_tutorial",
@@ -22,6 +23,7 @@
     },
     {
       "ep": 2,
+      "route": "vibe",
       "type": "concept_explainer",
       "topic": "沉没成本",
       "topic_terms": [
@@ -34,17 +36,17 @@
       "publish_status": "已发布",
       "version": "release-v1",
       "script": "course/scripts/02-sunk-cost-love.md",
-      "output": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "output": "pipeline/output/vibe/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
       "selection_note": "用户授权未指定主题时由AI选择、说明后继续；AI选择沉没成本，以恋爱中已投入多年的场景解释过去投入对未来判断的影响。",
       "notes": "用户确认完整配乐版并授权本地发布版本。release-v1与确认底片字节一致，1080p30，动作音效100%、音乐25%，配套发布文案已生成。用户已确认3:4独立封面并复制到发布目录；视频保持16:9。未登记课程线门禁通过或公开发布。 用户已通过视频状态看板确认本期已公开发布。",
       "narrative_mode": "vibe_knowledge_trial",
       "duration_s": 126,
-      "active_preview": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "active_preview": "pipeline/output/vibe/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
       "active_preview_version": "release-v1",
       "script_version": "rebuild-v1",
-      "previous_output": "pipeline/output/course/ep02_sunk-cost-love/full-background-v2-bgm25/沉没成本_高清成片_动作100_音乐25_2分06秒.mp4",
+      "previous_output": "pipeline/output/vibe/ep02_sunk-cost-love/full-background-v2-bgm25/沉没成本_高清成片_动作100_音乐25_2分06秒.mp4",
       "active_preview_duration_s": 126,
-      "cover": "pipeline/output/course/ep02_sunk-cost-love/release-v1/cover.png",
+      "cover": "pipeline/output/vibe/ep02_sunk-cost-love/release-v1/cover.png",
       "dashboard_status": "已发布"
     },
     {
@@ -62,12 +64,12 @@
       "publish_status": "已发布",
       "version": "v4",
       "script": "course/scripts/03-choice-overload.md",
-      "output": "pipeline/output/course/ep03_choice-overload/v4/course_ep03_choice-overload_v4_publish.mp4",
+      "output": "pipeline/output/vibe/ep03_choice-overload/v4/course_ep03_choice-overload_v4_publish.mp4",
       "selection_note": "用户明确指定选择过载主题及Vibe知识讲解路线；2026-10-15精确查重、BM25与语义提醒均已执行，未发现重复。",
       "notes": "第四幕结尾v4与整期音乐版获用户确认“可以，没问题。”；抽象视觉生图封面v2获用户确认“可以没问题”。视频为107.7秒，固定背景音乐25%；发布包采用已确认媒体，按Vibe路线验收。 用户已通过视频状态看板确认本期已公开发布。",
       "route": "vibe",
       "narrative_mode": "vibe_knowledge",
-      "active_preview": "pipeline/output/course/ep03_choice-overload/complete-visual-v3/选择过载_整期画面v3_107.7秒_sfx100_bgm25.mp4",
+      "active_preview": "pipeline/output/vibe/ep03_choice-overload/complete-visual-v3/选择过载_整期画面v3_107.7秒_sfx100_bgm25.mp4",
       "active_preview_version": "complete-visual-v3-bgm25",
       "active_preview_duration_s": 107.7,
       "planned_duration_s": 107.7,
@@ -93,13 +95,13 @@
       "route": "vibe",
       "duration_s": 102.7,
       "active_preview": null,
-      "previous_output": "pipeline/output/course/ep04_spotlight-effect/v12/course_ep04_spotlight-effect_v12_sfx100_bgm25.mp4",
+      "previous_output": "pipeline/output/vibe/ep04_spotlight-effect/v12/course_ep04_spotlight-effect_v12_sfx100_bgm25.mp4",
       "active_preview_version": null,
       "active_preview_duration_s": null,
       "planned_duration_s": 102.7,
       "script_version": "修订v7",
       "production_index": "course/episodes/04-spotlight-effect/制作索引.json",
-      "active_act_output": "pipeline/output/course/ep04_spotlight-effect/v13/act3_聚光灯效应_v13_纯画面.mp4"
+      "active_act_output": "pipeline/output/vibe/ep04_spotlight-effect/v13/act3_聚光灯效应_v13_纯画面.mp4"
     }
   ],
   "backlog_captured_at": null,
