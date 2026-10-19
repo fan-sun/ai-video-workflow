@@ -25,7 +25,7 @@ function fixture(t,text='选项多了，有时反而更难决定，甚至干脆�
   };
   const folder='course/episodes/01-demo';
   const index={route:'vibe',episode:'ep01',slug:'demo',script:'course/scripts/01-demo.md',
-    split_preview:folder+'/旁白切分预览.json',publish_spec:{duration_s:8},
+    split_preview:folder+'/旁白切分预览.json',publish_spec:{duration_s:22},topic_reveal:{start_s:14,complete_s:17},
     acts:[{act:1,visual_timing:folder+'/act1.json'}]};
   put(index.script,'## 第一幕\n旁白：'+text+'\n');put(index.split_preview,{act1:[text]});
   const file=path.resolve(root,folder,'制作索引.json');put(file,index);
@@ -118,7 +118,7 @@ test('时间表统一导出每条一屏的预览，旧预览不能靠全文相�
   const index={...f.index,content_approval:{confirmed:true,statement:'测试夹具确认'}};
   f.put(f.file,index);bindVibeContentApproval(f.file,{rootDir:f.root});
   const captions=[{id:'a',start:0,end:3,text:'票钱回不来。'},{id:'b',start:3,end:8,text:'未来的时间还能选择。'}];
-  f.put(index.acts[0].visual_timing,{total_s:8,source_text:f.text,captions});
+  f.put(index.acts[0].visual_timing,{total_s:22,source_text:f.text,captions});
   writeVibeTimeline(f.file,{rootDir:f.root});
   const updated=f.load();assert.ok(updated.caption_preview,'应登记独立的逐屏预览路径');
   const preview=path.resolve(f.root,updated.caption_preview);
@@ -128,7 +128,7 @@ test('时间表统一导出每条一屏的预览，旧预览不能靠全文相�
   writeVibeTimeline(f.file,{rootDir:f.root});
   assert.doesNotThrow(()=>assertVibeContent(f.load(),{rootDir:f.root,checkPreview:true}));
   const before=fs.readFileSync(preview);
-  f.put(index.acts[0].visual_timing,{total_s:8,source_text:'漏句',captions:[{id:'a',start:0,end:8,text:'漏句'}]});
+  f.put(index.acts[0].visual_timing,{total_s:22,source_text:'漏句',captions:[{id:'a',start:0,end:8,text:'漏句'}]});
   assert.throws(()=>writeVibeTimeline(f.file,{rootDir:f.root}),/正文/);
   assert.deepEqual(fs.readFileSync(preview),before);
 });
@@ -139,7 +139,7 @@ test('逐屏预览输出不得覆盖作为确认来源的同名文件',t=>{
   f.index.content_approval={confirmed:true,statement:'测试夹具确认'};
   f.put(f.index.split_preview,{act1:[f.text]});f.put(f.file,f.index);
   bindVibeContentApproval(f.file,{rootDir:f.root});
-  f.put(f.index.acts[0].visual_timing,{total_s:8,source_text:f.text,captions:[
+  f.put(f.index.acts[0].visual_timing,{total_s:22,source_text:f.text,captions:[
     {id:'a',start:0,end:3,text:'票钱回不来。'},{id:'b',start:3,end:8,text:'未来还能选择。'}]});
   const before=fs.readFileSync(path.resolve(f.root,f.index.split_preview));
   assert.throws(()=>writeVibeTimeline(f.file,{rootDir:f.root}),/路径.*冲突|覆盖.*来源/);
@@ -150,7 +150,7 @@ test('已登记的逐屏预览不能用空值或额外幕绕过检查',t=>{
   const f=fixture(t,'票钱回不来。');
   f.index.content_approval={confirmed:true,statement:'测试夹具确认'};
   f.put(f.file,f.index);bindVibeContentApproval(f.file,{rootDir:f.root});
-  f.put(f.index.acts[0].visual_timing,{total_s:8,source_text:f.text,captions:[{id:'a',start:0,end:8,text:f.text}]});
+  f.put(f.index.acts[0].visual_timing,{total_s:22,source_text:f.text,captions:[{id:'a',start:0,end:8,text:f.text}]});
   writeVibeTimeline(f.file,{rootDir:f.root});const index=f.load();
   for (const value of [null,false,0,'',{}, {act1:[f.text],act2:['多出来的字幕。']}]) {
     f.put(index.caption_preview,JSON.stringify(value));

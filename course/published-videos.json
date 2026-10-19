@@ -1,5 +1,50 @@
 {
   "note": "只记录确实已公开发布的课程。",
-  "updated_at": null,
-  "videos": []
+  "updated_at": "2026-10-17",
+  "videos": [
+    {
+      "episode": "ep01",
+      "topic": "AI 教学视频制作流程（上）",
+      "recommendation_name": "AI 视频制作流程教程",
+      "summary": "从选题、讲解稿和旁白切分开始，用配音时间轴安排画面，完成审片、封面和发布包。已确认的输入、版本和素材决定后续修改与重建的依据。",
+      "keywords": [
+        "AI 视频制作",
+        "教学流程",
+        "旁白",
+        "时间轴",
+        "HyperFrames"
+      ],
+      "source_index": "course/episodes/01-video-workflow-overview/制作索引.json",
+      "publish_copy": "pipeline/output/course/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21.txt",
+      "publish_output": "pipeline/output/course/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
+      "publication_confirmation": {
+        "confirmed_on": "2026-10-17",
+        "source": "用户在本次对话明确确认已公开发布",
+        "published_at": null,
+        "platform": null
+      }
+    },
+    {
+      "episode": "ep02",
+      "topic": "沉没成本",
+      "recommendation_name": "沉没成本讲解视频",
+      "summary": "已经付出而无法收回的时间、金钱或精力，属于沉没成本。继续投入的决定应考虑未来的收益与代价；过去付出很多，并不自动意味着继续投入更值得。",
+      "keywords": [
+        "沉没成本",
+        "决策",
+        "恋爱",
+        "过去投入",
+        "未来收益"
+      ],
+      "source_index": "course/episodes/02-sunk-cost-love/制作索引.json",
+      "publish_copy": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.txt",
+      "publish_output": "pipeline/output/course/ep02_sunk-cost-love/release-v1/course_ep02_sunk-cost-love_release-v1.mp4",
+      "publication_confirmation": {
+        "confirmed_on": "2026-10-17",
+        "source": "用户在本次对话明确确认已公开发布",
+        "published_at": null,
+        "platform": null
+      }
+    }
+  ]
 }

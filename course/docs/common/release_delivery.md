@@ -72,33 +72,22 @@ publish 入口已包含此检查；入口已通过且所有输入输出未变时
 
 ## 六、公开发布与登记
 
-发布包检查通过后，才进入公开发布确认。公开发布是外部操作，必须获得用户明确授权；已获授权不重复询问。不能把“同意发布”当作“发布成功”。用户确认已经成功公开发布后，由 AI 同步台账字段 dashboard_status="已发布"、publish_status="已发布" 和 status="Vn 已公开发布"，在 notes 记录实际平台、成功时间及确认依据，幂等更新。
+发布包检查通过后，才进入公开发布确认。公开发布是外部操作，必须获得用户明确授权；已获授权不重复询问。不能把“同意发布”当作“发布成功”。用户确认已经成功公开发布后，由 AI 或[视频状态看板](published_cleanup.md)同步台账字段 dashboard_status="已发布"、publish_status="已发布" 和 status="Vn 已公开发布"。记录确认依据；实际平台、发布日期只有用户提供或有事实依据时才填写，不能把确认日期冒充发布日期。
 
 用户确认已经公开发布后，AI 同步向 `course/published-videos.json` 新增或更新本期条目。目录只记录已发布课程，至少保存 `episode`、`topic`、`recommendation_name`、一段可独立阅读的 `summary`、用于关联判断的 `keywords`，以及制作索引、发布文案和发布视频路径。以 `episode` 为唯一键幂等更新；发布包就绪但尚未公开发布时禁止提前登记。
 
 
 ## 七、冻结与清理
 
-版本冻结后按以下清单清理；先确保长期保留产物存在、路径可追溯，再删除可重建中间物。保留已确认旧版，不能因制作新版本覆盖旧版。
+公开发布并固定目标版本后，按重建依赖区分保留输入和可重建派生物，分别执行[教学与 Vibe 的清理规则](published_cleanup.md)。目标是保留完整输入和生成方法，而非保留全部旧版本。当前命令仍读取的旧素材、音轨、辅助脚本和审片 MP4 必须保留，或先验证其重建步骤。
 
-| 长期保留 | 版本冻结后可删除 |
-|---|---|
-| 原始资料路径与制作索引 | 未选中的风格候选 |
-| 定稿讲解稿与整期切分预览 | 每幕临时 `.preview.json` |
-| 四幕正式 JSON | 逐句 segment WAV、失败重配目录 |
-| 四幕 `actN.wav`、timings 与整期时间表 | `trim/`、concat 清单 |
-| 固定风格选择记录与四幕源 HTML | 临时模板副本、无声视频、抽帧目录 |
-| 已确认审片版、高清发布版、正式独立封面与发布配套文案 | 未选中的封面候选、已拼入成片的临时分幕视频 |
-| `course/episodes.json`、`course/published-videos.json` | 其他可从正式源重建的审片中间物 |
+按“宁可少删，不能多删”保留正式 MP4、已确认审片原件、尚存原始配音与确认/验收记录。不能仅根据文件名、版本新旧或“已发布”状态删除。任何候选放行前，须排查所有依赖并用保留输入完成独立重建验证。
 
-清理 `pipeline/build` 时统一使用项目入口，禁止临时拼接递归删除命令：
+清理统一使用项目入口，保留范围、看板操作和重建边界见[已发布视频的保留与清理规则](published_cleanup.md)。禁止临时拼接递归删除命令：
 
 ```bash
-# 默认只预览目标、数量和空间，不删除
-node --env-file-if-exists=.env build/common/cleanup_course_builds.mjs --episodes 1-9
-
-# 核对预览后显式执行
-node --env-file-if-exists=.env build/common/cleanup_course_builds.mjs --episodes 1-9 --apply
+# 仅预览已发布期次的候选，不代表已验证可删除
+node build/common/cleanup_course_builds.mjs --published --intermediates
 ```
 
-脚本只匹配 `pipeline/build` 直属目录下指定期次的 `course_epNN_*` 和 `epNN_*` 产物。存在清理目标时，该期必须在 `course/episodes.json` 标记为“已发布”，制作索引必须存在，且 `publish_output` 必须指向非空正式成片；任一条件不满足则整次操作失败并保持原文件。正式源 HTML、WAV、timings、制作索引、审片版、发布版、正式封面、发布文案、通用开场模板和 `npm-cache` 均不属于该入口的删除范围。重复执行不报错，也不产生额外副作用。
+`--episodes 1,2` 可代替 `--published` 限定期数；显式指定未发布期次会拒绝。省略 `--intermediates` 时仅列出 build 候选。当前静态扫描不能证明完整可重建，非空计划的 `--apply` 已暂停并会报错，不删除文件；不能绕过入口另写递归删除命令。

@@ -111,14 +111,13 @@ publish 已包含发布包验收；后续修正文案或配套产物时，再独
 node --env-file-if-exists=.env build/common/check_course_release.mjs course/episodes/NN-<slug>/制作索引.json
 ```
 
-公开发布成功并完成登记后，先预览再清理指定期次的可重建构建产物：
+公开发布成功并完成登记后，只读预览已发布期次的候选。按“宁可少删”的规则，独立重建验证未完成前保留文件；未发布期次自动跳过：
 
 ```bash
-node --env-file-if-exists=.env build/common/cleanup_course_builds.mjs --episodes 1-9
-node --env-file-if-exists=.env build/common/cleanup_course_builds.mjs --episodes 1-9 --apply
+node build/common/cleanup_course_builds.mjs --published --intermediates
 ```
 
-清理入口的保留范围、发布状态门禁和失败行为见 [发布交付](../common/release_delivery.md#七冻结与清理)。
+当前非空计划的自动删除已暂停。保留范围、复核方法和已知影响见[发布后清理规则](../common/published_cleanup.md)。
 
 - review/publish 只处理配音确认后的画面链路，不生成 VoxCPM 配音，不绕过试听、视频风格或封面选择门禁。
 - `--check-only` 与 `--range` 只产出独立检查/片段预览，不登记整幕或整期完成；分幕与整期必须共用正式字幕和构建入口，避免重复渲染。缓存条件与片段限制见渲染验收文档。

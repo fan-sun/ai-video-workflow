@@ -19,6 +19,8 @@
     "split:vibe": "node build/vibe/vibe_caption_split.mjs",
     "mix": "node --env-file-if-exists=.env build/vibe/mix_video_audio.mjs",
     "preview:music": "node build/vibe/preview_video_audio.mjs",
+    "preview:motion": "node examples/vibe-motion/run.mjs serve",
+    "preview:styles": "node examples/vibe-styles/run.mjs serve",
     "example:vibe": "node --env-file-if-exists=.env examples/vibe-knowledge/run.mjs",
     "example": "node --env-file-if-exists=.env examples/context-window/run.mjs"
   }

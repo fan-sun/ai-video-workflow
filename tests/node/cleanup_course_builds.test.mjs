@@ -79,7 +79,7 @@ test("存在构建产物时拒绝清理未发布或缺少正式成片的期次",
   }
 });
 
-test("只有显式执行清理计划才删除已验证目标", () => {
+test("显式执行也不能删除尚未完成重建验证的候选", () => {
   assert.equal(typeof cleanup.applyCourseBuildCleanup, "function");
   const fixture = createFixture({ episode: 5 });
   try {
@@ -88,10 +88,166 @@ test("只有显式执行清理计划才删除已验证目标", () => {
       episodeSpec: "5",
     });
     assert.ok(fs.existsSync(fixture.courseTarget));
-    cleanup.applyCourseBuildCleanup(plan);
-    assert.equal(fs.existsSync(fixture.courseTarget), false);
-    assert.equal(fs.existsSync(fixture.auxiliaryTarget), false);
-    assert.equal(cleanup.applyCourseBuildCleanup(plan).deletedCount, 0, "重复执行应保持幂等");
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /独立重建验证/);
+    assert.ok(fs.existsSync(fixture.courseTarget));
+    assert.ok(fs.existsSync(fixture.auxiliaryTarget));
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /独立重建验证/, "重复调用仍不删除");
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("扩展预览区分已知引用，但未经重建验证仍不删除任何候选", () => {
+  const fixture = createFixture();
+  const output = path.join(fixture.rootDir, "pipeline/output/course/ep02_demo/v1");
+  const audio = path.join(fixture.rootDir, "pipeline/02_audio/02-demo");
+  const disposable = [
+    path.join(output, "actual-mp4-frames/frame-1.png"),
+    path.join(output, "check/caption-1.png"),
+    path.join(output, "act1_silent.mp4"),
+    path.join(audio, "act1_voxcpm_raw/seg-1.wav"),
+    path.join(audio, "act1_voxcpm/trim/seg-1.wav"),
+    path.join(audio, "act1_voxcpm/concat.txt")
+  ];
+  const retained = [
+    path.join(output, "final.mp4"), path.join(output, "old-confirmed.mp4"),
+    path.join(output, "cover.png"), path.join(output, "report.json"),
+    path.join(output, "actual-mp4-frames/used.png"),
+    path.join(audio, "act1_voxcpm/act1.wav"),
+    path.join(audio, "act1_voxcpm/act1_timings.json")
+  ];
+  for (const file of [...disposable, ...retained]) writeText(file);
+  writeText(path.join(fixture.rootDir, "course/acts/ep02_demo/index.html"),
+    '<img src="../../../pipeline/output/course/ep02_demo/v1/actual-mp4-frames/used.png">');
+  try {
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    for (const file of disposable) assert.ok(plan.targets.includes(file), file);
+    for (const file of retained) assert.ok(!plan.targets.includes(file), file);
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /独立重建验证/);
+    for (const file of disposable) assert.ok(fs.existsSync(file), file);
+    for (const file of retained) assert.ok(fs.existsSync(file), file);
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("预览后发布状态撤回时整次拒绝删除", () => {
+  const fixture = createFixture();
+  try {
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2" });
+    writeText(path.join(fixture.rootDir, "course/episodes.json"), JSON.stringify({ episodes: [{ ep: 2, publish_status: "未发布" }] }));
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /尚未标记为已发布/);
+    assert.ok(fs.existsSync(fixture.courseTarget));
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("拒绝清理通过目录链接指向项目外的文件", () => {
+  const fixture = createFixture();
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), "cleanup-outside-"));
+  try {
+    writeText(path.join(outside, "frame.png"));
+    fs.symlinkSync(outside, path.join(fixture.courseTarget, "frames"), "junction");
+    assert.throws(() => cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2" }), /链接|越界/);
+    assert.ok(fs.existsSync(path.join(outside, "frame.png")));
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+test("保护CSS素材和HTML嵌套引号中的抽帧引用", () => {
+  const fixture = createFixture();
+  const output = path.join(fixture.rootDir, "pipeline/output/course/ep02_demo/v1/source-frames");
+  const cssImage = path.join(output, "css-used.png");
+  const inlineImage = path.join(output, "inline-used.png");
+  const source = path.join(fixture.rootDir, "course/acts/ep02_demo");
+  writeText(cssImage); writeText(inlineImage);
+  writeText(path.join(source, "style.css"), '.scene { background: url(../../../pipeline/output/course/ep02_demo/v1/source-frames/css-used.png); }');
+  writeText(path.join(source, "index.html"), '<div style="background-image:url(\'../../../pipeline/output/course/ep02_demo/v1/source-frames/inline-used.png\')"></div>');
+  try {
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    assert.ok(!plan.targets.includes(cssImage), "外部CSS引用的图片不能删除");
+    assert.ok(!plan.targets.includes(inlineImage), "HTML嵌套引号引用的图片不能删除");
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("拒绝build祖先目录指向项目内其他位置的链接", () => {
+  const fixture = createFixture();
+  try {
+    const build = path.join(fixture.rootDir, "pipeline/build");
+    const moved = path.join(fixture.rootDir, "relocated-build");
+    fs.renameSync(build, moved);
+    fs.symlinkSync(moved, build, "junction");
+    assert.throws(() => cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2" }), /链接/);
+    assert.ok(fs.existsSync(path.join(moved, path.basename(fixture.courseTarget), "frame.png")));
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("索引登记目录输入时保留该目录及其全部文件", () => {
+  const fixture = createFixture();
+  try {
+    writeText(path.join(fixture.rootDir, "course/episodes/02-demo/制作索引.json"), JSON.stringify({
+      publish_output: "pipeline/output/course/ep02_demo/v1/final.mp4",
+      acts: [{ visual_source: "pipeline/build/course_ep02_act1_v1_review" }]
+    }));
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2" });
+    assert.ok(!plan.targets.includes(fixture.courseTarget), "正式目录输入不能作为构建副本删除");
+    writeText(path.join(fixture.rootDir, "course/episodes/02-demo/制作索引.json"), JSON.stringify({
+      publish_output: "pipeline/output/course/ep02_demo/v1/final.mp4",
+      acts: [{ visual_source: "pipeline/build" }]
+    }));
+    const parentPlan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2" });
+    assert.equal(parentPlan.targets.length, 0, "目录输入的后代也应保留");
+    const image = path.join(fixture.rootDir, "pipeline/output/course/ep02_demo/v1/source-frames/used.png");
+    writeText(image);
+    writeText(path.join(fixture.rootDir, "course/episodes/02-demo/制作索引.json"), JSON.stringify({
+      publish_output: "pipeline/output/course/ep02_demo/v1/final.mp4",
+      acts: [{ visual_assets: ["pipeline/output/course/ep02_demo/v1/source-frames"] }]
+    }));
+    const imagePlan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    assert.ok(!imagePlan.targets.includes(image), "目录素材中的独立图片候选也应保留");
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("已发布和成片存在不等于候选可重建，未验证时不得执行删除", () => {
+  const fixture = createFixture();
+  const input = path.join(fixture.rootDir, "pipeline/02_audio/02-demo/sfx_raw/only-copy.wav");
+  writeText(input, "唯一动作音效");
+  writeText(path.join(fixture.rootDir, "course/episodes/02-demo/制作索引.json"), JSON.stringify({
+    publish_output: "pipeline/output/course/ep02_demo/v1/final.mp4",
+    acts: [{ sfx: "pipeline/02_audio/02-demo/sfx_raw/only-copy.wav" }]
+  }));
+  try {
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /重建验证|暂停自动删除/);
+    assert.equal(fs.readFileSync(input, { encoding: "utf8" }), "唯一动作音效");
+    assert.ok(fs.existsSync(fixture.courseTarget));
+  } finally {
+    fs.rmSync(fixture.rootDir, { recursive: true, force: true });
+  }
+});
+
+test("其他期次及MJS生成脚本引用的素材不会被未验证清单删除", () => {
+  const fixture = createFixture();
+  const input = path.join(fixture.rootDir, "pipeline/output/course/ep02_demo/v1/source-frames/reused.png");
+  writeText(input, "跨期复用的素材");
+  writeText(path.join(fixture.rootDir, "course/episodes/03-demo/制作索引.json"), JSON.stringify({
+    acts: [{ visual_assets: ["pipeline/output/course/ep02_demo/v1/source-frames/reused.png"] }]
+  }));
+  writeText(path.join(fixture.rootDir, "course/episodes/03-demo/render.mjs"),
+    'readFileSync("pipeline/output/course/ep02_demo/v1/source-frames/reused.png")');
+  try {
+    const plan = cleanup.createCourseBuildCleanupPlan({ rootDir: fixture.rootDir, episodeSpec: "2", includeIntermediates: true });
+    assert.throws(() => cleanup.applyCourseBuildCleanup(plan), /重建验证|暂停自动删除/);
+    assert.equal(fs.readFileSync(input, { encoding: "utf8" }), "跨期复用的素材");
   } finally {
     fs.rmSync(fixture.rootDir, { recursive: true, force: true });
   }

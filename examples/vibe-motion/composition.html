@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>动效接入验证</title>
+<style>@font-face{font-family:Vibe;src:url('fonts/NotoSansSC-700.woff2')}body{margin:0;background:#0b1d29}#root{position:relative;width:1920px;height:1080px;overflow:hidden}canvas{display:block}</style>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script></head>
+<body><div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="6"><canvas width="1920" height="1080" data-layout-ignore></canvas></div>
+<script type="module">
+import {drawDemo} from './demos.js';
+const state={p:0},c=document.querySelector('canvas').getContext('2d');
+const frame=()=>drawDemo(c,'__EFFECT__',state.p);
+const tl=gsap.timeline({paused:true});tl.to(state,{p:1,duration:6,ease:'none',onUpdate:frame});
+window.__timelines=window.__timelines||{};window.__timelines['main']=tl;frame();
+document.fonts.ready.then(frame);
+</script></body></html>

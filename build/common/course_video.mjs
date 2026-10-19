@@ -15,7 +15,7 @@ import { assertCourseOutroTailArtifacts } from "../teaching/course_outro_tail.mj
 import { generateCourseQcReport } from "./course_qc_report.mjs";
 import { injectCourseChapterProgressHtml } from "../teaching/course_chapter_progress.mjs";
 import { assertCourseEpisodeScriptLocation } from "./init_course_episode.mjs";
-import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline, assertVibeContent } from "../vibe/vibe_timeline.mjs";
+import { readVibeTiming, vibeSubtitleDeclaration, assertVibeTimeline, assertVibeContent, assertVibeTopicReveal } from "../vibe/vibe_timeline.mjs";
 
 
 const BUILD_TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -770,6 +770,7 @@ export function verifyCourseVideoInputs(plan) {
       ? plan.index.acts : plan.acts.map(act => ({ act: act.act, visual_timing: act.timings })) });
     const timeline = JSON.parse(fs.readFileSync(absolute(plan.rootDir, plan.index.timeline_summary), { encoding: "utf8" }));
     assertVibeTimeline(timeline, plan.index.acts.length, plan.index.publish_spec.duration_s);
+    assertVibeTopicReveal(plan.index, timeline);
     for (const act of plan.acts) {
       const timing = readVibeTiming(act.timings);
       const source = fs.readFileSync(act.source, { encoding: "utf8" });

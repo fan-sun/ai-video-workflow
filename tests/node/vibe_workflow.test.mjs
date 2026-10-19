@@ -173,15 +173,16 @@ test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首�
   index.publish_output=folder+'/course_ep01_demo_v1_publish.mp4';
   index.publish_copy=folder+'/course_ep01_demo_v1.txt';
   index.timeline_summary='course/episodes/01-demo/整期时间表.json';
-  index.publish_spec.duration_s=3;
+  index.publish_spec.duration_s=20;
+  index.topic_reveal={start_s:14,complete_s:17};
   for (const key of ['review_output','publish_output']) fs.writeFileSync(path.join(root,index[key]),'media',{encoding:'utf8'});
   const png=spawnSync('ffmpeg',['-v','error','-f','lavfi','-i','color=c=white:s=30x40','-frames:v','1',path.join(root,index.cover_output)],{encoding:'utf8',windowsHide:true});
   assert.equal(png.status,0,png.stderr);
-  fs.writeFileSync(path.join(root,index.timeline_summary),JSON.stringify({route:'vibe',total_s:3,acts:[{act:1,start_s:0,end_s:3,duration_s:3}]}),{encoding:'utf8'});
-  const copy='【标题】\nVibe知识大赏｜沉没成本：为何还舍不得？\n【发布文案】\n钱已经花掉，下一小时还能选择。\n【标签】\n#Vibe知识大赏 #沉没成本\n【视频总结】\n沉没成本是已经付出且无法收回的钱、时间和精力。判断要不要继续时，除了过去的投入，还应看接下来需要付出什么、可能得到什么，以及现实的变化和自己还有哪些选择。\n【视频章节】\n00:00–00:03　第一幕 · 判断\n';
+  fs.writeFileSync(path.join(root,index.timeline_summary),JSON.stringify({route:'vibe',total_s:20,topic_reveal:index.topic_reveal,acts:[{act:1,start_s:0,end_s:20,duration_s:20}]}),{encoding:'utf8'});
+  const copy='【标题】\nVibe知识大赏｜沉没成本：为何还舍不得？\n【发布文案】\n钱已经花掉，下一小时还能选择。\n【标签】\n#Vibe知识大赏 #沉没成本\n【视频总结】\n沉没成本是已经付出且无法收回的钱、时间和精力。判断要不要继续时，除了过去的投入，还应看接下来需要付出什么、可能得到什么，以及现实的变化和自己还有哪些选择。\n【视频章节】\n00:00–00:20　第一幕 · 判断\n';
   fs.writeFileSync(path.join(root,index.publish_copy),copy,{encoding:'utf8'});
   const ledger=JSON.parse(fs.readFileSync(path.join(root,'course/episodes.json'),{encoding:'utf8'}));
-  Object.assign(ledger.episodes[0],{output:index.publish_output,version:'v1',duration_s:3});
+  Object.assign(ledger.episodes[0],{output:index.publish_output,version:'v1',duration_s:20});
   fs.writeFileSync(path.join(root,'course/episodes.json'),JSON.stringify(ledger),{encoding:'utf8'});
   fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
   const result=checkCourseRelease(file,{rootDir:root,outroTailVerifier:()=>{throw Error('错误调用片尾静音');},coverWindowVerifier:()=>{throw Error('错误调用首帧封面');}});
@@ -196,12 +197,17 @@ test('Vibe发布检查独立3:4封面和短标题，不要求课程标签、首�
   index.acts[0].visual_timing='timing.json';
   fs.writeFileSync(path.join(root,index.script),'## 第一幕\n旁白：票钱回不来。\n',{encoding:'utf8'});
   fs.writeFileSync(path.join(root,index.split_preview),JSON.stringify({act1:['票钱回不来。']}),{encoding:'utf8'});
-  const timing={total_s:3,source_text:'票钱回不来。',captions:[{id:'a',start:0,end:3,text:'票钱回不来。'}]};
+  const timing={total_s:20,source_text:'票钱回不来。',captions:[{id:'a',start:0,end:3,text:'票钱回不来。'}]};
   fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify(timing),{encoding:'utf8'});
   fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
   const {bindVibeContentApproval}=await import('../../build/vibe/vibe_timeline.mjs');
   index.content_approval.source_sha256=bindVibeContentApproval(file,{rootDir:root});
   assert.equal(checkCourseRelease(file,{rootDir:root}).ok,true);
+  index.topic_reveal.complete_s=12.6;fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
+  assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/首次点题/);
+  index.topic_reveal.complete_s=18;fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
+  assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/点题.*过期|点题.*一致/);
+  index.topic_reveal.complete_s=17;fs.writeFileSync(file,JSON.stringify(index),{encoding:'utf8'});
   fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify({...timing,source_text:'回不来',captions:[{id:'a',start:0,end:3,text:'回不来'}]}),{encoding:'utf8'});
   assert.throws(()=>checkCourseRelease(file,{rootDir:root}),/第1幕.*正文/);
   fs.writeFileSync(path.join(root,'timing.json'),JSON.stringify(timing),{encoding:'utf8'});
@@ -256,4 +262,15 @@ test('Vibe复用分幕渲染，不要求TTS、固定开场或章节覆盖层',as
   assert.equal(published.finalOutput,path.resolve(root,'pipeline/output/course/ep01_demo/v2/course_ep01_demo_v2_publish.mp4'));
   const cover=published.finalSteps.find(s=>s.type==='copy-cover');
   assert.equal(cover?.output,path.resolve(root,'pipeline/output/course/ep01_demo/v2/cover.png'));
+});
+
+
+test('Vibe显示字幕去掉句读时保留百分比单位',async t=>{
+  const {vibeSubtitleDeclaration}=await import('../../build/vibe/vibe_timeline.mjs');
+  const {root}=fixture(t),file=path.join(root,'percent-timing.json');
+  const timing={total_s:3,source_text:'平均只有约23%。',captions:[{id:'a',start:0,end:3,text:'平均只有约23%。'}]};
+  fs.writeFileSync(file,JSON.stringify(timing),{encoding:'utf8'});
+  const declaration=vibeSubtitleDeclaration(file);
+  assert.ok(declaration.includes('平均只有约23%'));
+  assert.ok(!declaration.includes('。'));
 });

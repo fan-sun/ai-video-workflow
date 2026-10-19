@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>动效素材库 · AI Video Workflow</title>
+<style>
+@font-face{font-family:Vibe;src:url('../../templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2')}
+:root{color-scheme:dark;--paper:#f2ebdc;--muted:#a1adb3;--line:#30414a;--accent:#e9bf74}
+*{box-sizing:border-box}body{margin:0;background:#101b22;color:var(--paper);font-family:Vibe,'Microsoft YaHei',sans-serif;font-size:15px}
+button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+header{padding:28px 4vw 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:24px}
+h1{font-size:27px;margin:5px 0 0;letter-spacing:.04em}header small{color:var(--muted);letter-spacing:.14em;font-size:11px}header p{color:var(--muted);font-size:13px;margin:0;max-width:430px;line-height:1.8}
+main{max-width:1580px;margin:auto;padding:28px 4vw;display:grid;grid-template-columns:210px minmax(0,1fr);gap:30px}
+nav{display:grid;align-content:start;gap:6px}nav button{border:0;background:transparent;color:#b6c3c8;text-align:left;padding:15px 12px;display:flex;gap:20px;border-radius:5px}nav button span{font-family:monospace;font-size:12px;color:#7a8d97}nav button:hover{background:#1b2c36}nav button[aria-pressed=true]{background:#293b45;color:var(--paper);box-shadow:inset 3px 0 var(--accent)}
+.stage{border:1px solid #3b4f59;background:#0b1d29;overflow:hidden;border-radius:6px;box-shadow:0 22px 64px #0004}canvas{display:block;width:100%;aspect-ratio:16/9}
+.transport{display:flex;align-items:center;gap:16px;padding:14px 18px;background:#182933;border-top:1px solid var(--line)}.transport button{border:1px solid #56707b;background:transparent;color:var(--paper);padding:6px 14px;min-width:70px;border-radius:4px}.transport input{width:100%;accent-color:var(--accent)}output{font-family:monospace;font-size:13px;white-space:nowrap;color:#bac6ca}
+.description{display:flex;justify-content:space-between;align-items:start;gap:25px;padding:25px 0 19px}h2{font-size:22px;margin:0 0 8px}.description p{color:var(--muted);font-size:13px;margin:0;line-height:1.8}a{color:var(--accent);text-underline-offset:4px;white-space:nowrap;font-size:13px}
+.controls{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:21px 0;display:flex;gap:22px;flex-wrap:wrap;align-items:end}.controls label{display:grid;gap:9px;color:var(--muted);font-size:12px}.controls input,.controls select{background:#1b2a33;color:var(--paper);border:1px solid #3b515d;border-radius:4px;padding:8px 10px;height:38px}.controls input[type=color]{padding:4px;width:70px}.controls input[type=number]{width:90px}.controls input[type=text]{width:140px}.controls input[type=range]{padding:0;width:110px;accent-color:var(--accent)}
+.note{font-size:12px;line-height:1.9;color:var(--muted);margin:17px 0}#error{color:#ff9e82;white-space:pre-wrap}.side-note{color:#91a2ac;font-size:12px;line-height:1.9;padding:18px 12px 0;border-top:1px solid var(--line);margin-top:20px}
+@media(max-width:850px){header p{display:none}main{grid-template-columns:1fr;gap:16px;padding:18px 4vw}nav{grid-template-columns:repeat(4,1fr)}nav button{padding:10px 6px;gap:7px;font-size:12px}nav button span{display:none}.side-note{display:none}.description{padding:20px 0}.controls{gap:16px}header{padding:20px 4vw}.transport{padding:10px;gap:10px}}
+</style></head><body>
+<header><div><small>AI VIDEO WORKFLOW / MOTION LIBRARY</small><h1>让变化真正发生</h1></div><p>选择一种运动方式，替换对象与参数。<br>先看它怎样动，再决定它在这一期表达什么。</p></header>
+<main><aside><nav aria-label="动效类型"></nav><div class="side-note">八类可组合的动效<br>统一进度 · 可倒退定位<br><br>每项都是实现起点<br>画面如何接续，由本期内容决定</div></aside>
+<section><div class="stage"><canvas width="1920" height="1080" aria-label="当前动效预览"></canvas><div class="transport"><button id="play" aria-pressed="false">播放</button><input id="time" type="range" min="0" max="1000" value="0" aria-label="预览进度"><output id="clock">0.0 / 6.0s</output></div></div>
+<div class="description"><div><h2 id="name"></h2><p id="usage"></p></div><a href="README.md" target="_blank">使用说明 ↗</a></div>
+<div class="controls"><label>强调色<input id="accent" type="color" value="#e9bf74"></label><label>对象形状<select id="shape"><option value="diamond">菱形</option><option value="circle">圆形</option><option value="square">圆角块</option></select></label><label>演示时长 / 秒<input id="duration" type="number" min="1" max="30" step=".5" value="6"></label><label>动作幅度<input id="strength" type="range" min=".6" max="1.4" step=".1" value="1"></label><label>结果文字<input id="label" type="text" maxlength="6" value="新状态"></label></div>
+<p class="note" id="params"></p><p class="note">这里的构图与时长用于演示。实际制作保留有用的运动方法，重新安排主体、字幕和前后接续。</p><div id="error" role="alert"></div>
+</section></main><script type="module" src="app.mjs"></script></body></html>

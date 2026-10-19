@@ -243,7 +243,7 @@ course/acts/epNN_<slug>/actN.html
 已验收的版本成片
 ```
 
-版本成片验收后可删除：
+以下仅为重建候选，成片验收不等于删除验证。按[发布后清理规则](../common/published_cleanup.md)核对完整依赖及独立重建前保留，不能整目录直接删除：
 
 ```text
 pipeline/build/course_epNN_actN_vK_<review|publish>/

@@ -9,6 +9,18 @@ import {extractActNarration} from '../teaching/course_act_split_preview.mjs';
 const read=file=>JSON.parse(fs.readFileSync(file,{encoding:'utf8'}));
 const plain=text=>String(text).replace(/[\p{P}\s]/gu,'');
 
+// 只校验登记的全片累计时刻；实际名称可读与入场落定仍须审看成片。
+export function assertVibeTopicReveal(index,timeline) {
+  if (index.example?.technical_only===true) return;
+  const reveal=index.topic_reveal;
+  if (!reveal||!Number.isFinite(reveal.start_s)||!Number.isFinite(reveal.complete_s)
+    ||reveal.start_s<0||reveal.start_s>reveal.complete_s
+    ||reveal.complete_s<16||reveal.complete_s>19||reveal.complete_s>timeline.total_s)
+    throw new Error('首次点题须登记topic_reveal.start_s/complete_s：从正片0秒累计，完成时刻必须在16～19秒内（含边界），且不超出视频');
+  if (timeline.topic_reveal?.start_s!==reveal.start_s||timeline.topic_reveal?.complete_s!==reveal.complete_s)
+    throw new Error('整期时间表点题记录过期或与索引不一致，请重跑timeline:vibe');
+}
+
 export function assertVibeTimeline(timeline,actCount,duration) {
   if (timeline.route!=='vibe'||!Number.isFinite(timeline.total_s)||timeline.total_s<=0
     ||!Array.isArray(timeline.acts)||timeline.acts.length!==actCount)
@@ -49,7 +61,7 @@ export function readVibeTiming(file) {
 export function vibeSubtitleDeclaration(file) {
   const timing=readVibeTiming(file);
   const entries=timing.captions.map(c=>{
-    let text=String(c.text).replace(/\p{P}/gu,'').trim();
+    let text=String(c.text).replace(/\p{P}/gu,mark=>mark==='%'?mark:'').trim();
     for (const word of c.emphasis??[]) text=text.replace(word,`**${word}**`);
     return {s:c.start,e:c.end,t:text};
   });
@@ -128,6 +140,8 @@ export function writeVibeTimeline(indexFile,{rootDir=process.cwd()}={}) {
     preview[`act${act.act}`]=timing.captions.map(c=>c.text);
     return {act:act.act,start_s:start,end_s:time,duration_s:timing.total_s};
   });
+  const timeline={route:'vibe',total_s:time,acts,captions,topic_reveal:index.topic_reveal};
+  assertVibeTopicReveal(index,timeline);
   const relative=path.posix.join('course/episodes',`${index.episode.replace(/^ep/,'')}-${index.slug}`,'整期时间表.json');
   const out=path.resolve(rootDir,relative);
   const previewRelative=path.posix.join(path.posix.dirname(relative),'逐屏字幕预览.json');
@@ -135,7 +149,7 @@ export function writeVibeTimeline(indexFile,{rootDir=process.cwd()}={}) {
   if ([indexFile,index.script,index.split_preview,...index.acts.map(act=>act.visual_timing)]
     .filter(Boolean).some(file=>key(file)===key(previewRelative)))
     throw new Error('逐屏预览输出路径与输入来源冲突，请将语义预览保存在独立文件后重新核对绑定');
-  fs.writeFileSync(out,JSON.stringify({route:'vibe',total_s:time,acts,captions},null,2)+'\n',{encoding:'utf8'});
+  fs.writeFileSync(out,JSON.stringify(timeline,null,2)+'\n',{encoding:'utf8'});
   fs.writeFileSync(path.resolve(rootDir,previewRelative),JSON.stringify(preview,null,2)+'\n',{encoding:'utf8'});
   index.timeline_summary=relative;
   index.caption_preview=previewRelative;

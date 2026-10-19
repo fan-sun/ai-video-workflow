@@ -10,7 +10,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { readPngDimensions } from "./check_course_cover.mjs";
-import { assertVibeTimeline, assertVibeContent } from "../vibe/vibe_timeline.mjs";
+import { assertVibeTimeline, assertVibeContent, assertVibeTopicReveal } from "../vibe/vibe_timeline.mjs";
 
 import {
   assertCourseOutroTailTiming,
@@ -416,7 +416,10 @@ export function checkCourseRelease(indexPath, {
     throw new Error(`timeline_summary 文件不存在: ${index.timeline_summary}`);
   }
   const timeline = readJson(timelinePath);
-  if (vibe) assertVibeTimeline(timeline, actCount, index.publish_spec.duration_s);
+  if (vibe) {
+    assertVibeTimeline(timeline, actCount, index.publish_spec.duration_s);
+    assertVibeTopicReveal(index, timeline);
+  }
   if (!Array.isArray(timeline.acts) || timeline.acts.length !== actCount) {
     throw new Error(`整期时间表必须包含 ${actCount} 幕`);
   }

@@ -21,14 +21,15 @@ function fixture(t) {
   const index={episode:'ep01',slug:'demo',route:'vibe',production_contract:'current',current_version:'v1',
     script:'course/scripts/01-demo.md',split_preview:'course/episodes/01-demo/旁白切分预览.json',
     content_approval:{confirmed:true,statement:'测试夹具确认，不代表真实用户认可'},
-    publish_spec:{width:1920,height:1080,fps:30,duration_s:6},
+    topic_reveal:{start_s:14,complete_s:17},
+    publish_spec:{width:1920,height:1080,fps:30,duration_s:20},
     acts:texts.map((text,i)=>({act:i+1,visual_timing:`t${i+1}.json`,visual_source:`a${i+1}.html`,allowed_warnings:{},subtitle_highlights:[]}))};
   const file=path.join(root,'course/episodes/01-demo/制作索引.json');
   put(index.script,'# 正文\n\n## 第一幕 · 过去\n旁白：'+texts[0]+'\n\n## 第二幕 · 未来\n旁白：'+texts[1]+'\n');
   put(index.split_preview,{act1:[texts[0]],act2:[texts[1]]});
   index.acts.forEach((act,i)=>{
-    put(act.visual_timing,{total_s:3,source_text:texts[i],captions:[{id:'a',start:0,end:3,text:texts[i]}]});
-    put(act.visual_source,'<div data-composition-id="main" data-width="1920" data-height="1080" data-duration="3"></div><script>const DUR=3;</script>');
+    put(act.visual_timing,{total_s:10,source_text:texts[i],captions:[{id:'a',start:0,end:3,text:texts[i]}]});
+    put(act.visual_source,'<div data-composition-id="main" data-width="1920" data-height="1080" data-duration="10"></div><script>const DUR=10;</script>');
   });
   put(path.relative(root,file),index);
   const load=()=>JSON.parse(fs.readFileSync(file,{encoding:'utf8'}));
@@ -65,7 +66,7 @@ test('字幕与source_text同时漏字仍会被已确认正文拦截',t=>{
   const f=fixture(t);assert.equal(f.bind().status,0);
   writeVibeTimeline(f.file,{rootDir:f.root});
   const before=fs.readFileSync(f.file);const timeline=path.join(f.root,f.load().timeline_summary);const old=fs.readFileSync(timeline);
-  f.put('t1.json',{total_s:3,source_text:'回不来。',captions:[{id:'a',start:0,end:3,text:'回不来。'}]});
+  f.put('t1.json',{total_s:10,source_text:'回不来。',captions:[{id:'a',start:0,end:3,text:'回不来。'}]});
   assert.throws(()=>writeVibeTimeline(f.file,{rootDir:f.root}),/第1幕.*正文|原文/);
   assert.deepEqual(fs.readFileSync(f.file),before);assert.deepEqual(fs.readFileSync(timeline),old);
 });
@@ -76,7 +77,7 @@ test('源稿与预览一同改写后仍须更新确认绑定，旧成片确认�
   f.put(path.relative(f.root,f.file),ready);
   f.put(f.index.script,'## 第一幕\n旁白：已经花掉的钱。\n\n## 第二幕\n旁白：时间还能选择。\n');
   f.put(f.index.split_preview,{act1:['已经花掉的钱。'],act2:[f.texts[1]]});
-  f.put('t1.json',{total_s:3,source_text:'已经花掉的钱。',captions:[{id:'a',start:0,end:3,text:'已经花掉的钱。'}]});
+  f.put('t1.json',{total_s:10,source_text:'已经花掉的钱。',captions:[{id:'a',start:0,end:3,text:'已经花掉的钱。'}]});
   assert.throws(()=>writeVibeTimeline(f.file,{rootDir:f.root}),/确认.*变化|版本/);
   assert.equal(f.bind().status,0);const updated=f.load();
   assert.notEqual(updated.content_approval.source_sha256,ready.content_approval.source_sha256);
@@ -99,7 +100,7 @@ test('来源核验拒绝第七幕及重复或乱序的幕标题，不能静默�
   f.put(f.index.split_preview,Object.fromEntries(names.map((_,i)=>[`act${i+1}`,[`第${i+1}段正文。`]])));
   for (const act of f.index.acts) {
     const text=`第${act.act}段正文。`;
-    f.put(act.visual_timing,{total_s:3,source_text:text,captions:[{id:'a',start:0,end:3,text}]});
+    f.put(act.visual_timing,{total_s:10,source_text:text,captions:[{id:'a',start:0,end:3,text}]});
   }
   f.put(path.relative(f.root,f.file),f.index);assert.equal(f.bind().status,0);
   const approved=f.load();assertVibeContent(approved,{rootDir:f.root});
@@ -123,6 +124,6 @@ test('单幕渲染预检核对正文且允许后续幕尚无画面',t=>{
     fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.resolve(relative),file);
   }
   verifyCourseVideoInputs(plan);
-  f.put('t1.json',{total_s:3,source_text:'回不来。',captions:[{id:'a',start:0,end:3,text:'回不来。'}]});
+  f.put('t1.json',{total_s:10,source_text:'回不来。',captions:[{id:'a',start:0,end:3,text:'回不来。'}]});
   assert.throws(()=>verifyCourseVideoInputs(plan),/第1幕.*正文|原文/);
 });

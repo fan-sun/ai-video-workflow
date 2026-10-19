@@ -1,0 +1,5 @@
+/* 本地字体映射：原例中的字体名称保持不变，提供可随仓库分发的实际字体。 */
+@font-face{font-family:'Noto Sans CJK SC';src:url(fonts/NotoSansSC-400.woff2);font-weight:100 600}
+@font-face{font-family:'Noto Sans CJK SC';src:url(fonts/NotoSansSC-700.woff2);font-weight:700 900}
+@font-face{font-family:'Noto Serif CJK SC';src:url(fonts/NotoSerifSC-VF.woff2);font-weight:100 900}
+@font-face{font-family:VibeCaptions;src:url(fonts/NotoSansSC-700.woff2);font-weight:700}
