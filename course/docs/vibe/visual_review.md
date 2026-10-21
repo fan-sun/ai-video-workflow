@@ -4,11 +4,28 @@
 
 本路线验收阶段同时调用[共用视觉检查方法](../common/visual_review.md)与[共用渲染技术检查](../common/render_verification.md)。共同方法只在上述文件维护；下文保留 Vibe 观看任务、结构、表现及返工要求。
 
+## 实现与渲染入口
+
+实现前读取索引当前的画面编排和字幕时间表；节奏或断点变化时，按[时间表规则](captions_timing.md#配合画面落实字幕与时间)同步后再渲染。原例小字、演示题材、十秒时长及构图不作为生产标准；字体和画面规则按[动态规范](motion_design.md)执行。
+
+画面源保存在`course/acts/epNN_slug/`，索引填写`visual_source`、`visual_assets`及可选`sfx`。实现前读取[共用 HTML、素材与确定性契约](../common/visual_contract.md)。根画幅沿用[SOP默认规格](sop.md)，DUR 与 visual_timing.total_s 对齐；主字幕使用时间表导出的 SUBS，在稳定阅读区显示。制作中执行[共用视觉检查](../common/visual_review.md)，路线专属语义和表现仍按下方 Vibe 验收执行。
+
+动作声可以是单声道或立体声。没有动作声的分段让`sfx`为空，渲染器使用实际静音音轨完成拼接；它不是伪造配音，也不会填入`audio`或`timings`。布局声明、首现和媒体检查按[共同渲染验收](../common/render_verification.md)。
+
+```bash
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1 --check-only
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1 --range 0:6
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json --act 1
+npm run vibe:review -- course/episodes/03-topic-slug/制作索引.json
+```
+
+Vibe画面审看直接输出high质量，所有前期小样、分幕及整片画面预览均不加BGM；仅全片画面确认后的最终高清发布版本按[配乐规则](audio_mix.md)混音。资源、局部预览和缓存按[共同渲染规范](../common/render_verification.md)，本节只规定路线交付顺序。每次交付对应视频、正式稿及索引`caption_preview`所指的逐屏字幕路径，注明版本与范围；需要解释正文结构时另给语义预览并标明用途。按用户安排逐幕审看，合并前检查全局起伏与所有幕间接点。
+
 ## 先验证连续小样
 
 先渲染最容易暴露问题的连续小样，覆盖动作开始、过程、结果和相邻接点。优先选本期最需要验证的动作、关系揭示或空间转换，不因开头简单就只验证开头。使用实际整幕源码，不另做一套无法接入的漂亮静态样稿。按[方法落实检查](visual_methods.md#对照验证与返工)，将《画面编排.md》中当前幕的起点、中途过程、结果及接点与实际片段对照；在已有验收记录中说明哪一对象变化、空间接续和表现力已经兑现，哪些仍有差距。若待解决的是整幕组织停滞，小样须覆盖关键的相邻任务及其接续，单独改善材质、点题或某个动作不能关闭该问题；小样后仍须连看整幕。素材漂亮、程序能运行或标题完成入场，不算本期小样通过。
 
-一轮设计自查后进入动画验证，检查含义及表现力，有具体问题再修。局部通过后重建受影响整幕；各幕已有有效版本时复用，合并前连看接点，合并后复查全片起伏。命令及逐幕交付顺序见[SOP画面阶段](sop.md#3-逐幕实现与连续审看)。
+一轮设计自查后进入动画验证，检查含义及表现力，有具体问题再修。局部通过后重建受影响整幕；各幕已有有效版本时复用，合并前连看接点，合并后复查全片起伏。命令及逐幕交付顺序见[实现与渲染入口](#实现与渲染入口)。
 
 ## 实际检查与返工
 

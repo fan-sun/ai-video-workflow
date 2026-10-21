@@ -274,3 +274,13 @@ test('Vibe显示字幕去掉句读时保留百分比单位',async t=>{
   assert.ok(declaration.includes('平均只有约23%'));
   assert.ok(!declaration.includes('。'));
 });
+
+test('Vibe显示字幕保留金额与系数的小数点',async t=>{
+  const {vibeSubtitleDeclaration}=await import('../../build/vibe/vibe_timeline.mjs');
+  const {root}=fixture(t),file=path.join(root,'decimal-timing.json');
+  const texts=['卖家要价，5.25美元。','买家出价，2.25美元。','估出的系数，是2.25.'];
+  fs.writeFileSync(file,JSON.stringify({total_s:9,source_text:texts.join(''),captions:texts.map((text,i)=>({id:String(i),start:i*3,end:(i+1)*3,text}))}),{encoding:'utf8'});
+  const declaration=vibeSubtitleDeclaration(file);
+  const entries=JSON.parse(declaration.slice('const SUBS='.length,-1));
+  assert.deepEqual(entries.map(e=>e.t),['卖家要价5.25美元','买家出价2.25美元','估出的系数是2.25']);
+});

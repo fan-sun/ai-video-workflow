@@ -61,7 +61,8 @@ export function readVibeTiming(file) {
 export function vibeSubtitleDeclaration(file) {
   const timing=readVibeTiming(file);
   const entries=timing.captions.map(c=>{
-    let text=String(c.text).replace(/\p{P}/gu,mark=>mark==='%'?mark:'').trim();
+    let text=String(c.text).replace(/\p{P}/gu,(mark,offset,source)=>
+      mark==='%'||(mark==='.'&&/\d/.test(source[offset-1]??'')&&/\d/.test(source[offset+1]??''))?mark:'').trim();
     for (const word of c.emphasis??[]) text=text.replace(word,`**${word}**`);
     return {s:c.start,e:c.end,t:text};
   });

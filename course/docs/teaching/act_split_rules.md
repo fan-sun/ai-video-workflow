@@ -45,10 +45,7 @@ VoxCPM 每个 segment 都会重新起音。按逗号、短语、引号词或字�
 
 ## 三、讲解稿解析前提
 
-工具只读取：
-
-- 以 `## 第一幕`、`## 第二幕` 等开头的幕章节；
-- 章节内顶格、单行的 `旁白：...`。
+正式稿解析格式、逐幕运行、汇总和生成依据核对统一按[共用旁白语义预览](../common/narration_preview.md)执行。本路线固定四幕，具体正文格式仍见[教学讲解稿](script_writing_explainer.md)。
 
 如果 S0 已写在第一幕内，正常预演 act1，不加 `--include-opening`。只有讲解稿存在独立 `## 开场点题` 章节时才增加该参数。
 
@@ -109,28 +106,9 @@ VoxCPM 每个 segment 都会重新起音。按逗号、短语、引号词或字�
 
 ## 六、生成和审阅
 
-讲解稿按 [内容审查与单次润色](script_content_review.md) 完成审查、润色及事实、整幕顺读连贯性与可解析性复核后，AI 必须立即执行本步骤，不停下来要求用户审稿。先在终端检查单幕，不写文件：
+讲解稿按 [内容审查与单次润色](script_content_review.md) 完成审查、润色及事实、整幕顺读连贯性与可解析性复核后，AI 必须立即按[共用旁白语义预览](../common/narration_preview.md)逐幕运行程序并汇总，不停下来要求用户审稿。预演采用本文第四、五节的配音语气单位与停顿规则；实际命令、临时文件覆盖范围、执行记录和逐条核对只在共用文档维护。
 
-```bash
-node --env-file-if-exists=.env build/teaching/course_act_split_preview.mjs \
-  --md course/scripts/NN-<slug>.md \
-  --act 1 \
-  --format table
-```
-
-需要落盘以便汇总时，逐幕输出临时文件：
-
-```bash
-node --env-file-if-exists=.env build/teaching/course_act_split_preview.mjs \
-  --md course/scripts/NN-<slug>.md \
-  --act 1 \
-  --format json \
-  --out pipeline/01_script/<NN-slug>/course_epNN_act1.preview.json
-```
-
-讲解稿或某幕旁白修改后，旧临时 preview 已不再有效。重新生成前先确认目标路径属于当前期次的 `pipeline/01_script/<NN-slug>/`，再在原命令末尾增加 `--force` 覆盖。禁止因为文件已存在就继续沿用旧预览，也禁止把 `--force` 用于正式 JSON、其他期次或尚未核对的路径。
-
-当前工具按幕运行，因此需将四幕确认候选中的纯旁白文本汇总到整期 `旁白切分预览.json`。同一条交付消息必须提供 Markdown 讲解稿、资料覆盖与四幕逻辑摘要、整期预览，以及三处幕间接口（每幕末句 → 下一幕首句，按播放顺序列出），明确请用户同时确认内容是否讲对、讲全、讲顺，以及切分是否合适。
+当前工具按幕运行，因此需将四幕确认候选中的纯旁白文本汇总到整期 `旁白切分预览.json`。同一条交付消息提供 Markdown 讲解稿、简短审查结论和整期预览，明确请用户同时确认核心内容是否准确、讲清、讲顺，以及切分是否合适；不要求逐项资料覆盖证明或另列三处幕间问答。
 
 切分方面重点检查：
 
