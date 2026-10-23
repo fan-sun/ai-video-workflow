@@ -43,3 +43,29 @@
 逐个检查整期时间表的实际幕间边界：幕序正确，无黑帧、花屏、重复帧、上一幕残留；音频无意外缺失、重叠或跳时；下一幕从正确状态开始。最终正常速度通看完整版本，检查字幕、遮挡、转场、音画对应及全片起伏。不能只看 HTML 末态替实际导出尾帧通过验收。
 
 一个版本任一必查项失败或未核实，不登记整体通过；失败回到所属路线的设计或实现阶段处理。未变的有效部分可复用，已否定或未核实的旧段不能因本轮未修改而视作通过。
+
+## 教学线的可执行证据门禁
+
+教学线逐段复核必须回到制作前的[旁白—分镜对照](../teaching/visual_workflow.md#旁白分镜对照先编排再制作)，沿用原分镜编号：对照原句和实际声音，看该时段的主体、动作或保留状态是否表达了这句话，理解落点是否成立，以及前后是否接得上。不能只核对时间相近、字幕一致或画面在动。缺少原句对应、动作未落实或表达不清的段落记为待补或失败，修正后复看；不将技术通过登记为表达通过。
+
+production_contract 为 current 的教学期次在制作前必须登记独立 visual_plan。先做每幕一个完整的输入—处理—结果片段，内部检查主体是否实际参与、结果是否真的变化，再展开本幕；失败应改画面实现，不得把编排降级成已有文字框的描述。旧版退回后另建视觉版本，保留退回原因和旧文件。
+
+技术小样仍由 review、--act、--range 生成。文件生成及解码只登记 review_technical_status，不代表视觉合格。索引 visual_review 指向本期版本目录内的视觉复核 JSON；证据包含：
+
+- inputs：由 captureCourseVisualInputs 记录的版本、独立编排、四幕源/稿/音轨/timings/素材、整期时间表、字幕/章节/渲染工具及共享字体素材、构建配置摘要；
+- media：实际整片的 path 和 sha256；acts：每幕当前 standard 审片输出的相同绑定；
+- acts[].segments：对应编排分镜编号的 plan_ref、真实 start_s/end_s、覆盖的 narration_ids、expected、observed_before、observed_change、observed_after、fix_and_recheck、result；
+- 每个片段的实际 clip（path、sha256），以及 frames 中按 before/during/after 排列、带 time_s/path/sha256 的三帧；处理动作应在连续片段中核验；
+- 每个片段的 method 为 continuous_playback、playback_rate 为 1。每幕和整片另记 full_review 的完整起止、正常速度、实际 observation 与 result。未实际完成连续审看时保留 pending，不填 passed。
+
+全部旁白 ID 必须被对应完整时段覆盖。证据文件中无失败、完整审看已做、文件绑定有效后，AI 运行：
+
+    node build/common/check_course_visual_review.mjs course/episodes/NN-slug/制作索引.json --record
+
+命令只检查证据完整性与当前文件的一致性，不能判断观察记录是否真实、动画是否好懂。不能用技术检测结果、非空 JSON 或自动补齐的 passed 代替实际判断。源码、编排、配音、字幕配置、版本或视频变更后，检查返回过期/无效；--record 和 review 整片登记会撤销旧完成状态，并保留、清除失效的用户确认。修改文件后、交付前必须重跑此检查。
+
+publish 和 check-release 都重新读取实际证据，拒绝缺失、失败或过期复核；另核对 review_approval.confirmed、version 和 sha256 是否属于用户明确确认的当前整片。助手检查与用户确认互不代替。本门禁不新增用户审批步骤；历史非 current 期次及技术 example 保留原验收范围。
+
+用户在当前审片版交付后回复“没问题，进行下一步”等明确通过意见，应结合上下文记录该版本确认，不要求重复口令。助手缺少内部复核记录不能自动撤销有效的用户确认。
+
+若用户明确说明已审查当前整片并接受视觉质量，且在知悉助手连续审看未完成后仍要求继续，按用户最终审片结论执行：在 review_approval 中记录 reviewer="user"、visual_quality_accepted=true、原始确认依据及 captureCourseVisualInputs 输入快照，并绑定当前 version 与实际视频 sha256。门禁登记 accepted_by_user，允许进入发布；各幕 assistant_visual_review 仍保留待核验，不补写助手连续审看或逐段观察为 passed。只有明确的用户整片质量接受适用此路径，普通的制作授权不适用；输入、配置、版本或视频变化后该接受失效。已有助手复核证据失败或失效时，仍按原证据规则处理，不用用户接受覆盖失败记录。

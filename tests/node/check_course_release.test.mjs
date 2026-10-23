@@ -125,6 +125,7 @@ test("六幕发布包核对全部章节，并在第六幕检查片尾收尾", ()
   try {
     const index = JSON.parse(fs.readFileSync(fixture.indexPath, { encoding: "utf8" }));
     index.production_contract = "current";
+    index.example = true; // 本用例只核对六幕媒体契约，用户审片门禁由独立测试覆盖。
     index.chapter_titles = titles;
     index.acts = titles.map((_, i) => ({ act: i + 1, timings: `audio/act${i + 1}_timings.json` }));
     index.publish_spec.duration_s = 12;

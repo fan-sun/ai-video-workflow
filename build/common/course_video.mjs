@@ -4,6 +4,7 @@
  * 运行：node build/common/course_video.mjs <review|publish> <制作索引.json> [--act N] [--check-only | --range 起秒:止秒]
  * 依赖：Node.js、Python、FFmpeg、模板内声明的 HyperFrames CLI。
  */
+import { assertCourseVisualPlan, assertCourseVisualReady, refreshCourseVisualStatus } from "./check_course_visual_review.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -202,6 +203,7 @@ export function createCourseVideoPlan(index, mode, { rootDir = process.cwd(), ac
     throw new Error("--range 必须配合 --act，使用递增的非负起秒:止秒，不能与 --check-only 合用");
   }
   assertIndex(index, selectedAct);
+  if (mode === "publish") assertCourseVisualReady(index, { rootDir });
   if (vibe && !index.example && !index.content_approval?.confirmed) throw new Error("Vibe画面制作前需要content_approval确认文稿与切分");
   const quality = vibe || mode === "publish" ? "high" : "standard";
   const version = String(index.current_version ?? "").trim();
@@ -750,6 +752,7 @@ export function parseCourseWarnings(output) {
 }
 
 export function verifyCourseVideoInputs(plan) {
+  assertCourseVisualPlan(plan.index ?? {}, { rootDir: plan.rootDir });
   for (const file of plan.requiredInputs) {
     if (!fs.existsSync(file) || !fs.statSync(file).isFile() || fs.statSync(file).size === 0) {
       throw new Error(`输入预检失败，文件不存在或为空：${file}`);
@@ -835,10 +838,15 @@ function recordCourseVideoOutput(plan, { spawnSyncImpl = spawnSync } = {}) {
     throw new Error("课程台账期号、slug 或主题与制作索引不一致，不能登记输出");
   }
 
+  if (plan.mode === "publish") assertCourseVisualReady(storedIndex, { rootDir: plan.rootDir });
+
   // 只登记已经生成并解码的文件；时长沿用正式音频时间表，允许容器编码尾差。
   const outputKey = plan.mode + "_output";
   const output = path.relative(plan.rootDir, plan.finalOutput).replaceAll("\\", "/");
   storedIndex[outputKey] = output;
+  if (plan.mode === "review" && storedIndex.route !== "vibe") {
+    storedIndex.review_technical_status = { status: "generated_and_decoded", output, sha256: hashFile(plan.finalOutput) };
+  }
   if (storedIndex.route === "vibe") storedIndex.publish_bundle = null;
   if (storedIndex.route === "vibe" && plan.mode === "review") {
     storedIndex.review_base_output = output;
@@ -864,6 +872,7 @@ function recordCourseVideoOutput(plan, { spawnSyncImpl = spawnSync } = {}) {
     episode.version = storedIndex.current_version;
     episode.duration_s = duration;
   }
+  if (plan.mode === "review") refreshCourseVisualStatus(storedIndex, { rootDir: plan.rootDir });
   fs.writeFileSync(indexPath, JSON.stringify(storedIndex, null, 2) + "\n", { encoding: "utf8" });
   fs.writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2) + "\n", { encoding: "utf8" });
   plan.index[outputKey] = output;
@@ -1057,7 +1066,7 @@ if (isMain) {
       }
       if (mode === "publish" && index.example) console.log("技术示例：只验收本地发布包，不登记用户确认或公开发布事实");
       runCourseVideoPlan(plan, { logger: (message) => console.log(message) });
-      console.log(`${index.episode} ${index.current_version} ${mode} ${plan.checkOnly ? '预检完成（未渲染）' : plan.partial ? `分幕${plan.range ? '片段预览' : ''}完成：${plan.acts[0].output}` : `流程完成：${plan.finalOutput}`}`);
+      console.log(`${index.episode} ${index.current_version} ${mode} ${plan.checkOnly ? '预检完成（未渲染）' : plan.partial ? `分幕${plan.range ? '片段预览' : ''}完成：${plan.acts[0].output}` : `技术流程完成：${plan.finalOutput}`}`);
     } catch (error) {
       console.error(`课程视频流程失败：${error.message}`);
       process.exitCode = 1;

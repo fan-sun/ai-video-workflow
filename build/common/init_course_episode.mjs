@@ -78,6 +78,7 @@ export function initCourseEpisode(root, episode, { topic = "待确认", topicTer
       selected_style: null, cover_selection: null, cover_output: null, cover_upload_output: null,
       timeline_summary: null, chapter_titles: [], audio_review: null, review_approval: null,
       review_output: null, publish_output: null, publish_copy: null,
+      ...(route === "course" ? { visual_plan: null, visual_review: null, visual_review_status: { status: "pending" } } : {}),
       cover_embed: { duration_s: 0.5, ssim_threshold: 0.97 },
       publish_spec: { width: 1080, height: 1440, fps: 30, video_codec: "h264", video_profiles: ["High", "Main"],
         pixel_format: "yuv420p", audio_codec: "aac", audio_sample_rate: 48000, audio_channels: 1,

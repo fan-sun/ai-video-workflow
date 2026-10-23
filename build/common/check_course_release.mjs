@@ -4,6 +4,7 @@
  * 用法：node build/common/check_course_release.mjs <制作索引.json>
  * 依赖：Node.js 内置模块；默认从仓库根目录解析索引中的相对路径。
  */
+import { assertCourseVisualReady } from "./check_course_visual_review.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -296,6 +297,7 @@ export function checkCourseRelease(indexPath, {
   outroTailVerifier,
 } = {}) {
   const index = readJson(indexPath);
+  assertCourseVisualReady(index, { rootDir });
   const vibe = index.route === "vibe";
   if (index.route !== undefined && !["course", "vibe"].includes(index.route)) throw new Error("未知制作路线");
   if (vibe && !index.example && (!index.review_approval?.confirmed || !index.cover_selection)) throw new Error("Vibe发布需要已确认审片版及独立封面");
