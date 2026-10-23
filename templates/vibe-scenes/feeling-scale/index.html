@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>实体天平 · 自有场景</title>
+<style>
+@font-face{font-family:Noto;src:url('fonts/NotoSansSC-700.woff2');font-weight:700;font-display:block}
+*{box-sizing:border-box}html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#182b39}
+#main{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Noto,sans-serif;color:#fff0d6}
+#scale-stage,#picture{position:absolute;inset:0;width:1920px;height:1080px}
+#reading-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(13,32,42,.98),rgba(13,32,42,.65) 12%,transparent 25%);pointer-events:none}
+.label{position:absolute;transform:translate(-50%,-50%);font-size:80px;line-height:1.25;font-weight:700;white-space:nowrap;opacity:0;text-shadow:0 3px 8px #173441}
+#left-label,#right-label{padding:8px 20px;background:#eee3cd;border-radius:4px;box-shadow:0 6px 12px #10253255;text-shadow:none}
+#left-label{color:#315d54}#right-label{color:#8d4f3c}#title{color:#f4dfb8}
+#unit{font-size:120px;color:#b9d9b2}#times{color:#edb88e}
+#ratio{width:650px;height:280px;color:#edb88e;text-shadow:none}#ratio canvas{display:block;width:650px;height:280px}
+</style></head><body><div id="main" data-composition-id="main" data-start="0" data-duration="8.5" data-width="1920" data-height="1080">
+<div id="scale-stage"></div><canvas id="picture" width="1920" height="1080" data-layout-ignore></canvas><div id="reading-shade" data-layout-ignore></div>
+<div id="left-label" class="label" data-reveal-at="1.8"></div><div id="right-label" class="label" data-reveal-at="1.8"></div>
+<div id="title" class="label" data-reveal-at="1.5"></div><div id="unit" class="label" data-reveal-at="5.4">1</div><div id="times" class="label" data-reveal-at="5.4">倍</div>
+<div id="ratio" class="label" data-reveal-at="5.4"><canvas width="650" height="280"></canvas></div>
+</div>
+<script src="settings.js"></script><script src="gsap.min.js"></script><script src="core.js"></script><script src="gl.js"></script><script src="rm.js"></script><script src="morph-core.js"></script><script src="scale.js"></script><script src="morph.js"></script><script src="scene.js"></script>
+<script>window.__timelines=window.__timelines||{};window.__timelines.main=window.createScaleScene();</script>
+</body></html>

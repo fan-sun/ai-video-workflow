@@ -1,0 +1,4 @@
+{
+ "original":{"inputAsset":null,"targetAsset":null,"scannerLabel":"读取小票","targetLabel":"写入账本","dataTitle":"日期 · 金额","dataText":"06/18 · ¥28.50","resultText":"日期、金额已入账 ✓"},
+ "demo":{"inputAsset":"templates/teaching-scenes/scan-transfer/assets/photo-input.svg","targetAsset":"templates/teaching-scenes/scan-transfer/assets/archive.svg","scannerLabel":"识别照片","targetLabel":"归入图集","dataTitle":"识别标签","dataText":"山景 · 照片07","resultText":"照片标签已归档 ✓"}
+}

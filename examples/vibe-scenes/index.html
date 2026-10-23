@@ -1,0 +1,17 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vibe自有场景素材库</title>
+<style>
+:root{color-scheme:dark;--ink:#f2eee5;--muted:#a7b2ba;--line:#33414a;--accent:#ffb86b}*{box-sizing:border-box}body{margin:0;background:#111a21;color:var(--ink);font-family:'Microsoft YaHei',sans-serif}a{color:var(--accent);text-decoration:none}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+header{padding:22px 32px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}h1{font-size:24px;margin:0 0 8px}header p{margin:0;color:var(--muted);font-size:13px}main{max-width:1640px;margin:auto;padding:24px 32px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:30px}nav{display:grid;gap:8px;align-content:start}nav button{padding:16px;text-align:left;border:1px solid #b58b58;background:#273b48;color:var(--ink);border-radius:5px;font-size:16px}nav small{display:block;color:var(--muted);font-size:12px;margin-top:10px;line-height:1.7}
+.screen{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#080e13;border:1px solid var(--line);border-radius:6px}iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0}.controls{display:flex;gap:12px;align-items:center;margin-top:14px}.controls input{flex:1;min-width:60px}button,.button{border:1px solid #465e6d;background:transparent;color:var(--ink);padding:10px 15px;border-radius:4px;font-size:14px}button[aria-pressed=true]{border-color:var(--accent);background:#273b48;color:var(--accent)}h2{font-size:24px;margin:22px 0 12px}.variants{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.desc{line-height:1.9;color:#bdc9cf}.tags{display:flex;gap:8px;flex-wrap:wrap}.tags span{padding:6px 10px;background:#25333d;color:#dbc19a;font-size:12px;border-radius:3px}.meta{padding-top:16px;border-top:1px solid var(--line);margin-top:20px;font-size:13px;line-height:1.9;color:var(--muted)}#status{color:var(--accent);font-size:13px;min-height:22px}.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px}#time{font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+@media(max-width:800px){header{padding:20px;gap:20px}main{grid-template-columns:1fr;padding:16px}nav small{display:none}h1{font-size:21px}.controls{gap:7px}}
+</style></head><body>
+<header><div><h1>Vibe · 自有场景</h1><p>从已完成作品中保留动作、材质和运镜，换内容后继续使用。</p></div><a href="/">20种风格 ↗</a><a href="/teaching-scenes/">AI教学素材库 ↗</a></header>
+<main><nav aria-label="自有场景"></nav><section>
+<div class="screen"><iframe id="player" title="实体天平场景预览" allow="autoplay"></iframe></div>
+<div class="controls"><button id="play">播放</button><button id="restart">重播</button><input id="seek" type="range" min="0" max="8.5" step="0.01" value="0" aria-label="场景时间"><span id="time">0.00 / 8.50秒</span></div>
+<h2 id="title"></h2><p class="desc" id="desc"></p><div class="tags" id="tags"></div>
+<div class="variants"></div>
+<p id="status" aria-live="polite">正在准备场景…</p>
+<div class="meta"><div id="source"></div><div id="version-note"></div><div>保留原场景实现与联动运镜。预览无配乐。</div></div>
+<div class="links"><a id="rendered" hidden target="_blank" rel="noopener">查看已导出MP4 ↗</a><a href="README.md" target="_blank" rel="noopener">如何改内容与复用 ↗</a><a id="settings" target="_blank" rel="noopener">参数文件 ↗</a></div>
+</section></main><script src="player.js"></script></body></html>

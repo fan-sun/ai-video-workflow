@@ -1,0 +1,17 @@
+{
+  "id": "task-handoff",
+  "preset": "original",
+  "timings": ".local/teaching-scenes/inputs/original/timings.json",
+  "audio": ".local/teaching-scenes/inputs/original/voice.wav",
+  "binding": {
+    "divide": "g08.u01",
+    "price": "g09.u01",
+    "feedback": "g09.u02",
+    "channels": "g09.u03",
+    "ownership": "g10.u01",
+    "gather": "g11.u01",
+    "transfer": "g11.u02",
+    "report": "g12.u01",
+    "question": "g12.u02"
+  }
+}

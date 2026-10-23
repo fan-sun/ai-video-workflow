@@ -1,0 +1,9 @@
+{
+  "preset": "demo",
+  "settings": {
+    "focusOrder": [
+      0,
+      1
+    ]
+  }
+}

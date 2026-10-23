@@ -1,0 +1,64 @@
+{
+  "source_html": "course/acts/ep04_spotlight-effect/act3-v14.html",
+  "source_html_sha256": "0b608445bdbf66082236b5918c7e61864313877f89ba61a2be18f7124d1b7c01",
+  "source_act_range_s": [
+    18.333333333333332,
+    27.4
+  ],
+  "whole_video_range_s": [
+    86.033333,
+    95.1
+  ],
+  "files": [
+    {
+      "source": "course/episodes/04-spotlight-effect/gsap-3.14.2.min.js",
+      "copy": "assets/gsap-3.14.2.min.js",
+      "source_sha256": "c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280",
+      "copy_sha256": "c174bfce53a729418d57a8ad8625e7247c793a22fef8e2851e3cfa3de9cd8280",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/04-spotlight-effect/three-0.160.1.iife.min.js",
+      "copy": "assets/three-0.160.1.iife.min.js",
+      "source_sha256": "31f06be85c6516e39f09641472979d2f5df71868829c1094ed5cd06cce3a10dd",
+      "copy_sha256": "31f06be85c6516e39f09641472979d2f5df71868829c1094ed5cd06cce3a10dd",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/04-spotlight-effect/点题字形-v5.js",
+      "copy": "assets/点题字形-v5.js",
+      "source_sha256": "bb87fdb8f1c19422f4e93790598f6f4114a152a6096aa595b9904579b5d8a9b0",
+      "copy_sha256": "bb87fdb8f1c19422f4e93790598f6f4114a152a6096aa595b9904579b5d8a9b0",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/04-spotlight-effect/第三幕-v14.js",
+      "copy": "assets/第三幕-v14.js",
+      "source_sha256": "16a35fa44527075efacf2904ad54de2fd81c9f66065ac7b03d3e893c33e9f4d5",
+      "copy_sha256": "35a74991aa401e62b3265469563280f9f07dc4faab8dc10d7010b7376eb1ff85",
+      "modified": true
+    },
+    {
+      "source": "course/episodes/04-spotlight-effect/素材-v9/barry-manilow-1975.jpg",
+      "copy": "assets/barry-manilow-1975.jpg",
+      "source_sha256": "a81519bd33c8cdba6bce8ceb17179c3479bb5a0f5e45a32cb3090cafadb00c34",
+      "copy_sha256": "a81519bd33c8cdba6bce8ceb17179c3479bb5a0f5e45a32cb3090cafadb00c34",
+      "modified": false
+    },
+    {
+      "source": "templates/course-explainer-3x4/fonts/NotoSansSC-400.woff2",
+      "copy": "fonts/NotoSansSC-400.woff2",
+      "source_sha256": "96e7fe4f909adfea3ce8a3b7af76842e6265a84e1b8e4ef892dab7169eabe185",
+      "copy_sha256": "96e7fe4f909adfea3ce8a3b7af76842e6265a84e1b8e4ef892dab7169eabe185",
+      "modified": false
+    },
+    {
+      "source": "templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2",
+      "copy": "fonts/NotoSansSC-700.woff2",
+      "source_sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba",
+      "copy_sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba",
+      "modified": false
+    }
+  ],
+  "note": "保存原实现与必要依赖，仅裁定独立时间段、去除本期字幕并开放参数；保留未进入的场景构造以避免破坏共享对象。"
+}

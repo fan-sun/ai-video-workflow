@@ -1,0 +1,2 @@
+// 片段配置在原场景脚本之前初始化。
+globalThis.SceneSpec={"id":"choice-comparison","start":11.333333333333334,"end":15.4,"duration":4.066666666666666};const preset=new URLSearchParams(location.search).get("preset")||"original";if(!SceneConfig.presets[preset])throw new Error("未知版本");globalThis.SceneOptions=SceneConfig.normalize(globalThis.SCENE_BUILD_OPTIONS||SceneConfig.presets[preset]);window.SCENE_REFERENCE=false;

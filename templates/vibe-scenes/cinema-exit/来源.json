@@ -1,0 +1,85 @@
+{
+  "source_html": "course/acts/ep02_sunk-cost-love/act3-background-v2/index.html",
+  "source_html_sha256": "b653a2c6d23cc8e58d9840eecd4c54a6bd2ee35f4a55c4062dd919772b8b0516",
+  "source_act_range_s": [
+    21.3,
+    31.3
+  ],
+  "whole_video_range_s": [
+    84.8,
+    94.8
+  ],
+  "files": [
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/bridge.js",
+      "copy": "bridge.js",
+      "source_sha256": "c271e53668e227cdcef86d9b7e6676519e4216d570282706f0f9b7867efb927c",
+      "copy_sha256": "c271e53668e227cdcef86d9b7e6676519e4216d570282706f0f9b7867efb927c",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/environment.js",
+      "copy": "environment.js",
+      "source_sha256": "604d425c7b7359883dc65968179b1ff0e2e29ee8def5b6637ba8277c6f80608d",
+      "copy_sha256": "604d425c7b7359883dc65968179b1ff0e2e29ee8def5b6637ba8277c6f80608d",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/memories.js",
+      "copy": "memories.js",
+      "source_sha256": "4ead6d8ecf2c0fd913d1e840c62f04543a795a1636fdc3a7d48173acb15327f6",
+      "copy_sha256": "4ead6d8ecf2c0fd913d1e840c62f04543a795a1636fdc3a7d48173acb15327f6",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/motion.js",
+      "copy": "motion.js",
+      "source_sha256": "53d3b5af11b25ed453674d9e69656d304e340ab6c147c56af0b10c11b6122030",
+      "copy_sha256": "6681032888b04330f69b74b7a49264323498a627c41af4bc517c8f9073f3d674",
+      "modified": true
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/opening.js",
+      "copy": "opening.js",
+      "source_sha256": "339eeb452735a3ba2240a6b7a4cd946d02a79620534a1ad5c3f452283575a13f",
+      "copy_sha256": "339eeb452735a3ba2240a6b7a4cd946d02a79620534a1ad5c3f452283575a13f",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/scene.js",
+      "copy": "scene.js",
+      "source_sha256": "224f3c3f7b8ff67386205cc1cbe6c9e7de82a42be1fb17ed512de861689ef29a",
+      "copy_sha256": "15a3cb095b5df2833dbb8a7a6c45c7e9144e03db620f7af62509ecbed3b4e70d",
+      "modified": true
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/assets/bridge-background.png",
+      "copy": "assets/bridge-background.png",
+      "source_sha256": "56c339a63d9970eafc9042091b905d21b1f5fbc44bc17d70f614deacf316ab77",
+      "copy_sha256": "56c339a63d9970eafc9042091b905d21b1f5fbc44bc17d70f614deacf316ab77",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/assets/object-sans.woff2",
+      "copy": "assets/object-sans.woff2",
+      "source_sha256": "06102fc9fb5b3b18d13750471a14a52d0cb3f1ea04b5082e5da773e600bf45eb",
+      "copy_sha256": "06102fc9fb5b3b18d13750471a14a52d0cb3f1ea04b5082e5da773e600bf45eb",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/assets/story-serif.woff2",
+      "copy": "assets/story-serif.woff2",
+      "source_sha256": "c525ed81b156a7a4d7393bc145b670f897cdfdbb638f7e1fdcbfe4f7cee7c74b",
+      "copy_sha256": "c525ed81b156a7a4d7393bc145b670f897cdfdbb638f7e1fdcbfe4f7cee7c74b",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep02_sunk-cost-love/act3-background-v2/vendor/gsap.min.js",
+      "copy": "vendor/gsap.min.js",
+      "source_sha256": "9d6dd3499d49b3f3bc9ddf1754535134354bf787fcd6029beabaf630bf69be44",
+      "copy_sha256": "9d6dd3499d49b3f3bc9ddf1754535134354bf787fcd6029beabaf630bf69be44",
+      "modified": false
+    }
+  ],
+  "note": "保存原实现与必要依赖，仅裁定独立时间段、去除本期字幕并开放参数；保留未进入的场景构造以避免破坏共享对象。"
+}

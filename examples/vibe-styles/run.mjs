@@ -53,10 +53,27 @@ export function serve(port=Number(process.env.STYLE_PREVIEW_PORT||5591)){
       let base=HERE,relative=name==='/'?'index.html':name.slice(1);
       if(name.startsWith('/ref/')){base=SOURCE;relative=name.slice(5);}
       if(name.startsWith('/prepared/')){base=WORK;relative=name.slice(10);}
+      if(name.startsWith('/scenes/')){base=path.join(ROOT,'examples/vibe-scenes');relative=name.slice(8)||'index.html';}
+      if(name.startsWith('/scene-library/')){base=path.join(ROOT,'templates/vibe-scenes');relative=name.slice(15);}
+      if(name.startsWith('/scene-prepared/')){base=path.join(ROOT,'.local/vibe-scenes');relative=name.slice(16);}
+      if(name.startsWith('/teaching-scenes/')){base=path.join(ROOT,'examples/teaching-scenes');relative=name.slice(17)||'index.html';}
+      if(name.startsWith('/teaching-prepared/')){base=path.join(ROOT,'.local/teaching-scenes');relative=name.slice(19);}
       const file=path.resolve(base,relative),rel=path.relative(base,file);
       if(rel.startsWith('..')||path.isAbsolute(rel)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
       const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.md':'text/plain; charset=utf-8','.mp4':'video/mp4','.jpg':'image/jpeg','.png':'image/png','.woff2':'font/woff2','.json':'application/json; charset=utf-8'};
-      res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});
+      const headers={'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'};
+      if(path.extname(file)==='.mp4'){
+        const size=fs.statSync(file).size;headers['Accept-Ranges']='bytes';
+        if(req.headers.range){
+          const match=/^bytes=(\d+)-(\d*)$/.exec(req.headers.range);
+          const start=match?Number(match[1]):-1,end=match&&match[2]?Math.min(Number(match[2]),size-1):size-1;
+          if(start<0||start>=size||end<start){res.writeHead(416,{'Content-Range':'bytes */'+size});res.end();return;}
+          res.writeHead(206,{...headers,'Content-Range':`bytes ${start}-${end}/${size}`,'Content-Length':end-start+1});
+          fs.createReadStream(file,{start,end}).on('error',error=>res.destroy(error)).pipe(res);return;
+        }
+        headers['Content-Length']=size;
+      }
+      res.writeHead(200,headers);
       fs.createReadStream(file).on('error',error=>res.destroy(error)).pipe(res);
     }catch(error){res.writeHead(400);res.end('Invalid path');}
   });

@@ -1,0 +1,4 @@
+{
+  "preset":"focus",
+  "settings":{"title":"精力分配","leftLabel":"日常事务","rightLabel":"重点任务","leftGlyph":"日","rightGlyph":"重","ratio":3}
+}

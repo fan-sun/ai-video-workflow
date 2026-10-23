@@ -1,0 +1,536 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>任务分工与交接</title><style>
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-400.woff2") format("woff2");
+        font-weight: 400;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Course";
+        src: url("fonts/NotoSansSC-700.woff2") format("woff2");
+        font-weight: 700;
+        font-display: block;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      :root {
+        --paper: #eeeade;
+        --paper-bright: #fbf8ed;
+        --ink: #20231f;
+        --steel: #53686e;
+        --steel-light: #cfd7d5;
+        --brass: #ad7928;
+        --brass-light: #e0bb73;
+        --red: #c53e2d;
+      }
+      #opening {
+        width: 1080px;
+        height: 1440px;
+        overflow: hidden;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Course", sans-serif;
+      }
+      #opening {
+        position: relative;
+        isolation: isolate;
+        background-image:
+          radial-gradient(circle at 50% 46%, rgba(255, 255, 250, 0.98), transparent 38%),
+          linear-gradient(90deg, rgba(197, 62, 45, 0.055) 1px, transparent 1px),
+          linear-gradient(rgba(83, 104, 110, 0.055) 1px, transparent 1px);
+        background-size: auto, 54px 54px, 54px 54px;
+      }
+      #opening::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.11;
+        pointer-events: none;
+        z-index: 30;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.26' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #opening::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 3px solid var(--ink);
+        box-shadow: inset 0 0 0 7px rgba(83, 104, 110, 0.12);
+        pointer-events: none;
+        z-index: 40;
+      }
+      .corner {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-color: var(--red);
+        z-index: 41;
+      }
+      .corner.tl { left: 29px; top: 29px; border-left: 8px solid; border-top: 8px solid; }
+      .corner.tr { right: 29px; top: 29px; border-right: 8px solid; border-top: 8px solid; }
+      .corner.bl { left: 29px; bottom: 29px; border-left: 8px solid; border-bottom: 8px solid; }
+      .corner.br { right: 29px; bottom: 29px; border-right: 8px solid; border-bottom: 8px solid; }
+
+      .top-deck {
+        position: absolute;
+        top: 46px;
+        left: 54px;
+        width: 972px;
+        height: 230px;
+        z-index: 18;
+      }
+      .brand-row {
+        height: 78px;
+        display: grid;
+        grid-template-columns: 1fr 100px 1fr;
+        align-items: center;
+        border-bottom: 4px solid var(--ink);
+      }
+      .brand {
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+      }
+      .leaf {
+        justify-self: center;
+        width: 76px;
+        height: 76px;
+        object-fit: contain;
+      }
+      .serial {
+        justify-self: end;
+        font: 700 17px/1.2 monospace;
+        letter-spacing: 0.11em;
+        color: var(--steel);
+        text-align: right;
+      }
+      .telemetry {
+        height: 92px;
+        display: grid;
+        grid-template-columns: 1.15fr 1fr 1fr 1.35fr;
+        border-bottom: 2px solid var(--ink);
+      }
+      .telemetry-cell {
+        position: relative;
+        padding: 14px 17px 10px;
+        border-right: 2px solid rgba(32, 35, 31, 0.66);
+        overflow: hidden;
+      }
+      .telemetry-cell:last-child { border-right: 0; }
+      .telemetry-cell::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--steel);
+      }
+      .telemetry-cell.alert::before { background: var(--red); }
+      .kicker {
+        display: block;
+        color: var(--steel);
+        font: 700 14px/1 monospace;
+        letter-spacing: 0.13em;
+      }
+      .metric {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 10px;
+        font: 700 23px/1 monospace;
+        letter-spacing: 0.04em;
+      }
+      .status-light {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--red);
+        box-shadow: 0 0 0 5px rgba(197, 62, 45, 0.13);
+      }
+      .micro-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        height: 25px;
+      }
+      .micro-bars i { width: 5px; background: var(--brass); }
+      .micro-bars i:nth-child(1) { height: 9px; }
+      .micro-bars i:nth-child(2) { height: 17px; }
+      .micro-bars i:nth-child(3) { height: 12px; }
+      .micro-bars i:nth-child(4) { height: 23px; }
+      .micro-bars i:nth-child(5) { height: 15px; }
+      .ruler {
+        height: 31px;
+        border-bottom: 2px solid var(--ink);
+        background:
+          linear-gradient(90deg, transparent 49.7%, var(--red) 49.7% 50.3%, transparent 50.3%),
+          repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 27px);
+        background-size: 100% 100%, 100% 13px;
+        background-position: 0 0, 0 18px;
+        background-repeat: no-repeat;
+      }
+
+      .lead-wrap {
+        position: absolute;
+        top: 303px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 14;
+      }
+      .lead-index {
+        display: block;
+        margin-bottom: 12px;
+        color: #a92f23;
+        font: 700 16px/1 monospace;
+        letter-spacing: 0.25em;
+      }
+      .lead {
+        display: inline-block;
+        color: var(--steel);
+        font-size: 47px;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+      }
+      .side-code {
+        position: absolute;
+        top: 437px;
+        color: #52676d;
+        font: 700 13px/1 monospace;
+        letter-spacing: 0.12em;
+        writing-mode: vertical-rl;
+        z-index: 8;
+      }
+      .side-code.left { left: 35px; transform: rotate(180deg); }
+      .side-code.right { right: 35px; }
+
+      .machine {
+        position: absolute;
+        top: 425px;
+        left: 54px;
+        width: 972px;
+        height: 565px;
+        perspective: 1800px;
+        z-index: 12;
+      }
+      .target-ring {
+        position: absolute;
+        top: 3px;
+        left: 208px;
+        width: 556px;
+        height: 556px;
+        border: 2px solid rgba(83, 104, 110, 0.45);
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .target-ring::before,
+      .target-ring::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        border: 2px dashed rgba(173, 121, 40, 0.65);
+      }
+      .target-ring::before { inset: 43px; }
+      .target-ring::after { inset: 102px; border-color: rgba(197, 62, 45, 0.45); }
+      .axis-h, .axis-v {
+        position: absolute;
+        background: rgba(83, 104, 110, 0.34);
+        opacity: 0;
+      }
+      .axis-h { top: 280px; left: 16px; width: 940px; height: 2px; }
+      .axis-v { top: 16px; left: 485px; width: 2px; height: 530px; }
+      .machine-core {
+        position: absolute;
+        top: 67px;
+        left: 10px;
+        width: 952px;
+        height: 430px;
+        transform-origin: center center;
+      }
+      .backplate {
+        position: absolute;
+        inset: 0;
+        border: 6px solid var(--ink);
+        background:
+          linear-gradient(155deg, rgba(255,255,255,.68), transparent 37%),
+          repeating-linear-gradient(135deg, rgba(83,104,110,.085) 0 9px, transparent 9px 18px),
+          #ddd9cd;
+        box-shadow: 15px 18px 0 rgba(32, 35, 31, 0.15), 0 0 0 8px rgba(255,255,255,.32);
+        opacity: 0;
+      }
+      .backplate::before {
+        content: "";
+        position: absolute;
+        inset: 22px;
+        border: 3px solid var(--steel);
+        background: rgba(253, 251, 244, 0.8);
+      }
+      .backplate::after {
+        content: "";
+        position: absolute;
+        inset: 60px 50px;
+        border: 4px solid #713844;
+        background: #f7efe7;
+        box-shadow: inset 0 0 0 7px rgba(113, 56, 68, 0.08);
+      }
+      .bolt {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        background: var(--steel-light);
+        z-index: 4;
+      }
+      .bolt::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        right: 4px;
+        top: 11px;
+        height: 3px;
+        background: var(--ink);
+        transform: rotate(-28deg);
+      }
+      .b1 { left: 38px; top: 38px; }
+      .b2 { right: 38px; top: 38px; }
+      .b3 { left: 38px; bottom: 38px; }
+      .b4 { right: 38px; bottom: 38px; }
+      .camera {
+        position: absolute;
+        inset: 66px 0;
+        perspective: 1800px;
+        perspective-origin: 50% 50%;
+        z-index: 10;
+      }
+      .retreat {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: scale(3.8);
+        transform-style: preserve-3d;
+      }
+      .word {
+        position: relative;
+        color: var(--ink);
+        font-size: 178px;
+        font-weight: 700;
+        line-height: 1.24;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+        transform-style: preserve-3d;
+        transform-origin: 50% 50%;
+      }
+      .face {
+        position: relative;
+        display: block;
+        z-index: 5;
+        transform: translateZ(3px);
+        color: #713844;
+        backface-visibility: visible;
+      }
+      .depth {
+        position: absolute;
+        inset: 0;
+        display: block;
+        color: var(--brass);
+        pointer-events: none;
+        backface-visibility: visible;
+      }
+      .clamp {
+        position: absolute;
+        top: 128px;
+        width: 61px;
+        height: 178px;
+        border: 4px solid var(--ink);
+        background: linear-gradient(90deg, #40555c, #91a1a3 50%, #40555c);
+        box-shadow: 7px 8px 0 rgba(32,35,31,.14);
+        opacity: 0;
+        z-index: 13;
+      }
+      .clamp::after {
+        content: "";
+        position: absolute;
+        top: 61px;
+        width: 34px;
+        height: 47px;
+        border: 4px solid var(--ink);
+        background: var(--brass-light);
+      }
+      .clamp-left { left: -5px; }
+      .clamp-left::after { left: 57px; border-left: 0; }
+      .clamp-right { right: -5px; }
+      .clamp-right::after { right: 57px; border-right: 0; }
+      .scanner {
+        position: absolute;
+        top: 52px;
+        bottom: 52px;
+        left: 0;
+        width: 12px;
+        opacity: 0;
+        background: linear-gradient(90deg, transparent, rgba(197,62,45,.76), rgba(255,255,255,.95), transparent);
+        box-shadow: 0 0 21px rgba(197,62,45,.48);
+        z-index: 16;
+      }
+      .shine {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.8) 49%, transparent 60%);
+        transform: translateX(-120%);
+        pointer-events: none;
+        z-index: 15;
+      }
+      .shine, .scanner { opacity: 0 !important; }
+      .burst {
+        position: absolute;
+        top: 280px;
+        left: 486px;
+        width: 405px;
+        height: 5px;
+        background: linear-gradient(90deg, var(--red), transparent);
+        transform-origin: left center;
+        opacity: 0;
+        z-index: 2;
+      }
+      .burst.b2x { transform: rotate(45deg); }
+      .burst.b3x { transform: rotate(90deg); }
+      .burst.b4x { transform: rotate(135deg); }
+      .burst.b5x { transform: rotate(180deg); }
+      .burst.b6x { transform: rotate(225deg); }
+      .burst.b7x { transform: rotate(270deg); }
+      .burst.b8x { transform: rotate(315deg); }
+
+      .lower-deck {
+        position: absolute;
+        left: 54px;
+        bottom: 48px;
+        width: 972px;
+        height: 344px;
+        z-index: 14;
+      }
+      .progress-track {
+        height: 50px;
+        border: 3px solid var(--ink);
+        padding: 7px;
+        background: rgba(251, 248, 237, .62);
+      }
+      .progress-grid {
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+        background: repeating-linear-gradient(90deg, rgba(83,104,110,.38) 0 2px, transparent 2px 31px);
+      }
+      .progress-fill {
+        position: absolute;
+        inset: 0;
+        transform: scaleX(0);
+        transform-origin: left center;
+        background: linear-gradient(90deg, var(--brass), var(--red));
+        mix-blend-mode: multiply;
+      }
+      .progress-head {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        right: 0;
+        width: 7px;
+        background: var(--ink);
+      }
+      .lower-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 67px;
+        border-bottom: 3px solid var(--ink);
+        font: 700 17px/1 monospace;
+        letter-spacing: 0.14em;
+      }
+      .lower-title strong {
+        padding: 9px 13px;
+        color: var(--paper-bright);
+        background: var(--ink);
+        font-size: 15px;
+      }
+      .module-grid {
+        height: 139px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        border-bottom: 3px solid var(--ink);
+      }
+      .module {
+        position: relative;
+        padding: 20px 18px;
+        border-right: 3px solid var(--ink);
+        overflow: hidden;
+      }
+      .module:last-child { border-right: 0; }
+      .module-label {
+        display: block;
+        color: var(--steel);
+        font: 700 13px/1 monospace;
+        letter-spacing: 0.16em;
+      }
+      .module-value {
+        display: block;
+        margin-top: 18px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: .06em;
+      }
+      .signal {
+        position: absolute;
+        right: 17px;
+        bottom: 20px;
+        display: flex;
+        gap: 5px;
+        align-items: flex-end;
+        height: 48px;
+      }
+      .signal i { width: 8px; border: 2px solid var(--ink); background: var(--brass-light); }
+      .signal i:nth-child(1) { height: 14px; }
+      .signal i:nth-child(2) { height: 25px; }
+      .signal i:nth-child(3) { height: 37px; }
+      .signal i:nth-child(4) { height: 48px; background: var(--red); }
+      .footer {
+        height: 77px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--steel);
+        font-size: 23px;
+        letter-spacing: 0.12em;
+      }
+      .footer-mark {
+        width: 212px;
+        height: 18px;
+        background: repeating-linear-gradient(110deg, var(--brass) 0 8px, transparent 8px 17px);
+      }
+    
+
+@font-face{font-family:Course;src:url("fonts/NotoSansSC-400.woff2");font-weight:400;font-display:block}
+@font-face{font-family:Course;src:url("fonts/NotoSansSC-700.woff2");font-weight:700;font-display:block}
+*{box-sizing:border-box;margin:0}html,body,#root{width:1080px;height:1440px;overflow:hidden}
+body{font-family:Course,sans-serif;color:#20231f;background:#eeeade}#root{position:relative;isolation:isolate;background:#eeeade}
+.body-paper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,#fffdf6 0,transparent 62%),linear-gradient(90deg,#53686e0c 1px,transparent 1px),linear-gradient(#53686e0c 1px,transparent 1px);background-size:auto,54px 54px,54px 54px}
+.scene{position:absolute;inset:0;opacity:0}.scene h2{position:absolute;left:70px;top:155px;width:940px;font-size:57px;line-height:1.3;font-weight:700;letter-spacing:-1px}
+.scene h2:before{content:"";display:block;width:70px;height:8px;background:#b23b32;margin-bottom:23px}
+.item{position:absolute;opacity:0;transform-origin:50% 50%}.item svg{display:block;width:100%;height:100%;overflow:visible}
+.object{display:flex;flex-direction:column;align-items:center;gap:12px}.object .art{width:100%;height:calc(100% - 58px)}.object .caption{font-size:33px;line-height:1.2;font-weight:700;text-align:center;white-space:nowrap}
+.note{padding:24px 28px;background:#fbf8ed;border:2px solid #53686e;box-shadow:8px 9px 0 #20231f12;font-size:34px;line-height:1.48;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700}
+.note.red{color:#a43831;border-color:#b23b32;background:#f5e4dc}.note.gold{background:#ead29b;border-color:#ad7928}.note.green{background:#e1e9e0;color:#315d54;border-color:#47746a}
+.note.role{padding:10px;font-size:30px}
+.doc{background:#fbf8ed;border:3px solid #53686e;box-shadow:10px 12px 0 #20231f15;padding:27px 25px;display:flex;flex-direction:column;gap:15px;overflow:hidden}
+.doc:after{content:"";position:absolute;top:0;right:0;width:27px;height:27px;background:linear-gradient(45deg,#d8d8c9 48%,#eeeade 50%);border-left:1px solid #53686e;border-bottom:1px solid #53686e}
+.doc strong{font-size:35px;line-height:1.35}.doc p{font-size:29px;line-height:1.5;color:#53686e}.doc .ruled{height:11px;background:#53686e30;width:100%;margin-top:10px}.doc .ruled.short{width:65%}
+.doc.compact{padding:20px 22px;gap:9px}.doc.compact strong{font-size:33px;line-height:1.3}.doc.compact p{font-size:27px;line-height:1.35}
+.tagline{font-size:34px;line-height:1.5;color:#53686e;font-weight:700;text-align:center}.bigtype{font-size:72px;font-weight:700;line-height:1.2;text-align:center;letter-spacing:-2px}.bigtype.red{color:#b23b32}
+.line{pointer-events:none}.line svg{overflow:visible}.mini-row{display:flex;gap:13px;align-items:center;justify-content:center}.mini-row span{padding:10px 13px;border:2px solid #53686e;background:#fbf8ed;font-size:27px;font-weight:700;white-space:nowrap}
+.seal{border:5px solid #b23b32;color:#b23b32;padding:16px 22px;font-size:36px;line-height:1.3;font-weight:700;text-align:center;background:#fbf8edf5;transform:rotate(-5deg)}
+.split-heading{font-size:37px;line-height:1.3;text-align:center;font-weight:700;color:#53686e}
+.substrip{position:absolute;left:60px;top:1190px;width:960px;height:205px;z-index:80}.sub{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:43px;line-height:1.55;font-weight:700;opacity:0;color:#20231f}.subtext{display:block;width:100%;text-wrap:balance}.hl{background:#ead29b;padding:0 4px;color:#963b30;border-radius:4px}
+.refshot{background:#fbf8ed;border:2px solid #53686e;box-shadow:9px 10px 0 #20231f15;padding:10px}.refshot img{width:100%;height:100%;object-fit:contain}.checkrow{padding:18px 24px;border-bottom:2px solid #53686e;font-size:39px;font-weight:700;display:flex;align-items:center;gap:22px;background:#fbf8ed}.checkrow:before{content:"✓";color:#47746a;font-size:46px}
+
+#root{width:1080px;height:1440px;overflow:hidden}
+</style></head><body><main id="root" data-composition-id="main" data-start="0" data-duration="__DURATION__" data-width="1080" data-height="1440"><div class="body-paper" data-layout-ignore></div><section id="s2" class="scene"><h2>三个助手，各查一个方向</h2><div id="a1e20" class="item object" style="left:90px;top:365px;width:240px;height:250px" data-reveal-at="25.426" data-reveal-duration="0.65" data-beat="25.426" aria-label="bot 竞品调查"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><ellipse cx="130" cy="203" rx="105" ry="11" fill="#20231f18"/><path d="M130 33V12" stroke="#20231f" stroke-width="6"/><circle cx="130" cy="12" r="9" fill="#d4ab58" stroke="#20231f" stroke-width="4"/><path d="M41 101 18 121 32 157M219 101l23 20-14 36" stroke="#20231f" stroke-width="10" stroke-linecap="round"/><rect x="44" y="33" width="172" height="113" rx="31" fill="#fbf8ed" stroke="#20231f" stroke-width="6"/><rect x="65" y="55" width="130" height="66" rx="17" fill="#47746a"/><circle cx="103" cy="85" r="10" fill="#fbf8ed"/><circle cx="157" cy="85" r="10" fill="#fbf8ed"/><path d="M112 107h36" stroke="#fbf8ed" stroke-width="4" stroke-linecap="round"/><path d="m71 146-9 40h136l-9-40" fill="#47746a" stroke="#20231f" stroke-width="6"/><rect x="103" y="155" width="54" height="18" rx="6" fill="#d4ab58"/><path d="M85 188v11m90-11v11" stroke="#20231f" stroke-width="9"/></svg></div><div class="caption">竞品调查</div></div><div id="a1e21" class="item object" style="left:420px;top:365px;width:240px;height:250px" data-reveal-at="25.575999999999997" data-reveal-duration="0.65" data-beat="25.575999999999997" aria-label="bot 反馈调查"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><ellipse cx="130" cy="203" rx="105" ry="11" fill="#20231f18"/><path d="M130 33V12" stroke="#20231f" stroke-width="6"/><circle cx="130" cy="12" r="9" fill="#d4ab58" stroke="#20231f" stroke-width="4"/><path d="M41 101 18 121 32 157M219 101l23 20-14 36" stroke="#20231f" stroke-width="10" stroke-linecap="round"/><rect x="44" y="33" width="172" height="113" rx="31" fill="#fbf8ed" stroke="#20231f" stroke-width="6"/><rect x="65" y="55" width="130" height="66" rx="17" fill="#b23b32"/><circle cx="103" cy="85" r="10" fill="#fbf8ed"/><circle cx="157" cy="85" r="10" fill="#fbf8ed"/><path d="M112 107h36" stroke="#fbf8ed" stroke-width="4" stroke-linecap="round"/><path d="m71 146-9 40h136l-9-40" fill="#b23b32" stroke="#20231f" stroke-width="6"/><rect x="103" y="155" width="54" height="18" rx="6" fill="#d4ab58"/><path d="M85 188v11m90-11v11" stroke="#20231f" stroke-width="9"/></svg></div><div class="caption">反馈调查</div></div><div id="a1e22" class="item object" style="left:750px;top:365px;width:240px;height:250px" data-reveal-at="25.726" data-reveal-duration="0.65" data-beat="25.726" aria-label="bot 渠道调查"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><ellipse cx="130" cy="203" rx="105" ry="11" fill="#20231f18"/><path d="M130 33V12" stroke="#20231f" stroke-width="6"/><circle cx="130" cy="12" r="9" fill="#d4ab58" stroke="#20231f" stroke-width="4"/><path d="M41 101 18 121 32 157M219 101l23 20-14 36" stroke="#20231f" stroke-width="10" stroke-linecap="round"/><rect x="44" y="33" width="172" height="113" rx="31" fill="#fbf8ed" stroke="#20231f" stroke-width="6"/><rect x="65" y="55" width="130" height="66" rx="17" fill="#53686e"/><circle cx="103" cy="85" r="10" fill="#fbf8ed"/><circle cx="157" cy="85" r="10" fill="#fbf8ed"/><path d="M112 107h36" stroke="#fbf8ed" stroke-width="4" stroke-linecap="round"/><path d="m71 146-9 40h136l-9-40" fill="#53686e" stroke="#20231f" stroke-width="6"/><rect x="103" y="155" width="54" height="18" rx="6" fill="#d4ab58"/><path d="M85 188v11m90-11v11" stroke="#20231f" stroke-width="9"/></svg></div><div class="caption">渠道调查</div></div><div id="a1e23" class="item object" style="left:100px;top:710px;width:230px;height:250px" data-reveal-at="28.005" data-reveal-duration="0.65" data-beat="g09.u01" aria-label="price 保留价格资料"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="m38 47 126-18 66 63-118 115-79-83Z" fill="#d4ab58" stroke="#20231f" stroke-width="6"/><circle cx="66" cy="76" r="12" fill="#fbf8ed" stroke="#20231f" stroke-width="5"/><path d="M64 64C15 35 8 11 51 17" stroke="#53686e" stroke-width="5"/><path d="m117 83 18 23 18-23m-18 22v42m-26-31h52m-52 15h52" stroke="#20231f" stroke-width="7" stroke-linecap="round"/></svg></div><div class="caption">保留价格资料</div></div><div id="a1e24" class="item line" style="left:180px;top:605px;width:60px;height:115px" data-reveal-at="28.005" data-reveal-duration="0.65" data-beat="g09.u01" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 115" fill="none" aria-hidden="true" data-layout-ignore><path d="M30 30 L30 85" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="85" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:16px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e25" class="item object" style="left:430px;top:710px;width:230px;height:250px" data-reveal-at="30.108" data-reveal-duration="0.65" data-beat="g09.u02" aria-label="comment 归纳用户问题"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="M25 27h210v137H92l-45 39v-39H25Z" fill="#fbf8ed" stroke="#20231f" stroke-width="6"/><circle cx="69" cy="73" r="18" fill="#c8d3cb" stroke="#53686e" stroke-width="4"/><path d="M108 60h90M108 83h65M52 121h148" stroke="#53686e" stroke-width="9" stroke-linecap="round"/></svg></div><div class="caption">归纳用户问题</div></div><div id="a1e26" class="item line" style="left:510px;top:605px;width:60px;height:115px" data-reveal-at="30.108" data-reveal-duration="0.65" data-beat="g09.u02" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 115" fill="none" aria-hidden="true" data-layout-ignore><path d="M30 30 L30 85" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="85" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:16px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e27" class="item object" style="left:760px;top:710px;width:230px;height:250px" data-reveal-at="32.21" data-reveal-duration="0.65" data-beat="g09.u03" aria-label="map 核对覆盖范围"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="m20 43 72-22 79 23 69-23v157l-69 24-79-22-72 22Z" fill="#dce3d4" stroke="#20231f" stroke-width="5"/><path d="M92 22v158m79-136v158" stroke="#53686e" stroke-width="3"/><path d="m29 133 49-38 38 20 47-38 64 23M54 36l25 60 20 80m23-145 9 59 89 66" stroke="#fbf8ed" stroke-width="13"/><path d="M143 83c0-19 31-26 39-6 8 19-18 43-18 43s-21-21-21-37Z" fill="#b23b32" stroke="#20231f" stroke-width="4"/><circle cx="163" cy="83" r="7" fill="#fbf8ed"/></svg></div><div class="caption">核对覆盖范围</div></div><div id="a1e28" class="item line" style="left:840px;top:605px;width:60px;height:115px" data-reveal-at="32.21" data-reveal-duration="0.65" data-beat="g09.u03" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 115" fill="none" aria-hidden="true" data-layout-ignore><path d="M30 30 L30 85" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="85" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:16px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e29" class="item mini-row" style="left:80px;top:1025px;width:260px;height:80px" data-reveal-at="34.827" data-reveal-duration="0.65" data-beat="34.827" aria-label="任务、资料、工具"><span>任务</span><span>资料</span><span>工具</span></div><div id="a1e30" class="item mini-row" style="left:410px;top:1025px;width:260px;height:80px" data-reveal-at="35.007" data-reveal-duration="0.65" data-beat="35.007" aria-label="任务、资料、工具"><span>任务</span><span>资料</span><span>工具</span></div><div id="a1e31" class="item mini-row" style="left:740px;top:1025px;width:260px;height:80px" data-reveal-at="35.187" data-reveal-duration="0.65" data-beat="35.187" aria-label="任务、资料、工具"><span>任务</span><span>资料</span><span>工具</span></div></section><section id="s3" class="scene"><h2>分完工，还要接回来</h2><div id="a1e32" class="item object" style="left:100px;top:355px;width:220px;height:235px" data-reveal-at="38.024" data-reveal-duration="0.65" data-beat="g11.u01" aria-label="price 价格"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="m38 47 126-18 66 63-118 115-79-83Z" fill="#d4ab58" stroke="#20231f" stroke-width="6"/><circle cx="66" cy="76" r="12" fill="#fbf8ed" stroke="#20231f" stroke-width="5"/><path d="M64 64C15 35 8 11 51 17" stroke="#53686e" stroke-width="5"/><path d="m117 83 18 23 18-23m-18 22v42m-26-31h52m-52 15h52" stroke="#20231f" stroke-width="7" stroke-linecap="round"/></svg></div><div class="caption">价格</div></div><div id="a1e33" class="item object" style="left:430px;top:355px;width:220px;height:235px" data-reveal-at="38.024" data-reveal-duration="0.65" data-beat="g11.u01" aria-label="comment 反馈"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="M25 27h210v137H92l-45 39v-39H25Z" fill="#fbf8ed" stroke="#20231f" stroke-width="6"/><circle cx="69" cy="73" r="18" fill="#c8d3cb" stroke="#53686e" stroke-width="4"/><path d="M108 60h90M108 83h65M52 121h148" stroke="#53686e" stroke-width="9" stroke-linecap="round"/></svg></div><div class="caption">反馈</div></div><div id="a1e34" class="item object" style="left:760px;top:355px;width:220px;height:235px" data-reveal-at="38.024" data-reveal-duration="0.65" data-beat="g11.u01" aria-label="map 渠道"><div class="art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" fill="none" aria-hidden="true" data-layout-ignore><path d="m20 43 72-22 79 23 69-23v157l-69 24-79-22-72 22Z" fill="#dce3d4" stroke="#20231f" stroke-width="5"/><path d="M92 22v158m79-136v158" stroke="#53686e" stroke-width="3"/><path d="m29 133 49-38 38 20 47-38 64 23M54 36l25 60 20 80m23-145 9 59 89 66" stroke="#fbf8ed" stroke-width="13"/><path d="M143 83c0-19 31-26 39-6 8 19-18 43-18 43s-21-21-21-37Z" fill="#b23b32" stroke="#20231f" stroke-width="4"/><circle cx="163" cy="83" r="7" fill="#fbf8ed"/></svg></div><div class="caption">渠道</div></div><div id="a1e35" class="item line" style="left:180px;top:600px;width:390px;height:220px" data-reveal-at="38.902" data-reveal-duration="0.65" data-beat="38.902" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 220" fill="none" aria-hidden="true" data-layout-ignore><path d="M30 30 L360 190" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="360" cy="190" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:16px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e36" class="item line" style="left:510px;top:600px;width:60px;height:220px" data-reveal-at="39.052" data-reveal-duration="0.65" data-beat="39.052" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 220" fill="none" aria-hidden="true" data-layout-ignore><path d="M30 30 L30 190" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="190" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:16px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e37" class="item line" style="left:510px;top:600px;width:390px;height:220px" data-reveal-at="39.202" data-reveal-duration="0.65" data-beat="39.202" aria-label="交接路线"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 220" fill="none" aria-hidden="true" data-layout-ignore><path d="M360 30 L30 190" stroke="#53686e" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="190" r="7" fill="#53686e"/></svg><span class="packet" style="position:absolute;left:346px;top:12px;width:28px;height:36px;opacity:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" fill="none" aria-hidden="true" data-layout-ignore><path d="M3 3h20v29H3Z" fill="#fbf8ed" stroke="#53686e" stroke-width="2"/><path d="M7 11h12M7 17h12M7 23h8" stroke="#53686e" stroke-width="2"/></svg></span></div><div id="a1e38" class="item doc" style="left:340px;top:780px;width:400px;height:270px" data-reveal-at="40.964" data-reveal-duration="0.65" data-beat="g12.u01" aria-label="三份材料"><strong>三份材料</strong><p>口径尚未对齐</p><div class="ruled" data-layout-ignore></div><div class="ruled short" data-layout-ignore></div></div><div id="a1e39" class="item note red" style="left:220px;top:1080px;width:640px;height:90px" data-reveal-at="41.999" data-reveal-duration="0.65" data-beat="g12.u02" aria-label="怎样合成能用的建议？">怎样合成能用的建议？</div></section><div class="substrip" id="substrip"></div></main><script src="gsap.min.js"></script><script src="data.js"></script><script src="timeline.js"></script><script>window.__timelines={};window.__timelines.main=window.createTeachingScene(TeachingData);</script></body></html>

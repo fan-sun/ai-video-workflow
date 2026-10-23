@@ -1,0 +1,10 @@
+{
+  "preset": "demo",
+  "settings": {
+    "minutes": 30,
+    "remainingLabel": "还可安排",
+    "stayLabel": "继续看",
+    "leaveLabel": "去读书",
+    "ticketLabel": "观影票"
+  }
+}

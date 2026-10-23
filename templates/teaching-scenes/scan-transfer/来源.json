@@ -1,0 +1,19 @@
+{
+  "source_html": "course/acts/ep01_video-workflow-overview/v14/act2.html",
+  "source_sha256": "032695f7e031ccc7b8b44e7f80d116cf14d58152c33b0c132ab496feea064d1f",
+  "source_video": "pipeline/output/teaching/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
+  "candidate_range": [
+    123.9,
+    128.6
+  ],
+  "source_candidate": "01-A",
+  "objects": [
+    "task-receipt",
+    "task-scanner",
+    "task-amount",
+    "task-ledger",
+    "ledger-entry"
+  ],
+  "selection": "用户已明确同意三个候选全部入库；换主题示例用于验证，未冒充用户已审看。",
+  "changes": "移除标题、字幕、音频及课程时序；保留选中节点、相对布局、SVG和动作曲线，从0秒开始。扫描结构补齐入场动作，独立版5.4秒。"
+}

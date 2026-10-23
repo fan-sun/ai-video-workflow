@@ -1,0 +1,9 @@
+// 用途：教学样例有声预览与旁白定位。
+// 运行：通过本地素材库服务器打开index.html。
+// 依赖：已准备并导出的两个工作副本。
+const video=document.querySelector('#video'),status=document.querySelector('#status'),error=document.querySelector('#error');let generation=0,units=[];
+async function choose(preset){const token=++generation;video.pause();error.textContent='';status.textContent='正在读取示例…';document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.preset===preset)));
+ try{const base='/teaching-prepared/task-handoff/'+preset+'/';const r=await fetch(base+'旁白分镜对照.json');if(!r.ok)throw new Error('缺少准备结果，请先按复用说明运行prepare和render');const data=await r.json();if(token!==generation)return;units=data.beats;video.src=base+'preview.mp4';document.querySelector('#download').href=video.src;document.querySelector('#mapping').href=base+'旁白分镜对照.json';document.querySelector('#settings').href=base+'settings.json';const lines=document.querySelector('#lines');lines.replaceChildren();for(const u of units){const li=document.createElement('li'),button=document.createElement('button'),label=document.createElement('small');label.textContent=u.start.toFixed(2)+' 秒 · '+u.id;button.append(label,document.createTextNode(u.text));button.onclick=()=>{video.currentTime=Math.min(u.start+.13,video.duration||data.duration);};li.append(button);lines.append(li);}status.textContent='已载入 · '+data.duration.toFixed(2)+' 秒 · 3:4';}catch(e){error.textContent=e.message;status.textContent='读取失败';}}
+video.addEventListener('timeupdate',()=>document.querySelectorAll('#lines button').forEach((b,i)=>b.classList.toggle('active',video.currentTime>=units[i].start&&video.currentTime<units[i].end)));
+video.addEventListener('error',()=>{error.textContent='视频无法加载，请确认对应版本已完成render。';});
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>choose(b.dataset.preset));choose('original');

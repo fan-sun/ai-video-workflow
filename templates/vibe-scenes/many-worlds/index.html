@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>聚光灯效应 · 第3幕完整重制v14</title>
+<script src="assets/gsap-3.14.2.min.js"></script><script src="assets/three-0.160.1.iife.min.js"></script>
+<style>
+@font-face{font-family:Noto;src:url('fonts/NotoSansSC-400.woff2');font-weight:400}
+@font-face{font-family:Noto;src:url('fonts/NotoSansSC-700.woff2');font-weight:700}
+*{box-sizing:border-box}html,body{margin:0;width:1920px;height:1080px;background:#153d48;color:#f7f2e9;font-family:Noto,sans-serif}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden}
+canvas{position:absolute;inset:0;width:1920px;height:1080px}
+#captionShade{position:absolute;left:0;right:0;bottom:0;height:210px;background:linear-gradient(transparent,#133742d9 50%,#133742)}
+#caption{position:absolute;left:384px;right:384px;top:920px;height:128px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:80px;line-height:1.25;font-weight:700;letter-spacing:0;text-shadow:0 3px 10px #102e38}
+#caption strong{color:#f2cc94;font-weight:700}
+.label{position:absolute;z-index:10;left:0;top:0;font-size:80px;line-height:1.2;font-weight:700;white-space:nowrap;opacity:0;transform-origin:center}
+#tagA,#tagB{background:#153d48ed;padding:8px 18px;border-radius:8px}
+#memory{text-shadow:0 2px 14px #153d48}
+#topic{position:absolute;inset:0;width:1920px;height:1080px;opacity:0;pointer-events:none}
+</style><style>#caption,#caption-rule,#captionShade{display:none!important}</style><script src="settings.js"></script><script>globalThis.SceneSpec={"id":"many-worlds","start":18.333333333333332,"end":27.4,"duration":9.066666666666666};const preset=new URLSearchParams(location.search).get("preset")||"original";if(!SceneConfig.presets[preset])throw new Error("未知版本");globalThis.SceneOptions=SceneConfig.normalize(globalThis.SCENE_BUILD_OPTIONS||SceneConfig.presets[preset]);window.SCENE_REFERENCE=false;</script></head><body><div id="root" data-composition-id="main" data-start="0" data-duration="9.066666666666666" data-width="1920" data-height="1080">
+<canvas id="stage" width="1920" height="1080"></canvas><div class="label" id="date"></div><div class="label" id="memory"></div><div class="label" id="stateLabel" style="color:#f4e5c8;text-shadow:0 3px 14px #153d48"></div>
+<div id="topic"  aria-label="聚光灯效应"><canvas id="topicCanvas" width="1920" height="1080"></canvas></div><div id="captionShade"></div><div id="caption"></div></div>
+<script>const DUR=35.2;const ACT=3;const SUBS=[];window.__timelines=window.__timelines||{};</script>
+<script src="assets/点题字形-v5.js"></script><script src="assets/第三幕-v14.js"></script><script>window.__sourceTimeline=SpotlightAct3V14.create(DUR,ACT);</script><script src="adapter.js"></script><script>window.__timelines={main:window.registerScene(window.__sourceTimeline)};</script></body></html>

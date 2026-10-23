@@ -1,0 +1,7 @@
+{
+  "preset": "demo",
+  "settings": {
+    "title": "注意力转移",
+    "attentionLabel": "先看这里"
+  }
+}

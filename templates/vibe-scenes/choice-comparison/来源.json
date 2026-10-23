@@ -1,0 +1,50 @@
+{
+  "source_html": "course/acts/ep03_choice-overload/act1-rework-v6/index.html",
+  "source_html_sha256": "1413fa46ac80e9ecc6ae124459c838466c8c99162bbdc0a62547f4a0cccf6806",
+  "source_act_range_s": [
+    11.333333333333334,
+    15.4
+  ],
+  "whole_video_range_s": [
+    11.333333,
+    15.4
+  ],
+  "files": [
+    {
+      "source": "course/acts/ep03_choice-overload/act1-rework-v6/assets/comparison.js",
+      "copy": "assets/comparison.js",
+      "source_sha256": "a94b9f572cd4e2641e403b1ff2a512200e7faeff25cb229ae43b8639df2777b4",
+      "copy_sha256": "8d5b371078d1893c14c581509a15ace6dbba14e6e88483abc2f962d8e5421eb2",
+      "modified": true
+    },
+    {
+      "source": "course/acts/ep03_choice-overload/act1-rework-v6/assets/gsap.min.js",
+      "copy": "assets/gsap.min.js",
+      "source_sha256": "9d6dd3499d49b3f3bc9ddf1754535134354bf787fcd6029beabaf630bf69be44",
+      "copy_sha256": "9d6dd3499d49b3f3bc9ddf1754535134354bf787fcd6029beabaf630bf69be44",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep03_choice-overload/act1-rework-v6/assets/naming.js",
+      "copy": "assets/naming.js",
+      "source_sha256": "5a221dc97cd7ad07927cf72ad71ffd83c9e5925bc4836f41debb5a51aac7b661",
+      "copy_sha256": "5a221dc97cd7ad07927cf72ad71ffd83c9e5925bc4836f41debb5a51aac7b661",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep03_choice-overload/act1-rework-v6/fonts/NotoSansSC-400.woff2",
+      "copy": "fonts/NotoSansSC-400.woff2",
+      "source_sha256": "96e7fe4f909adfea3ce8a3b7af76842e6265a84e1b8e4ef892dab7169eabe185",
+      "copy_sha256": "96e7fe4f909adfea3ce8a3b7af76842e6265a84e1b8e4ef892dab7169eabe185",
+      "modified": false
+    },
+    {
+      "source": "course/acts/ep03_choice-overload/act1-rework-v6/fonts/NotoSansSC-700.woff2",
+      "copy": "fonts/NotoSansSC-700.woff2",
+      "source_sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba",
+      "copy_sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba",
+      "modified": false
+    }
+  ],
+  "note": "保存原实现与必要依赖，仅裁定独立时间段、去除本期字幕并开放参数；保留未进入的场景构造以避免破坏共享对象。"
+}

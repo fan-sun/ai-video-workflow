@@ -1,0 +1,22 @@
+{
+  "source_html": "course/acts/ep08_video-workflow-customization/act3-sample-v2/act3.html",
+  "source_sha256": "b0bc830bb6cbde0015bbb757934fa80db2209e70f26db80805c64d294f67945d",
+  "source_video": "pipeline/output/teaching/ep08_video-workflow-customization/full-review-v1/course_ep08_video-workflow-customization_full-review-v1_publish.mp4",
+  "candidate_range": [
+    121.6,
+    124.9
+  ],
+  "source_candidate": "08-A",
+  "objects": [
+    "repo-doc",
+    "link-lines",
+    "link1",
+    "link2",
+    "link3",
+    "link4",
+    "selection",
+    "selected-doc"
+  ],
+  "selection": "用户已明确同意三个候选全部入库；换主题示例用于验证，未冒充用户已审看。",
+  "changes": "移除标题、字幕、音频及课程时序；保留选中节点、相对布局、SVG和动作曲线，从0秒开始。扫描结构补齐入场动作，独立版5.4秒。"
+}

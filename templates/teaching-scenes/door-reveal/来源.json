@@ -1,0 +1,9 @@
+{
+  "source_html": "course/acts/ep08_video-workflow-customization/act5-sample-v1/act5.html",
+  "source_sha256": "f4ec3dfcbc300457048b307f8225374a1d10acc5a063d42bae75c2270c814841",
+  "objects": [
+    "door-demo"
+  ],
+  "selection": "用户认可A、E方向，并授权继续通用化；本次新变体尚未获得用户审看。",
+  "changes": "移除课程标题、旁白、字幕、章节栏和配音时序依赖；保留原对象造型、间距及动作曲线；A主体整体下移132px以居中。"
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>沉没成本 · 第3幕背景重做v2</title><style>
+@font-face{font-family:Story;src:url('assets/story-serif.woff2')}@font-face{font-family:Object;src:url('assets/object-sans.woff2')}
+*{box-sizing:border-box}html,body{margin:0;background:#071418}#root{position:relative;width:1920px;height:1080px;overflow:hidden;color:#f5edda;font-family:Object,sans-serif;background:radial-gradient(ellipse at 49% 39%,#2c454c,#112831 49%,#071418 100%)}
+#world,#bridge{position:absolute;inset:0;width:1920px;height:1080px}#bridge>svg{position:absolute;inset:0;width:1920px;height:1080px}
+#caption{position:absolute;left:100px;right:100px;top:924px;height:86px;display:flex;align-items:center;justify-content:center;font:54px Story,serif;letter-spacing:3px;white-space:nowrap;text-shadow:0 4px 20px #020a0e}#caption>span{display:inline-block}.caption-keyword{color:#e8c781}#caption-rule{position:absolute;left:230px;right:230px;top:887px;height:1px;background:linear-gradient(90deg,transparent,#66818266,transparent)}
+.ui{font:32px Object;fill:#d4ddd6}.small{font:25px Object;fill:#9cb2b5}.tag{font:38px Object;fill:#e8dfc7;letter-spacing:3px}.display{font:110px Story;fill:#efd4a0}.paper-text{font:35px Object;fill:#28414a}.paper-small{font:24px Object;fill:#526e70}.gold-text{fill:#e8c781}
+#root{background:#07111b}#environment,#background-bridge{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none}#background-bridge{transform-origin:50% 50%}#ambient,#background,#prev-ambient,#prev-background{opacity:0!important}
+</style><style>#caption,#caption-rule,#captionShade{display:none!important}</style></head><body>
+<div id="root" data-background-act="3" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="10.0">
+<canvas id="environment" width="1920" height="1080" data-layout-ignore aria-hidden="true"></canvas>
+<img id="background-bridge" src="assets/bridge-background.png" data-layout-ignore alt="">
+<div id="bridge"></div>
+<svg id="world" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+<defs data-layout-ignore>
+ <linearGradient id="metal" x1="0" y1="0" x2=".65" y2="1"><stop stop-color="#f3f0dc"/><stop offset=".3" stop-color="#9cb5bb"/><stop offset=".58" stop-color="#314e5b"/><stop offset=".8" stop-color="#aec2c1"/><stop offset="1" stop-color="#526e79"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b8"/><stop offset=".5" stop-color="#dfb971"/><stop offset="1" stop-color="#89612f"/></linearGradient>
+ <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eee7cc"/><stop offset="1" stop-color="#aebdad"/></linearGradient>
+ <linearGradient id="velvet" x1="0" x2="1"><stop stop-color="#29434e"/><stop offset=".45" stop-color="#4f7078"/><stop offset="1" stop-color="#182f3d"/></linearGradient>
+ <linearGradient id="screen-light" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9cb2ad"/><stop offset="1" stop-color="#415f67"/></linearGradient>
+ <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#dce3c9" stop-opacity=".1"/><stop offset="1" stop-color="#dce3c9" stop-opacity="0"/></linearGradient>
+ <linearGradient id="door-light" x1="0" x2="1"><stop stop-color="#e9ce99" stop-opacity=".26"/><stop offset="1" stop-color="#f4d6a1" stop-opacity=".02"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#dfbb7c" stop-opacity=".24"/><stop offset="1" stop-color="#dfbb7c" stop-opacity="0"/></radialGradient>
+ <filter id="shadow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="14"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <clipPath id="movie-window"><rect x="-325" y="-195" width="650" height="370" rx="6"/></clipPath>
+ <clipPath id="walk-doorway" clipPathUnits="userSpaceOnUse"><rect x="-500" y="-500" width="2115" height="1700"/></clipPath>
+ <g id="head-right"><path d="M-16 22L-13 50H16L20 20Z" fill="#b39576"/><path d="M-27-35Q-12-62 17-49Q34-40 32-13L42 2Q44 7 33 11L30 31Q16 49-3 41L-23 18Z" fill="#d2b68e"/><path d="M-27-9Q-45-47-14-65Q18-72 35-37L31-19 13-35Q-3-22-27-24Z" fill="#0c2530"/><path d="M-1-2H6 M17-3H23" stroke="#35464a" stroke-width="3.7" stroke-linecap="round"/><path d="M17 25L26 23" stroke="#8b735f" stroke-width="2.5" stroke-linecap="round"/></g>
+ <g id="chair-art"><path d="M-67-164Q-69-190-42-194H49Q72-190 76-160L72 5H-65Z" fill="url(#velvet)" stroke="#6c858a" stroke-width="2"/><path d="M-57-153Q0-174 63-151V-28H-57Z" fill="#345563"/><path d="M-74-26L78-26 94 28Q20 46-92 22Z" fill="url(#velvet)" stroke="#668087" stroke-width="2"/><path d="M-59 28V107M59 28V107" stroke="#16303c" stroke-width="12"/><path d="M-87-16V-70M90-7V-62" stroke="#789097" stroke-width="13" stroke-linecap="round"/></g>
+ <g id="head-art"><path d="M-24 22L-19 49H16L22 19Z" fill="#b39576"/><path d="M-39-35Q-30-64 9-60Q43-55 45-12L39 28Q27 53 2 51Q-29 49-38 22Z" fill="#d2b68e"/><path d="M-42-20Q-52-56-18-70Q27-85 48-46L43-13 25-35Q-10-20-42-20" fill="#0c2530"/><path d="M-23 1H-10 M10 0H22" fill="none" stroke="#35464a" stroke-width="4" stroke-linecap="round"/><path d="M-5 30Q3 33 12 29" fill="none" stroke="#8b735f" stroke-width="2.5"/></g>
+</defs>
+<g id="cinema"><g id="cinema-camera"></g></g>
+<g id="future"><g id="future-camera"></g></g>
+<g id="pull-stage"></g><g id="ticket-stage" data-layout-allow-overflow></g><g id="hypothesis"></g><g id="time-stage"></g><g id="scene-labels"></g>
+</svg><div id="caption-rule"></div><div id="caption"></div></div>
+<script src="settings.js"></script><script src="boot.js"></script><script src="vendor/gsap.min.js"></script><script src="bridge.js"></script><script src="scene.js"></script><script src="opening.js"></script><script src="memories.js"></script><script src="motion.js"></script>
+<script src="environment.js"></script>
+<script>window.__timelines=window.__timelines||{};window.__timelines.main=tl;</script>
+<script src="adapter.js"></script><script>window.__timelines={main:window.registerScene(tl)};</script></body></html>

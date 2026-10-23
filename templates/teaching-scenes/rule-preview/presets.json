@@ -1,0 +1,4 @@
+{
+ "original":{"leftTitle":"画面代码","leftNoteText":"代码与时间 · 简化示意","rightTitle":"代码对应的画面","rightNoteText":"动画演示","rule1Text":"SVG 图形","rule2Text":"图形进入(时间)","rule3Text":"文字出现(时间)","rule4Text":"位置变化(时间, 位置)","objectAsset":null,"objectLabel":"画面","railLabel":"按规则安排时间"},
+ "demo":{"leftTitle":"动作规则","leftNoteText":"同一框架 · 更换对象","rightTitle":"规则对应的画面","rightNoteText":"包裹运动演示","rule1Text":"对象 = 包裹","rule2Text":"包裹进入(时间)","rule3Text":"标签出现(时间)","rule4Text":"移到出口(时间, 位置)","objectAsset":"templates/teaching-scenes/rule-preview/assets/parcel.svg","objectLabel":"包裹","railLabel":"按规则安排时间"}
+}

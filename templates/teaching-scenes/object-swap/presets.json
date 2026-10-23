@@ -1,0 +1,4 @@
+{
+ "original":{"socketLabel":"统一调用接口","oldLabel":"模型A","newLabel":"模型B","oldAsset":null,"newAsset":null},
+ "demo":{"socketLabel":"统一供电接口","oldLabel":"","newLabel":"","oldAsset":"templates/teaching-scenes/object-swap/assets/battery-old.svg","newAsset":"templates/teaching-scenes/object-swap/assets/battery-new.svg"}
+}

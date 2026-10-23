@@ -1,0 +1,39 @@
+{
+  "id": "task-handoff",
+  "preset": "demo",
+  "timings": ".local/teaching-scenes/inputs/demo/processed/act1_timings.json",
+  "audio": ".local/teaching-scenes/inputs/demo/processed/act1.wav",
+  "binding": {
+    "divide": "d01.u01",
+    "price": "d02.u01",
+    "feedback": "d03.u01",
+    "channels": "d04.u01",
+    "ownership": "d05.u01",
+    "gather": "d06.u01",
+    "transfer": "d07.u01",
+    "report": "d08.u01",
+    "question": "d09.u01"
+  },
+  "content": {
+    "title": "咖啡店选址，三个助手分工",
+    "handoffTitle": "调查完成，把发现接回来",
+    "roles": [
+      "租金调查",
+      "顾客调查",
+      "周边调查"
+    ],
+    "findings": [
+      "保留租金报价",
+      "归纳顾客需求",
+      "核对周边位置"
+    ],
+    "collected": [
+      "租金",
+      "需求",
+      "位置"
+    ],
+    "reportTitle": "三份选址材料",
+    "reportNote": "等待统一口径",
+    "question": "怎样形成选址建议？"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "source_html": "course/acts/ep06_multi-agent/act1.html",
+  "source_html_sha256": "e3243405b1fa610b507d5678f0f6ef1d50f08801247eb663644de2b054ec5d62",
+  "range_s": [
+    25.426,
+    44.416
+  ],
+  "sections": [
+    "s2",
+    "s3"
+  ],
+  "files": [
+    {
+      "source": "templates/vibe-scenes/feeling-scale/gsap.min.js",
+      "copy": "gsap.min.js",
+      "sha256": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087"
+    },
+    {
+      "source": "templates/course-explainer-3x4/fonts/NotoSansSC-400.woff2",
+      "copy": "fonts/NotoSansSC-400.woff2",
+      "sha256": "96e7fe4f909adfea3ce8a3b7af76842e6265a84e1b8e4ef892dab7169eabe185"
+    },
+    {
+      "source": "templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2",
+      "copy": "fonts/NotoSansSC-700.woff2",
+      "sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba"
+    }
+  ],
+  "note": "保留原两场SVG、CSS和运动参数；移除其他幕内容及开场；动作通过旁白ID重新绑定。"
+}

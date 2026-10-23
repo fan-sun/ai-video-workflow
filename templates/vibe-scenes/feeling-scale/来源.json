@@ -1,0 +1,80 @@
+{
+  "episode": "ep05",
+  "version": "v11（第三幕原实现，最终整片v15沿用）",
+  "published_video": "pipeline/output/vibe/ep05_loss-aversion/v15/course_ep05_loss-aversion_v15_publish.mp4",
+  "source_act_start_s": 62.8,
+  "source_act_range_s": [
+    35.3,
+    43.8
+  ],
+  "whole_video_range_s": [
+    98.1,
+    106.6
+  ],
+  "duration_s": 8.5,
+  "extraction": "独立保存实体天平、材质、扫描、相机、粒子、投影与落盘运动；不带前一段题目纸张和原字幕",
+  "files": [
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/core.js",
+      "source_sha256": "dbcd0a32028abcbea3aee47b14a4d81c2ecfa0b9853c65774d71a64bb075f4c8",
+      "copy": "core.js",
+      "copy_sha256": "dbcd0a32028abcbea3aee47b14a4d81c2ecfa0b9853c65774d71a64bb075f4c8",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/gl.js",
+      "source_sha256": "06deacd3c034bfa27a8eb22d26e46cef400106a8dd8c3dd975554dc2c955e287",
+      "copy": "gl.js",
+      "copy_sha256": "06deacd3c034bfa27a8eb22d26e46cef400106a8dd8c3dd975554dc2c955e287",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/rm.js",
+      "source_sha256": "0d5b595c87969f294a797095d5df8038591d543ad9d19731e84f72003cb99457",
+      "copy": "rm.js",
+      "copy_sha256": "0d5b595c87969f294a797095d5df8038591d543ad9d19731e84f72003cb99457",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/gsap.min.js",
+      "source_sha256": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087",
+      "copy": "gsap.min.js",
+      "copy_sha256": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/06-完整形变核心.js",
+      "source_sha256": "806973c12d71a25097f76ffa13b232d3bfa2131ca81f28fb0efdce79656544d4",
+      "copy": "morph-core.js",
+      "copy_sha256": "806973c12d71a25097f76ffa13b232d3bfa2131ca81f28fb0efdce79656544d4",
+      "modified": false
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/20-实体天平.js",
+      "source_sha256": "8e471cb024301efb55194db1cdfbb9c8c4ddfee3916482f674280fd07504b56f",
+      "copy": "scale.js",
+      "copy_sha256": "b6e1cf6ecd548eae3dcd1f737f87c0c056049a48a5fc30148bc293ace9879dc7",
+      "modified": true
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/06-砝码形变.js",
+      "source_sha256": "61df8419e8623126612664160c3ac92e54725e4cdba768c8336596327776092f",
+      "copy": "morph.js",
+      "copy_sha256": "3d5b6c3829c8ca74efc05b6cf3cc00c638f3fc83f8c604c4a67a4f88cff6ceac",
+      "modified": true
+    },
+    {
+      "source": "course/episodes/05-loss-aversion/v11/assets/风格库-LICENSE",
+      "source_sha256": "4839ca8e3e9c5dbb425fba928acef860be695319a66c6e13445f6bdd6a7ed836",
+      "copy": "LICENSE",
+      "copy_sha256": "4839ca8e3e9c5dbb425fba928acef860be695319a66c6e13445f6bdd6a7ed836",
+      "modified": false
+    },
+    {
+      "source": "templates/course-explainer-3x4/fonts/NotoSansSC-700.woff2",
+      "source_sha256": "b25d6343362f1ceeb7d1736e5b2c6bebe09948ed23d4de6966d6954e53c35fba",
+      "copy": "fonts/NotoSansSC-700.woff2",
+      "modified": false
+    }
+  ]
+}

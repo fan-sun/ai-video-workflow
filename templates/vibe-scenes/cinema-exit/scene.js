@@ -1,0 +1,120 @@
+// 用途：建立影院、纸票、可选择的时间和灯下阅读空间。
+// 运行：同目录index.html加载，motion.js按绝对时间驱动。
+// 依赖：本幕SVG材质与本地字体；人物保留简化双眼。
+const NS='http://www.w3.org/2000/svg';
+const node=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e};
+const set=(e,attrs)=>{for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v)};
+const byId=id=>document.getElementById(id);
+const label=(p,text,x,y,cls='ui')=>{const e=node('text',{x,y,'text-anchor':'middle',class:cls},p);e.textContent=text;return e};
+const group=(p,id)=>node('g',id?{id}:{},p);
+function person(parent,id){
+ const g=group(parent,id);
+ const shadow=node('ellipse',{cx:0,cy:8,rx:99,ry:18,fill:'#010c11',opacity:.55},g);
+ const backLeg=node('path',{fill:'none',stroke:'#182f3b','stroke-width':39,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+ const frontLeg=node('path',{fill:'none',stroke:'#274653','stroke-width':43,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+ const backShoe=node('path',{fill:'#0b1d27',stroke:'#68818a','stroke-width':1.5},g),frontShoe=node('path',{fill:'#102630',stroke:'#849498','stroke-width':1.5},g);
+ const body=node('path',{fill:'url(#velvet)',stroke:'#749194','stroke-width':1.5},g);
+ const seam=node('path',{fill:'none',stroke:'#8fa5a1','stroke-width':2,opacity:.55},g);
+ const armBack=node('path',{fill:'none',stroke:'#496b73','stroke-width':26,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+ const backPalm=node('ellipse',{rx:11,ry:17,fill:'#c4a582'},g);
+ const head=node('use',{href:'#head-art'},g);
+ const arm=node('path',{fill:'none',stroke:'#618084','stroke-width':29,'stroke-linecap':'round','stroke-linejoin':'round'},g);
+ const palm=node('ellipse',{rx:12,ry:17,fill:'#d2b68e'},g);
+ return{g,shadow,backLeg,frontLeg,backShoe,frontShoe,body,seam,armBack,backPalm,head,arm,palm};
+}
+const cinema=byId('cinema'),camera=byId('cinema-camera');
+node('ellipse',{cx:820,cy:470,rx:1050,ry:475,fill:'url(#halo)',opacity:.5},camera);
+const wall=group(camera,'cinema-wall');
+node('path',{d:'M-170 24H1870V660L1150 807-170 800Z',fill:'#122d38',stroke:'#54727b','stroke-width':2},wall);
+for(let i=0;i<10;i++)node('path',{d:`M${70+i*185} 35V620`,stroke:'#40626d','stroke-width':2,opacity:.23},wall);
+node('path',{d:'M-180 674L1720 585 2140 1060H-180Z',fill:'#142b35'},camera);
+for(let i=0;i<5;i++)node('path',{d:`M-170 ${705+i*54}L${1760+i*64} ${602+i*60}`,stroke:'#536f75','stroke-width':2,opacity:.38},camera);
+const screen=group(camera,'screen');set(screen,{transform:'translate(510 365)'});
+node('path',{d:'M-366-230H355L370 220-380 211Z',fill:'#071a24',stroke:'url(#metal)','stroke-width':10},screen);
+node('rect',{x:-325,y:-195,width:650,height:370,rx:6,fill:'url(#screen-light)'},screen);
+const movie=group(screen,'movie');set(movie,{'clip-path':'url(#movie-window)'});
+const moon=node('circle',{cx:155,cy:-103,r:38,fill:'#d9d3b4',opacity:.68},movie);
+const hills=node('path',{fill:'#3c6068'},movie);
+const road=node('path',{d:'M-330 143Q-90-48 175 165H-330',fill:'#243f4c'},movie);
+const train=group(movie,'movie-train');
+for(let i=0;i<3;i++){
+ const car=group(train);set(car,{transform:`translate(${i*121} 0)`});node('rect',{x:-58,y:-48,width:116,height:63,rx:9,fill:'#819b9d',stroke:'#c3cbb8','stroke-width':2},car);
+ for(let j=0;j<3;j++)node('rect',{x:-44+j*33,y:-33,width:22,height:22,rx:2,fill:'#294852'},car);
+ node('path',{d:'M-58 18H59',stroke:'#19333f','stroke-width':6},car);for(const x of[-35,35])node('circle',{cx:x,cy:23,r:12,fill:'#122d3a',stroke:'#718c90','stroke-width':3},car);
+}
+const projection=node('path',{d:'M1602 110L187 167 835 543Z',fill:'url(#beam)',opacity:.7},camera);
+const projector=group(camera,'projector');set(projector,{transform:'translate(1680 110) scale(.6)'});
+node('rect',{x:-85,y:-50,width:141,height:92,rx:16,fill:'url(#metal)',stroke:'#879a9b','stroke-width':2},projector);
+node('path',{d:'M-84-28L-130-43V29L-84 13Z',fill:'#a4b7b4',stroke:'#263f4c','stroke-width':3},projector);
+node('path',{d:'M-29 42L-55 135M21 42L46 135',stroke:'#779096','stroke-width':8},projector);
+const reels=[];for(const x of[-45,44]){const g=group(projector);set(g,{transform:`translate(${x} -83)`});node('circle',{r:42,fill:'url(#metal)',stroke:'#b1c0b8','stroke-width':2},g);const rotor=group(g);for(let i=0;i<5;i++){const a=i*Math.PI*2/5;node('circle',{cx:Math.sin(a)*23,cy:Math.cos(a)*23,r:10,fill:'#16323e'},rotor)}node('circle',{r:7,fill:'#203b46'},rotor);reels.push(rotor)}
+const backgroundSeats=group(camera,'background-seats');
+for(let row=0;row<2;row++)for(let col=0;col<5;col++)node('use',{href:'#chair-art',transform:`translate(${920+col*184+row*20} ${579+row*94}) scale(${.43+row*.15})`,opacity:.55},backgroundSeats);
+const chair=group(camera,'main-chair');set(chair,{transform:'translate(1300 699)'});
+node('use',{href:'#chair-art',transform:'scale(1.14)'},chair);
+const seatCushion=node('path',{d:'M-77 2Q4-20 93 0L83 40Q-13 49-79 26Z',fill:'#59767b',stroke:'#9caeaa','stroke-width':2},chair);
+const viewer=person(camera,'viewer');
+const walkLayer=group(camera,'walk-layer');camera.insertBefore(walkLayer,viewer.g);walkLayer.append(viewer.g);
+const rightHead=node('use',{href:'#head-right',opacity:0},viewer.g);
+const door=group(camera,'exit-door');set(door,{transform:'translate(1700 807) scale(1 1.24)'});
+node('path',{d:'M-96 0V-403H98V0Z',fill:'#071c25',stroke:'url(#metal)','stroke-width':9},door);
+const doorway=node('path',{d:'M-87-394H87V-5H-87Z',fill:'#dcc18a',opacity:0},door);
+const doorLeaf=node('path',{d:'M-85-391H85V-3H-85Z',fill:'#304d58',stroke:'#8ca4a5','stroke-width':2},door);
+const doorHandle=node('path',{d:'M59-197V-164',stroke:'#c6bd9f','stroke-width':7,'stroke-linecap':'round'},door);
+label(camera,'出口',1700,282,'small');
+const doorBeam=node('path',{d:'M1615 807L1160 896H1870L1785 807Z',fill:'url(#door-light)',opacity:0},camera);
+const ghost=person(camera,'stay-possibility');
+const cinemaShade=node('rect',{x:0,y:0,width:1920,height:900,fill:'#091d27',opacity:0},cinema);
+function ticket(parent,id){
+ const g=group(parent,id);
+ node('ellipse',{cx:0,cy:171,rx:309,ry:28,fill:'#051116',opacity:.44,filter:'url(#shadow)'},g);
+ node('path',{d:'M-305-139H305V-45Q270-45 270 0Q270 45 305 45V139H-305V45Q-270 45-270 0Q-270-45-305-45Z',fill:'url(#paper)',stroke:'#b2c2b6','stroke-width':3},g);
+ node('path',{d:'M-281-112H281 M-281 112H281 M177-113V113',fill:'none',stroke:'#718a85','stroke-width':2,'stroke-dasharray':'6 6'},g);
+ const content=group(g);label(content,SceneOptions.ticketLabel,-64,-40,'paper-text');
+ for(let i=0;i<18;i++)node('path',{d:`M${193+i*4.1} -74V54`,stroke:'#3f5a62','stroke-width':i%3?1.5:3},content);
+ const stamp=group(g);node('rect',{x:-179,y:37,width:229,height:54,rx:3,fill:'none',stroke:'#92683f','stroke-width':3},stamp);label(stamp,'已付款  不可退',-65,74,'paper-small').style.fill='#875e35';
+ return{g,content,stamp};
+}
+const ticketStage=byId('ticket-stage'),paidTicket=ticket(ticketStage,'paid-ticket');
+const ticketDetail=label(ticketStage,'已经付出的',290,257,'small');
+const hypothetical=byId('hypothesis'),freeTicket=ticket(hypothetical,'free-ticket');
+freeTicket.content.remove();freeTicket.stamp.remove();label(freeTicket.g,'0',-55,47,'display').style.fill='#23424b';label(freeTicket.g,'元',40,48,'paper-text');
+const imagined=label(hypothetical,'假设这张票没花钱',960,248,'tag');
+const timeStage=byId('time-stage'),timePieces=[];
+const halo=node('ellipse',{cx:960,cy:434,rx:370,ry:283,fill:'url(#halo)'},timeStage);
+const timeHeading=label(timeStage,SceneOptions.remainingLabel,960,365,'tag'),timeValue=label(timeStage,String(SceneOptions.minutes),932,490,'display'),timeUnit=label(timeStage,'分钟',1063,490,'ui');
+for(let i=0;i<SceneOptions.minutes;i++)timePieces.push(node('rect',{x:-6,y:-18,width:12,height:36,rx:2,fill:'url(#gold)',stroke:'#ffe3a2','stroke-width':.6},timeStage));
+const routes=group(timeStage,'time-routes');
+const stayRoute=node('path',{d:'M860 540Q774 605 1023 698',fill:'none',stroke:'#839b9e','stroke-width':3,'stroke-dasharray':'650','stroke-dashoffset':'650'},routes);
+const leaveRoute=node('path',{d:'M1100 525Q1190 407 1333 693',fill:'none',stroke:'#dfc184','stroke-width':4,'stroke-dasharray':'650','stroke-dashoffset':'650'},routes);
+const stayLabel=label(routes,SceneOptions.stayLabel,814,628,'small'),leaveLabel=label(routes,SceneOptions.leaveLabel,1391,514,'tag');
+const future=byId('future'),futureCamera=byId('future-camera');
+node('ellipse',{cx:1080,cy:565,rx:815,ry:450,fill:'url(#halo)'},futureCamera);
+const windowScene=group(futureCamera,'night-window');
+node('path',{d:'M1170 112H1720V527H1170Z',fill:'#0c2633',stroke:'#51727b','stroke-width':6},windowScene);
+node('path',{d:'M1445 112V527 M1170 345H1720',stroke:'#3b5a66','stroke-width':7},windowScene);
+node('circle',{cx:1595,cy:225,r:35,fill:'#deceb0',opacity:.85},windowScene);
+for(let i=0;i<11;i++)node('rect',{x:1191+i*47,y:430-(i%4)*23,width:39,height:97+(i%4)*23,fill:i%2?'#2f4c5a':'#23414e'},windowScene);
+const reader=person(futureCamera,'reader');
+node('path',{d:'M227 682L1585 619 1780 738 368 827Z',fill:'#526768',stroke:'#b3b8a0','stroke-width':3},futureCamera);
+node('path',{d:'M368 827L1780 738V762L368 851Z',fill:'#223f49',stroke:'#6e898d','stroke-width':2},futureCamera);
+node('path',{d:'M447 838V1020M1643 766V980',stroke:'#1b3642','stroke-width':24},futureCamera);
+const lamp=group(futureCamera,'lamp');set(lamp,{transform:'translate(1510 635)'});
+node('ellipse',{cx:0,cy:0,rx:92,ry:19,fill:'url(#metal)'},lamp);node('path',{d:'M0-3L-20-277',stroke:'#9facaa','stroke-width':9},lamp);
+node('path',{d:'M-90-305H54L96-222H-143Z',fill:'url(#velvet)',stroke:'#b9b99f','stroke-width':3},lamp);
+const lampGlow=node('path',{d:'M-135-218L-440 102H313L89-218Z',fill:'url(#door-light)'},lamp);
+const book=group(futureCamera,'book');set(book,{transform:'translate(967 700) rotate(-5)'});
+node('path',{d:'M-285-52Q-130-125 0-37Q130-131 285-59L279 87Q126 24 0 113Q-135 38-279 106Z',fill:'#3c5f6d',stroke:'#8da6a5','stroke-width':3},book);
+const bookLeft=node('path',{d:'M-267-67Q-130-110 0-32V90Q-134 35-267 82Z',fill:'url(#paper)',stroke:'#d5d5bc','stroke-width':1.5},book);
+const bookRight=node('path',{d:'M0-32Q130-122 267-75V65Q130 14 0 90Z',fill:'url(#paper)',stroke:'#d5d5bc','stroke-width':1.5},book);
+const pageLines=group(book);for(let i=0;i<6;i++){node('path',{d:`M-230 ${-34+i*15}Q-129 ${-66+i*15} -34 ${-10+i*15} M35 ${-11+i*15}Q131 ${-70+i*15} 234 ${-45+i*15}`,fill:'none',stroke:'#869d95','stroke-width':2,opacity:.65},pageLines)}
+const turnPage=node('path',{fill:'url(#paper)',stroke:'#ccd4bd','stroke-width':2},book);
+const cup=group(futureCamera,'cup');set(cup,{transform:'translate(490 691)'});
+node('ellipse',{cy:59,rx:100,ry:26,fill:'url(#metal)'},cup);node('path',{d:'M-63-34H60L49 46Q0 76-50 44Z',fill:'url(#paper)',stroke:'#cfdbcc','stroke-width':2},cup);
+node('path',{d:'M60-17Q121-25 101 24Q84 46 53 29',fill:'none',stroke:'#c3d0bc','stroke-width':13},cup);node('ellipse',{cy:-33,rx:62,ry:16,fill:'#273e42',stroke:'#c7cfb6','stroke-width':5},cup);
+const steam=node('path',{d:'M-15-67Q-45-94-8-129Q16-151-8-186 M25-77Q3-112 39-145',fill:'none',stroke:'#e0d5ad','stroke-width':3,opacity:.28},cup);
+const phone=group(futureCamera,'next-phone');set(phone,{transform:'translate(1330 723) rotate(-9) scale(.95 .55)'});
+node('rect',{x:-60,y:-99,width:120,height:198,rx:16,fill:'#081e29',stroke:'url(#metal)','stroke-width':5},phone);node('rect',{x:-51,y:-89,width:102,height:174,rx:11,fill:'#2b4b57'},phone);
+node('path',{d:'M-20-78H20',stroke:'#0d2936','stroke-width':7,'stroke-linecap':'round'},phone);node('circle',{cy:-17,r:21,fill:'#6e9195'},phone);node('path',{d:'M-19 33H19 M-27 53H27',stroke:'#91a6a2','stroke-width':4,'stroke-linecap':'round'},phone);
+const readerHands=group(futureCamera,'reader-hands');
+for(const e of[reader.armBack,reader.backPalm,reader.arm,reader.palm])readerHands.append(e);

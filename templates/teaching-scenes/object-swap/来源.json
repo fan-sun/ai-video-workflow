@@ -1,0 +1,12 @@
+{
+  "source_html": "course/acts/ep07_langchain-langgraph/v8/act2.html",
+  "source_sha256": "4071f0fbb3f604d82f1af86ea97c8fb41116874cdbdf296bda8b94e1dd9be2f3",
+  "objects": [
+    "api-port",
+    "api-wire",
+    "provider-a",
+    "provider-b"
+  ],
+  "selection": "用户认可A、E方向，并授权继续通用化；本次新变体尚未获得用户审看。",
+  "changes": "移除课程标题、旁白、字幕、章节栏和配音时序依赖；保留原对象造型、间距及动作曲线；A主体整体下移132px以居中。"
+}

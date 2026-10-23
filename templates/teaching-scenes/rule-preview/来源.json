@@ -1,0 +1,27 @@
+{
+  "source_html": "course/acts/ep01_video-workflow-overview/v19/act5.html",
+  "source_sha256": "03c1e478a71d9c62be31ecb619e1ec63f654a323f608d09b2f62154767875150",
+  "source_video": "pipeline/output/teaching/ep01_video-workflow-overview/v21/course_ep01_video-workflow-overview_v21_publish.mp4",
+  "candidate_range": [
+    403.7,
+    409.5
+  ],
+  "source_candidate": "01-B",
+  "objects": [
+    "code-source",
+    "code-line-shape",
+    "code-line-enter",
+    "code-line-text",
+    "code-line-move",
+    "code-browser",
+    "code-timeline",
+    "code-demo-shape",
+    "code-demo-word",
+    "code-tick-0",
+    "code-tick-1",
+    "code-tick-2",
+    "code-playhead"
+  ],
+  "selection": "用户已明确同意三个候选全部入库；换主题示例用于验证，未冒充用户已审看。",
+  "changes": "移除标题、字幕、音频及课程时序；保留选中节点、相对布局、SVG和动作曲线，从0秒开始。扫描结构补齐入场动作，独立版5.4秒。"
+}
