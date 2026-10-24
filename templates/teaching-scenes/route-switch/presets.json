@@ -1,0 +1,26 @@
+{
+  "original": {
+    "messageLabel": "客户消息",
+    "message1Text": "查一下快递到哪了",
+    "message2Text": "衣服破了，想退换",
+    "message3Text": "请帮我核对这笔账单",
+    "target1Label": "物流工位",
+    "target2Label": "售后工位",
+    "target3Label": "财务工位",
+    "target1Asset": null,
+    "target2Asset": null,
+    "target3Asset": null
+  },
+  "demo": {
+    "messageLabel": "收到新任务",
+    "message1Text": "请分析这张图片",
+    "message2Text": "请总结这篇文章",
+    "message3Text": "请转写这段录音",
+    "target1Label": "图像处理",
+    "target2Label": "文字处理",
+    "target3Label": "音频处理",
+    "target1Asset": "templates/teaching-scenes/route-switch/assets/image.svg",
+    "target2Asset": "templates/teaching-scenes/route-switch/assets/document.svg",
+    "target3Asset": "templates/teaching-scenes/route-switch/assets/audio.svg"
+  }
+}

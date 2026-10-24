@@ -1,0 +1,21 @@
+{
+  "source_root": "E:/My_project/Hot-News-Video",
+  "source_html": "course/acts/ep19_jev/act2.html",
+  "source_html_sha256": "c2335dafb11ca4b33012fc7066c5c3b4dde7a9b2862d501fc82c8df3ee9b4437",
+  "source_video": "pipeline/output/course/ep19_jev/v1/course_ep19_jev_v1_publish.mp4",
+  "source_video_sha256": "fdf702deaeacb5900041a893776a3de216fb764df2b70020bed35df5423225e2",
+  "candidate_range": [
+    58.4,
+    60.4
+  ],
+  "source_candidate": "O19-A",
+  "objects": [
+    "shipMsg",
+    "routeFork",
+    "routeLog",
+    "routeAfter",
+    "routeFin"
+  ],
+  "changes": "用户认可联动方向并要求优化；三个目标逐一切换，仅当前目标全亮；同步切换消息、箭头及强调框，重新对齐路径终点，分开工位标签与桌面。用户已认可该优化版。",
+  "selection": "用户已认可4.2秒优化版并同意继续，现登记正式库；换内容示例用于验证。"
+}

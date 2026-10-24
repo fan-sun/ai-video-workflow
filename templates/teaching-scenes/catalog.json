@@ -1,7 +1,106 @@
 [
- {"id":"object-swap","name":"固定接口 · 对象替换","duration":4.4,"source_candidate":"A","structure":"保留固定接口，旧对象上移退出，新对象接替同一位置","uses":["更换组件","升级产品","切换方案"],"status":"用户已认可原造型及通用化示例"},
- {"id":"door-reveal","name":"打开遮挡 · 进入空间","duration":4.4,"source_candidate":"E","structure":"遮挡打开，后方空间显露，同一主体进入","uses":["进入下一阶段","揭示新空间","场景接续"],"status":"用户已认可原造型及通用化示例"},
- {"id":"scan-transfer","name":"扫描提取 · 送入目标","duration":5.4,"source_candidate":"01-A","structure":"输入物进入设备，提取结果移动到目标并确认","uses":["文件解析","图像识别","数据归档"],"status":"用户已选中入库；换主题示例用于验证"},
- {"id":"rule-preview","name":"双栏规则 · 画面联动","duration":5.8,"source_candidate":"01-B","structure":"规则逐行显露，右侧对象出现、标注并移动，时间游标同步推进","uses":["代码与结果","参数与效果","步骤演示"],"status":"用户已选中入库；换主题示例用于验证"},
- {"id":"focus-detail","name":"总览聚焦 · 进入详情","duration":3.3,"source_candidate":"08-A","structure":"淡化其他内容，放大选中卡片，叠化进入详情页","uses":["目录展开","选项聚焦","产品详情"],"status":"用户已选中入库；换主题示例用于验证"}
+  {
+    "id": "object-swap",
+    "name": "固定接口 · 对象替换",
+    "duration": 4.4,
+    "source_candidate": "A",
+    "structure": "保留固定接口，旧对象上移退出，新对象接替同一位置",
+    "uses": [
+      "更换组件",
+      "升级产品",
+      "切换方案"
+    ],
+    "status": "用户已认可原造型及通用化示例"
+  },
+  {
+    "id": "door-reveal",
+    "name": "打开遮挡 · 进入空间",
+    "duration": 4.4,
+    "source_candidate": "E",
+    "structure": "遮挡打开，后方空间显露，同一主体进入",
+    "uses": [
+      "进入下一阶段",
+      "揭示新空间",
+      "场景接续"
+    ],
+    "status": "用户已认可原造型及通用化示例"
+  },
+  {
+    "id": "scan-transfer",
+    "name": "扫描提取 · 送入目标",
+    "duration": 5.4,
+    "source_candidate": "01-A",
+    "structure": "输入物进入设备，提取结果移动到目标并确认",
+    "uses": [
+      "文件解析",
+      "图像识别",
+      "数据归档"
+    ],
+    "status": "用户已选中入库；换主题示例用于验证"
+  },
+  {
+    "id": "rule-preview",
+    "name": "双栏规则 · 画面联动",
+    "duration": 5.8,
+    "source_candidate": "01-B",
+    "structure": "规则逐行显露，右侧对象出现、标注并移动，时间游标同步推进",
+    "uses": [
+      "代码与结果",
+      "参数与效果",
+      "步骤演示"
+    ],
+    "status": "用户已选中入库；换主题示例用于验证"
+  },
+  {
+    "id": "focus-detail",
+    "name": "总览聚焦 · 进入详情",
+    "duration": 3.3,
+    "source_candidate": "08-A",
+    "structure": "淡化其他内容，放大选中卡片，叠化进入详情页",
+    "uses": [
+      "目录展开",
+      "选项聚焦",
+      "产品详情"
+    ],
+    "status": "用户已选中入库；换主题示例用于验证"
+  },
+  {
+    "id": "list-transfer",
+    "name": "逐项交接 · 跨栏迁移",
+    "duration": 3.3,
+    "source_candidate": "O17-A",
+    "structure": "同一组三个对象依次离开左栏，进入右栏，保持内容身份",
+    "uses": [
+      "规则迁入系统",
+      "照片归入相册",
+      "待办转交"
+    ],
+    "status": "用户已认可O17-A并选中入库；换主题示例用于验证"
+  },
+  {
+    "id": "route-switch",
+    "name": "目标切换 · 路径联动",
+    "duration": 4.2,
+    "source_candidate": "O19-A",
+    "structure": "消息与箭头依次移向三个目标，消息同步替换，仅当前工位高亮",
+    "uses": [
+      "任务分流",
+      "切换处理对象",
+      "分类与派发"
+    ],
+    "status": "用户已认可优化版并选中入库；换内容示例用于验证"
+  },
+  {
+    "id": "choice-fill",
+    "name": "候选选择 · 对象回填",
+    "duration": 2.8,
+    "source_candidate": "O11-A",
+    "structure": "选中的同一对象从候选区连续进入可见结果槽，未选项同步淡化",
+    "uses": [
+      "选项写入结果",
+      "标签补入内容",
+      "图标写入表单"
+    ],
+    "status": "用户已认可优化版并选中入库；换图标示例用于验证"
+  }
 ]

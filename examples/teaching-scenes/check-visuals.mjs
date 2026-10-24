@@ -32,7 +32,7 @@ try{
     await page.evaluate(t=>window.__sceneSeek(t),t);
     states.push(await page.evaluate(()=>{
      const state=id=>{const el=document.querySelector(id);return el?{opacity:Number(getComputedStyle(el).opacity),x:Number(gsap.getProperty(el,'x')),y:Number(gsap.getProperty(el,'y')),scaleX:Number(gsap.getProperty(el,'scaleX'))}:null;};
-     return {old:state('#provider-a'),next:state('#provider-b'),room:state('#room-objects'),door:state('#door-leaf'),person:state('#student'),input:state('#task-receipt'),result:state('#ledger-entry'),amount:state('#task-amount'),shape:state('#code-demo-shape'),cursor:state('#code-playhead'),selected:state('#link2'),detail:state('#selected-doc'),lastDetail:state('#detail3')};
+     return {old:state('#provider-a'),next:state('#provider-b'),room:state('#room-objects'),door:state('#door-leaf'),person:state('#student'),input:state('#task-receipt'),result:state('#ledger-entry'),amount:state('#task-amount'),shape:state('#code-demo-shape'),cursor:state('#code-playhead'),selected:state('#link2'),detail:state('#selected-doc'),lastDetail:state('#detail3'),pages:[1,2,3].map(i=>state('#pg'+i)),handoffResult:state('#result'),targets:['routeLog','routeAfter','routeFin'].map(id=>state('#'+id)),routeInput:state('#routing-input'),fill:state('#selected-object'),choices:[2,3].map(i=>state('#candidate'+i))};
     }));
     frames.push(await page.screenshot({path:path.join(OUT,item.id+'-'+preset+'-'+t+'.png')}));
    }
@@ -46,6 +46,12 @@ try{
     assert.equal(states[0].shape.opacity,0);assert.equal(states.at(-1).shape.x,154);assert.equal(states.at(-1).shape.y,110);assert.equal(states.at(-1).cursor.x,788);
    }else if(item.id==='focus-detail'){
     assert.equal(states[0].selected.opacity,1);assert.equal(states[0].detail.opacity,0);assert.ok(states[2].selected.x<-290);assert.equal(states.at(-1).detail.opacity,1);assert.equal(states.at(-1).lastDetail.opacity,1);
+   }else if(item.id==='list-transfer'){
+    assert.ok(states[0].pages.every(p=>p.x===0&&p.y===0));assert.ok(states[1].pages[0].x>0&&states[1].pages[0].x<522);assert.equal(states[1].pages[1].x,0);assert.ok(states.at(-1).pages.every(p=>p.x===522&&p.y===44));assert.equal(states.at(-1).handoffResult.opacity,1);
+   }else if(item.id==='route-switch'){
+    assert.deepEqual(states[0].targets.map(p=>p.opacity),[1,.28,.28]);assert.deepEqual(states[2].targets.map(p=>p.opacity),[.28,1,.28]);assert.deepEqual(states.at(-1).targets.map(p=>p.opacity),[.28,.28,1]);assert.equal(states[2].routeInput.y,212);assert.equal(states.at(-1).routeInput.y,424);
+   }else if(item.id==='choice-fill'){
+    assert.equal(states[0].fill.x,772);assert.ok(states[1].fill.x<772&&states[1].fill.x>535);assert.equal(states.at(-1).fill.x,535);assert.equal(states.at(-1).fill.y,557);assert.ok(states.every(s=>s.fill.opacity===1&&s.fill.scaleX===1));assert.deepEqual(states.at(-1).choices.map(p=>p.opacity),[.28,.28]);
    }
    await page.evaluate(()=>window.__sceneSeek(.8));const reverse=await diff(page,frames[1],await page.screenshot());assert.ok(reverse.mean<.1&&reverse.changed<.001,'倒退残留');
    const result={id:item.id,preset,reverse,states};

@@ -1,0 +1,15 @@
+{
+  "source_root": "E:/My_project/Hot-News-Video",
+  "source_html": "course/acts/ep11_pretraining-posttraining/v5/act1.html",
+  "source_html_sha256": "bb5528ce3dabc00c9cdbe3a999bba357d45f91a4af58f194f4951e503001a5bf",
+  "source_video": "pipeline/output/course/ep11_pretraining-posttraining/v5/course_ep11_pretraining-posttraining_v5_publish.mp4",
+  "source_video_sha256": "9eaf9618d2ac4434b00242bb7c02a4b42498d9b6a61ad82fdf16575b851486bf",
+  "candidate_range": [
+    13.0,
+    15.1
+  ],
+  "source_candidate": "O11-A",
+  "changes": "结果空槽提前可见；同一对象连续进入空槽，字号和基线保持一致；仅背景收窄，未选候选同时淡化；移除原课程包装。另以天气图标验证实际对象替换。",
+  "selection": "用户认可O11-A优化预览，并在本轮要求完成所有余下工作；正式入库。",
+  "limits": "固定三个候选，选择第一项；固定构图及落点。不是任意数量、任意选择或自动排版组件。"
+}

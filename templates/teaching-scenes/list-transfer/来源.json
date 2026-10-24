@@ -1,0 +1,21 @@
+{
+  "source_root": "E:/My_project/Hot-News-Video",
+  "source_html": "course/acts/ep17_harness-engineering/act2.html",
+  "source_html_sha256": "eefed55e4f7743463a937c0bddb411f449f397cee090d4a5a4fafae882f2b1ce",
+  "source_video": "pipeline/output/course/ep17_harness-engineering/v1/course_ep17_harness-engineering_v1_publish.mp4",
+  "source_video_sha256": "28000191c860f21674031cba513f66130f5d2fd682a903c8bff68fdb07a54364",
+  "candidate_range": [
+    112.6,
+    115.6
+  ],
+  "source_candidate": "O17-A",
+  "objects": [
+    "manual",
+    "pg1",
+    "pg2",
+    "pg3",
+    "machine"
+  ],
+  "changes": "用户认可并选中入库；保留三页跨栏曲线，移除课程包装，接收框补足末项边距。换主题版用三张实际图片代替纯规则纸页。",
+  "selection": "用户已认可O17-A并选中入库；换主题版用于技术验证。"
+}

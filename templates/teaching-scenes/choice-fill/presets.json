@@ -1,0 +1,30 @@
+{
+  "original": {
+    "sourceLabel": "已有的前文",
+    "sourceText": "天空很",
+    "processorLabel": "语言模型",
+    "candidatesLabel": "下一个词的候选",
+    "candidate1Text": "蓝",
+    "candidate2Text": "高",
+    "candidate3Text": "美",
+    "resultPrefixText": "天空很",
+    "resultHintText": "根据前文，继续生成",
+    "candidate1Asset": null,
+    "candidate2Asset": null,
+    "candidate3Asset": null
+  },
+  "demo": {
+    "sourceLabel": "需要一个图标",
+    "sourceText": "今日天气",
+    "processorLabel": "图标推荐",
+    "candidatesLabel": "可用的图标",
+    "candidate1Text": "晴",
+    "candidate2Text": "云",
+    "candidate3Text": "雨",
+    "resultPrefixText": "今日天气",
+    "resultHintText": "选中的图标，写入结果",
+    "candidate1Asset": "templates/teaching-scenes/choice-fill/assets/sun.svg",
+    "candidate2Asset": "templates/teaching-scenes/choice-fill/assets/cloud.svg",
+    "candidate3Asset": "templates/teaching-scenes/choice-fill/assets/rain.svg"
+  }
+}

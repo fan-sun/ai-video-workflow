@@ -97,6 +97,8 @@ examples/context-window/cover.html
 
 参考图形、场景显隐和字幕注册方式，实际文案、时间点和场景结构按本期旁白设计。
 
+编排本期分镜前，执行 `course/docs/teaching/scene_library_usage.md`：查看教学素材目录和实际预览，按对应旁白选择可复用结构，记录保留动作、替换内容与衔接，再从本期副本制作并验收。用户要求添加或积累素材时，执行 `course/docs/teaching/scene_library_addition.md`，完成候选、查重、必要优化、换内容验证和正式登记；不把原视频截段直接当作可编辑模板入库。
+
 ### 5. 正式音频和 timings
 
 ```text

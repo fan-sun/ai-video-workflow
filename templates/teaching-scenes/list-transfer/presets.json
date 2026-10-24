@@ -1,0 +1,4 @@
+{
+ "original":{"sourceLabel":"已有的规则","targetLabel":"交给系统执行","row1Text":"流程规范","row2Text":"权限","row3Text":"自动检查","resultText":"这些规则，交给系统执行","row1Asset":null,"row2Asset":null,"row3Asset":null},
+ "demo":{"sourceLabel":"待整理照片","targetLabel":"旅行相册","row1Text":"山景照片","row2Text":"城市照片","row3Text":"人物照片","resultText":"三张照片，依次归入相册","row1Asset":"templates/teaching-scenes/list-transfer/assets/landscape.svg","row2Asset":"templates/teaching-scenes/list-transfer/assets/city.svg","row3Asset":"templates/teaching-scenes/list-transfer/assets/portrait.svg"}
+}
