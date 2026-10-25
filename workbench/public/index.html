@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>视频工作台 · AI Video Workflow</title>
+  <link rel="stylesheet" href="/workbench.css">
+  <script type="module" src="/workbench.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="返回工作台总览"><span class="brand-mark">◧</span><span>视频工作台<small>AI VIDEO WORKFLOW</small></span></a>
+      <div class="nav-label">创作空间</div>
+      <nav aria-label="视频路线">
+        <button class="nav-item active" data-route="all"><span class="nav-icon">▦</span>全部视频<span id="nav-count" class="nav-count">—</span></button>
+        <button class="nav-item" data-route="teaching"><span class="nav-icon">▤</span>教学视频</button>
+        <button class="nav-item" data-route="vibe"><span class="nav-icon">◈</span>Vibe 视频</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="live-dot"></span>本地工作空间<small>进度 · 审片 · 修改意见</small></div>
+    </aside>
+    <main>
+      <header class="topbar"><div id="breadcrumb">工作空间 <span>/</span> 视频总览</div><div class="local-label"><span class="live-dot"></span>LOCAL</div></header>
+      <div id="notice" role="status" aria-live="polite" hidden></div>
+      <section id="overview" class="page">
+        <div class="page-heading"><div><p class="eyebrow">YOUR CREATIVE WORKSPACE</p><h1>创作总览<span class="heading-dot">.</span></h1><p class="subtitle">从每一期的进度，回到需要你看的那一帧。</p></div><button id="refresh" class="button secondary">↻ 刷新进度</button></div>
+        <div class="stats" id="stats"></div>
+        <div class="library-panel">
+          <div class="list-toolbar"><div><h2>视频项目 <span id="filtered-count" class="count"></span></h2><p id="last-read" class="small muted">正在读取本地制作记录…</p></div><div class="filters"><label class="search-field"><span>⌕</span><input id="search" type="search" aria-label="搜索视频" placeholder="搜索主题或期号"></label><select id="status-filter" aria-label="筛选制作状态"><option value="all">全部状态</option><option>制作中</option><option>待发布</option><option>已发布</option></select></div></div>
+          <div class="table-scroll"><table class="episode-table"><thead><tr><th>期次与主题</th><th>路线</th><th>当前版本</th><th>制作进度</th><th></th></tr></thead><tbody id="episode-list"><tr><td colspan="5" class="empty">正在读取视频…</td></tr></tbody></table></div>
+        </div>
+        <p class="page-footnote">选择状态后点击保存，详细制作记录可在期次页查看。</p>
+      </section>
+      <section id="detail" class="page" hidden>
+        <button id="back" class="back-button">← 返回视频总览</button>
+        <div class="detail-heading"><div><p id="episode-kicker" class="eyebrow"></p><h1 id="episode-title"></h1></div><span id="episode-status" class="badge"></span></div>
+        <div id="stage-summary" class="stage-summary"></div>
+        <details class="progress-disclosure"><summary>分幕进度 <span id="act-count"></span></summary><div id="acts" class="acts-grid"></div></details>
+        <div id="warnings" class="warnings" hidden></div>
+        <div class="review-layout">
+          <div class="viewer-column">
+            <section class="viewer-panel" aria-label="视频审片">
+              <div class="viewer-toolbar"><div><span class="section-kicker">当前播放</span><label><span class="sr-only">选择视频版本</span><select id="media-select" aria-label="选择视频版本"></select></label></div><label class="check-label"><input id="show-candidates" type="checkbox">其他候选</label><button id="record" class="button primary" disabled>＋ 记录问题</button></div>
+              <div class="video-stage"><video id="film" controls playsinline preload="metadata"></video><div id="video-empty" class="video-empty" hidden></div></div>
+              <div class="viewer-meta"><span id="media-label"></span><span id="approval" class="approval-label"></span></div>
+              <div class="viewer-actions"><div id="chapters" class="chapters"></div></div>
+              <details class="file-details"><summary>文件与版本信息</summary><div id="file-details"></div></details>
+            </section>
+            <section class="materials-panel">
+              <div class="tabs" role="tablist" aria-label="审片材料"><button role="tab" data-tab="script" aria-selected="true">讲解稿</button><button role="tab" data-tab="plan" aria-selected="false">画面分镜</button><button role="tab" data-tab="release" aria-selected="false">发布资料</button><label class="check-label follow-label"><input id="follow" type="checkbox" checked>跟随播放</label></div>
+              <p id="mapping-note" class="mapping-note"></p><div id="material-content" class="material-content" role="tabpanel"></div>
+            </section>
+          </div>
+          <aside class="feedback-panel" aria-label="修改意见">
+            <div class="feedback-heading"><div><p class="section-kicker">REVIEW NOTES</p><h2>修改意见 <span id="note-count" class="count">0</span></h2></div><button id="copy-notes" class="button small-button secondary">复制清单</button></div>
+            <form id="note-editor" class="note-editor" hidden>
+              <div class="editor-heading"><strong id="editor-title">记录这个画面</strong><button type="button" id="cancel-note" class="text-button">取消</button></div>
+              <div id="note-target" class="small muted"></div>
+              <div class="time-fields"><label>起点<input id="note-start" aria-label="意见起点" placeholder="00:00" required></label><label>终点<input id="note-end" aria-label="意见终点" placeholder="00:00" required></label></div>
+              <p class="range-hint">起止相同表示这一秒，修改终点即可标记一段。</p>
+              <label class="note-text-label">修改意见<textarea id="note-text" rows="4" maxlength="10000" placeholder="描述画面中的问题，以及希望怎样调整…" required></textarea></label>
+              <label id="resolution-label" hidden>处理说明<textarea id="note-resolution" rows="2" maxlength="10000" placeholder="记录改了什么、复核结果等"></textarea></label>
+              <div class="editor-footer"><span id="save-state" class="small" aria-live="polite"></span><button type="submit" id="save-note" class="button primary">保存意见</button></div>
+            </form>
+            <div class="note-filters"><select id="note-scope" aria-label="筛选意见版本"><option value="current">当前视频</option><option value="all">本期全部版本</option></select><select id="note-status" aria-label="筛选意见状态"><option value="open">未解决</option><option value="all">全部状态</option><option>待处理</option><option>待复核</option><option>已解决</option></select></div>
+            <div id="note-list" class="note-list"></div>
+            <p class="notes-footnote">意见保存在本地，并绑定具体视频。<br>“已解决”仅表示这条意见处理完成。</p>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+  <dialog id="copy-dialog"><h2>修改清单</h2><p class="muted">浏览器未允许直接复制，可选中下方文字手动复制。</p><textarea id="copy-fallback" rows="14" readonly aria-label="可复制的修改清单"></textarea><form method="dialog"><button class="button primary">完成</button></form></dialog>
+</body>
+</html>

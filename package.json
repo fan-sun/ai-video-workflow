@@ -6,6 +6,7 @@
   "description": "AI 辅助的教学与概念讲解视频制作流程",
   "engines": { "node": ">=22.9.0" },
   "scripts": {
+    "workbench": "node workbench/server.mjs",
     "test": "node --env-file-if-exists=.env --test tests/node/*.test.mjs",
     "test:python": "node --env-file-if-exists=.env build/common/run_python.mjs -m unittest discover -s tests",
     "voiceover": "node --env-file-if-exists=.env build/common/run_python.mjs pipeline/02_audio/voxcpm_tts.py",
