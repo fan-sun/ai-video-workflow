@@ -504,6 +504,70 @@ select {
   padding:8px;
   display:inline-block;
 }
+.episode-actions {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  white-space:nowrap;
+}
+.library-selector {
+  display:grid;
+  gap:8px;
+  margin:4px 0 26px;
+  color:#b7c5dc;
+  font-size:var(--font-ui);
+}
+.library-selector select {
+  width:100%;
+  min-width:0;
+  background:#20314b;
+  color:#eef3fc;
+  border-color:#415472;
+}
+.page-heading-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.cleanup-dialog { width:min(1100px,calc(100vw - 32px)); max-width:1100px; max-height:calc(100vh - 40px); overflow:auto; padding:26px; border:1px solid var(--line); border-radius:12px; color:#263c5c; }
+.cleanup-dialog::backdrop { background:rgba(15,27,47,.4); }
+.cleanup-heading,.cleanup-footer { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.cleanup-heading h2 { margin:4px 0; }
+.cleanup-intro,.cleanup-message { font-size:var(--font-ui); line-height:1.8; color:#596c87; }
+.cleanup-episode-actions,.cleanup-file-actions { display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin:14px 0; font-size:var(--font-ui); }
+.cleanup-select-all { display:inline-flex; align-items:center; gap:8px; font-weight:600; color:#263c5c; cursor:pointer; }
+.cleanup-select-all input { width:16px; height:16px; accent-color:var(--blue); }
+.cleanup-episodes { max-height:230px; overflow:auto; border:1px solid var(--line); border-radius:7px; margin-bottom:16px; }
+.cleanup-episodes label { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--line); font-size:var(--font-ui); }
+.cleanup-episodes label:last-child { border-bottom:0; }
+.cleanup-episodes label span { flex:1; }
+.cleanup-episodes small { font-size:var(--font-meta); color:#697990; }
+.cleanup-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0; }
+.cleanup-summary div { padding:16px; background:#f5f7fc; border-radius:7px; }
+.cleanup-summary span { display:block; font-size:var(--font-ui); color:#697990; margin-bottom:8px; }
+.cleanup-summary strong { font-size:22px; }
+#cleanup-warnings { font-size:var(--font-ui); line-height:1.7; padding:10px 0; }
+#cleanup-masters { font-size:var(--font-ui); line-height:1.7; padding:10px 0; }
+#cleanup-master-list { max-height:220px; overflow:auto; }
+#cleanup-master-list p { margin:10px 0; padding:10px 12px; background:#f5f7fc; border-radius:7px; }
+#cleanup-warning-text { max-height:200px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; font-family:inherit; font-size:var(--font-meta); line-height:1.7; }
+.cleanup-files { max-height:390px; overflow:auto; border:1px solid var(--line); border-radius:7px; }
+.cleanup-file { display:grid; grid-template-columns:20px minmax(0,1fr) auto; gap:12px; padding:13px; border-bottom:1px solid var(--line); align-items:start; font-size:var(--font-ui); }
+.cleanup-file:last-child { border-bottom:0; }
+.cleanup-file.protected { background:#f8f9fc; }
+.cleanup-file strong { display:block; font-weight:500; }
+.cleanup-file-path { display:block; overflow-wrap:anywhere; margin:5px 0; color:#405472; }
+.cleanup-file small { display:block; font-size:var(--font-meta); line-height:1.6; color:#697990; overflow-wrap:anywhere; }
+.cleanup-file-size { white-space:nowrap; color:#405472; }
+.cleanup-footer { margin-top:16px; font-size:var(--font-ui); }
+.cleanup-empty { padding:18px; line-height:1.8; font-size:var(--font-ui); }
+.danger-button { color:#9d3039; background:#fff1f2; border:1px solid #dfadb3; }
+@media(max-width:680px) {
+  .library-selector { margin:0 0 4px; }
+  .cleanup-dialog { padding:16px; }
+  .cleanup-summary { gap:6px; }
+  .cleanup-summary div { padding:10px; }
+  .cleanup-summary strong { font-size:18px; }
+  .cleanup-file { gap:8px; grid-template-columns:18px minmax(0,1fr); }
+  .cleanup-file-size { grid-column:2; }
+  .cleanup-footer { align-items:flex-start; flex-direction:column; gap:8px; }
+}
 .page-footnote {
   font-size:var(--font-ui);
   color:#697990;
@@ -1297,6 +1361,25 @@ dialog form {
 .status-editor select {
   font-size:var(--font-ui);
   min-width:110px;
+}
+.status-editor select[data-status="制作中"] {
+  background:#edf2ff;
+  color:#244fb5;
+  border-color:#bccbf7;
+}
+.status-editor select[data-status="待发布"] {
+  background:#fff4e5;
+  color:#92520b;
+  border-color:#edc68d;
+}
+.status-editor select[data-status="已发布"] {
+  background:#edf6f0;
+  color:#266445;
+  border-color:#b6d8c4;
+}
+.status-editor option {
+  background:#fff;
+  color:#58647a;
 }
 .status-editor .button {
   font-size:var(--font-ui);

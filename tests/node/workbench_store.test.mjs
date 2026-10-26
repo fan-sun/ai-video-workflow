@@ -147,3 +147,32 @@ test('当前预览指向正式分幕时，从索引补入范围与独立时钟',
   const d = await store.detail(1), m = await store.mediaDetail(1, d.currentMediaId);
   assert.equal(m.scope, 'act'); assert.equal(m.cues[0].start, 0); assert.equal(m.cues[0].act, 2);
 });
+
+test('发布文件夹只取当前索引的发布版，不跟随预览、旧台账或历史候选', async t => {
+  const f = await fixture(t), current = 'pipeline/output/teaching/ep01_demo/v2/publish.mp4', old = 'pipeline/output/teaching/ep01_demo/v1/publish.mp4';
+  f.index.publish_output = current;
+  await f.put(current, 'current-release'); await f.put(old, 'old-release');
+  await f.put('course/episodes/01-demo/制作索引.json', f.index);
+  await f.put('course/episodes/01-demo/v1/制作索引.json', { current_version: 'v1', publish_output: old });
+  const ledger = JSON.parse(await readFile(path.join(f.root, 'course/episodes.json'), 'utf8'));
+  ledger.episodes[0].output = old; await f.put('course/episodes.json', ledger);
+  const store = api.createWorkbenchStore(f.root);
+  const d = await store.detail(1), list = await store.list();
+  assert.equal(d.publishMedia?.path, current);
+  assert.equal(list.episodes.find(e => e.ep === 1).publishMedia?.path, current);
+  const folder = await store.releaseFolder(1);
+  assert.equal(folder.path, path.posix.dirname(current));
+  assert.equal(folder.absolute, path.dirname((await store.asset(1, d.publishMedia.id)).absolute));
+  assert.notEqual(folder.path, path.posix.dirname(old));
+});
+
+test('未生成、缺失或越界的发布版不能打开其他目录', async t => {
+  const f = await fixture(t), store = api.createWorkbenchStore(f.root);
+  await assert.rejects(() => store.releaseFolder(1), e => e.status === 404 && /未登记/.test(e.message));
+  f.index.publish_output = 'pipeline/output/teaching/ep01_demo/v2/missing-publish.mp4';
+  await f.put('course/episodes/01-demo/制作索引.json', f.index);
+  assert.equal((await store.detail(1)).publishMedia.exists, false);
+  await assert.rejects(() => store.releaseFolder(1), e => e.status === 404 && /不存在/.test(e.message));
+  f.index.publish_output = '../outside.mp4'; await f.put('course/episodes/01-demo/制作索引.json', f.index);
+  await assert.rejects(() => store.releaseFolder(1), e => e.status === 403);
+});

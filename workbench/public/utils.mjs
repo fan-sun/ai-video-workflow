@@ -15,6 +15,12 @@ export function parseTime(text) {
   return parts.reduce((sum, x) => sum * 60 + x, 0);
 }
 export const scopeLabel = m => m?.scope === 'act' ? `第${m.act || '?'}幕` : m?.scope === 'clip' ? '局部预览' : m?.scope === 'full' ? '整片' : '范围未核验';
+export const draftStorageKey = (library, ep, sha256) => `video-workbench:draft:${library === 'legacy' ? 'legacy:' : ''}${ep}:${sha256}`;
+export function formatBytes(bytes) {
+  if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KiB`;
+  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
+  return `${(bytes / 1024 ** 3).toFixed(2)} GiB`;
+}
 export function feedbackText(episode, items) {
-  return [`AI Video Workflow / 第${String(episode.ep).padStart(2, '0')}期 / ${episode.topic}`, ...items.map(x => `\n[${x.id}] ${scopeLabel(x)} · ${x.version}\n文件：${x.path}\nSHA256：${x.sha256}\n${formatTime(x.start)}${x.end > x.start ? `—${formatTime(x.end)}` : ''}｜${x.status}\n问题：${x.text}${x.resolution ? `\n处理说明：${x.resolution}` : ''}`)].join('\n');
+  return [`AI Video Workflow${episode.libraryName ? ' / ' + episode.libraryName : ''} / 第${String(episode.ep).padStart(2, '0')}期 / ${episode.topic}`, ...items.map(x => `\n[${x.id}] ${scopeLabel(x)} · ${x.version}\n文件：${x.path}\nSHA256：${x.sha256}\n${formatTime(x.start)}${x.end > x.start ? `—${formatTime(x.end)}` : ''}｜${x.status}\n问题：${x.text}${x.resolution ? `\n处理说明：${x.resolution}` : ''}`)].join('\n');
 }

@@ -12,6 +12,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <a class="brand" href="#" aria-label="返回工作台总览"><span class="brand-mark">◧</span><span>视频工作台<small>AI VIDEO WORKFLOW</small></span></a>
+      <label class="library-selector">视频库<select id="library-select" aria-label="选择视频库"><option value="current">当前视频库（内层）</option></select></label>
       <div class="nav-label">创作空间</div>
       <nav aria-label="视频路线">
         <button class="nav-item active" data-route="all"><span class="nav-icon">▦</span>全部视频<span id="nav-count" class="nav-count">—</span></button>
@@ -24,7 +25,7 @@
       <header class="topbar"><div id="breadcrumb">工作空间 <span>/</span> 视频总览</div><div class="local-label"><span class="live-dot"></span>LOCAL</div></header>
       <div id="notice" role="status" aria-live="polite" hidden></div>
       <section id="overview" class="page">
-        <div class="page-heading"><div><p class="eyebrow">YOUR CREATIVE WORKSPACE</p><h1>创作总览<span class="heading-dot">.</span></h1><p class="subtitle">从每一期的进度，回到需要你看的那一帧。</p></div><button id="refresh" class="button secondary">↻ 刷新进度</button></div>
+        <div class="page-heading"><div><p class="eyebrow">YOUR CREATIVE WORKSPACE</p><h1>创作总览<span class="heading-dot">.</span></h1><p class="subtitle">从每一期的进度，回到需要你看的那一帧。</p></div><div class="page-heading-actions"><button id="open-cleanup" class="button secondary">历史版本清理</button><button id="refresh" class="button secondary">↻ 刷新进度</button></div></div>
         <div class="stats" id="stats"></div>
         <div class="library-panel">
           <div class="list-toolbar"><div><h2>视频项目 <span id="filtered-count" class="count"></span></h2><p id="last-read" class="small muted">正在读取本地制作记录…</p></div><div class="filters"><label class="search-field"><span>⌕</span><input id="search" type="search" aria-label="搜索视频" placeholder="搜索主题或期号"></label><select id="status-filter" aria-label="筛选制作状态"><option value="all">全部状态</option><option>制作中</option><option>待发布</option><option>已发布</option></select></div></div>
@@ -44,7 +45,7 @@
               <div class="viewer-toolbar"><div><span class="section-kicker">当前播放</span><label><span class="sr-only">选择视频版本</span><select id="media-select" aria-label="选择视频版本"></select></label></div><label class="check-label"><input id="show-candidates" type="checkbox">其他候选</label><button id="record" class="button primary" disabled>＋ 记录问题</button></div>
               <div class="video-stage"><video id="film" controls playsinline preload="metadata"></video><div id="video-empty" class="video-empty" hidden></div></div>
               <div class="viewer-meta"><span id="media-label"></span><span id="approval" class="approval-label"></span></div>
-              <div class="viewer-actions"><div id="chapters" class="chapters"></div></div>
+              <div class="viewer-actions"><div id="chapters" class="chapters"></div><button id="restore-media" class="button secondary" type="button" hidden>恢复整片副本到原路径</button></div>
               <details class="file-details"><summary>文件与版本信息</summary><div id="file-details"></div></details>
             </section>
             <section class="materials-panel">
@@ -72,5 +73,21 @@
     </main>
   </div>
   <dialog id="copy-dialog"><h2>修改清单</h2><p class="muted">浏览器未允许直接复制，可选中下方文字手动复制。</p><textarea id="copy-fallback" rows="14" readonly aria-label="可复制的修改清单"></textarea><form method="dialog"><button class="button primary">完成</button></form></dialog>
+  <dialog id="cleanup-dialog" class="cleanup-dialog" aria-labelledby="cleanup-title">
+    <div class="cleanup-heading"><div><p id="cleanup-library" class="section-kicker"></p><h2 id="cleanup-title">历史版本清理</h2></div><button id="close-cleanup" class="text-button" type="button">关闭</button></div>
+    <p class="cleanup-intro">仅已发布期次可清理，制作中和待发布期次不可选择。支持旧视频、已核验旧检查图片与重复字体。保留发布母版及原画面、声音、配乐；相同整片副本可归档恢复，源码、素材和确认记录继续保留。</p>
+    <div class="cleanup-episode-actions"><label class="cleanup-select-all"><input id="cleanup-select-all-episodes" type="checkbox"><span id="cleanup-select-all-episodes-label">全选已发布期次</span></label><button id="cleanup-all-episodes" class="text-button" type="button">选择已发布期次</button><button id="cleanup-no-episodes" class="text-button" type="button">清空选择</button></div>
+    <div id="cleanup-episodes" class="cleanup-episodes"></div>
+    <button id="preview-cleanup" class="button primary" type="button">统计并预览</button>
+    <p id="cleanup-message" class="cleanup-message" role="status" aria-live="polite"></p>
+    <section id="cleanup-results" hidden>
+      <div id="cleanup-summary" class="cleanup-summary"></div>
+      <details id="cleanup-masters"><summary id="cleanup-masters-title">保留发布母版</summary><div id="cleanup-master-list"></div></details>
+      <details id="cleanup-warnings" hidden><summary>依赖核查说明</summary><pre id="cleanup-warning-text"></pre></details>
+      <div class="cleanup-file-actions"><select id="cleanup-kind" aria-label="清理类别"><option value="all">全部类别</option><option value="historical">旧视频</option><option value="duplicate">相同整片副本（可恢复）</option><option value="image">旧检查图片</option><option value="font">重复字体</option></select><label class="cleanup-select-all"><input id="cleanup-select-all" type="checkbox"><span id="cleanup-select-all-label">全选可清理文件</span></label><button id="cleanup-clear-files" class="text-button" type="button">清空文件选择</button><label><input id="cleanup-show-protected" type="checkbox">显示受保护文件</label></div>
+      <div id="cleanup-files" class="cleanup-files"></div>
+      <div class="cleanup-footer"><p id="cleanup-selected">尚未选择文件</p><button id="apply-cleanup" class="button danger-button" type="button" disabled>清理选中文件</button></div>
+    </section>
+  </dialog>
 </body>
 </html>

@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { resolveRetainedMedia } from "./retained_media.mjs";
 
 // 这些工具与共享资产会改变实际字幕、章节栏和渲染结果，须与已审版本一起锁定。
 export const COURSE_VISUAL_RENDER_INPUTS = [
@@ -24,7 +25,7 @@ export function requiresCourseVisualReview(index) {
 
 function requiredFile(rootDir, value, label) {
   if (typeof value !== "string" || !value.trim()) throw new Error(label + " 缺少文件路径");
-  const file = path.resolve(rootDir, value);
+  const file = /\.mp4$/i.test(value) ? resolveRetainedMedia(rootDir, value).absolute : path.resolve(rootDir, value);
   if (!fs.existsSync(file) || !fs.statSync(file).isFile() || fs.statSync(file).size === 0) {
     throw new Error(label + " 文件不存在或为空：" + value);
   }

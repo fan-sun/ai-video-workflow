@@ -18,6 +18,42 @@ test('复制交接包含原始版本、文件、时间与意见ID', () => {
   for (const value of ['第07期', 'v2', 'demo.mp4', '01:13—01:15', 'abc', '保持联动']) assert.ok(text.includes(value));
 });
 
+test('两个库的同一期同指纹草稿不会混用，当前库兼容已有草稿键', () => {
+  assert.equal(api.draftStorageKey('current', 1, 'same'), 'video-workbench:draft:1:same');
+  assert.notEqual(api.draftStorageKey('current', 1, 'same'), api.draftStorageKey('legacy', 1, 'same'));
+  const note = { id: 'n', path: 'video.mp4', sha256: 'same', start: 1, end: 1, text: '修改', status: '待处理' };
+  const text = api.feedbackText({ ep: 1, topic: '测试', libraryName: '历史视频库（外层）' }, [note]);
+  assert.ok(text.includes('历史视频库（外层）'));
+});
+
+test('切换到另一视频库的相同期号后，旧意见请求不能覆盖新库', async () => {
+  const code = await readFile(new URL('../../workbench/public/workbench.js', import.meta.url), 'utf8');
+  const source = code.slice(code.indexOf('async function loadNotes('), code.indexOf('function visibleNotes('));
+  let finish, renders = 0;
+  const state = { library: 'current', detail: { ep: 1 }, pageSerial: 1, notes: ['当前库'] };
+  const load = vm.runInNewContext(source + '\nloadNotes', { state, api: () => new Promise(resolve => { finish = resolve; }), renderNotes: () => renders++ });
+  const pending = load();
+  state.library = 'legacy'; state.detail = { ep: 1 }; state.pageSerial = 2; state.notes = ['历史库'];
+  finish({ items: ['迟到的当前库意见'] }); await pending;
+  assert.deepEqual(state.notes, ['历史库']); assert.equal(renders, 0);
+});
+
+test('切库等待列表期间清除旧主题和操作控件，禁止以新库执行旧库选择', async () => {
+  const code = await readFile(new URL('../../workbench/public/workbench.js', import.meta.url), 'utf8');
+  const source = code.slice(code.indexOf('async function route('), code.indexOf('function seek('));
+  const state = { library: 'current', libraries: [{ id: 'current', name: '当前库' }, { id: 'legacy', name: '历史库' }], episodes: [{ ep: 1, topic: '当前库主题' }], pageSerial: 0, mediaSerial: 0, materialSerial: 0, listSerial: 0, selected: new Set() };
+  const fields = { 'episode-list': { innerHTML: '当前库主题及保存按钮' }, 'open-cleanup': { disabled: false }, stats: { replaceChildren() {} }, 'nav-count': {}, 'filtered-count': {} };
+  const field = id => fields[id] ||= {};
+  let finish;
+  const route = vm.runInNewContext(source + '\nroute', { state, URLSearchParams, location: { hash: '#library=legacy' }, $: field, document: { querySelectorAll: () => [], querySelector: () => ({}) }, overviewHash: () => '#library=legacy', cleanup: { reset() {} }, film: { pause() {} }, loadList: () => new Promise(resolve => { finish = resolve; }) });
+  const pending = route();
+  try {
+    assert.equal(state.library, 'legacy'); assert.equal(state.episodes.length, 0);
+    assert.ok(!fields['episode-list'].innerHTML.includes('当前库主题'));
+    assert.equal(fields['open-cleanup'].disabled, true);
+  } finally { finish(); await pending; }
+});
+
 test('起止相同的意见清单只显示单个时间，点击回放这一秒', async () => {
   const note = { id: 'n', mediaId: 'A', sha256: 'A', start: 3, end: 3, text: '这一秒', version: 'v1', scope: 'full', status: '待处理' };
   const text = api.feedbackText({ ep: 1, topic: '测试' }, [note]);
@@ -75,4 +111,17 @@ test('意见定位核验返回后若已切期，不再清空新播放器', async
   state.detail = { ep: 2 }; state.pageSerial++; state.mediaSerial++;
   finish({ sha256: 'A' }); await pending.catch(() => {});
   assert.deepEqual(loads, []);
+});
+
+test('恢复旧库副本期间切库，完成结果不会重新载入新库同一期号', async () => {
+  const code = await readFile(new URL('../../workbench/public/workbench.js', import.meta.url), 'utf8');
+  assert.ok(code.includes('async function restoreArchivedMedia('), '尚未接入归档恢复按钮');
+  const source = code.slice(code.indexOf('async function restoreArchivedMedia('), code.indexOf('async function loadMedia('));
+  const state = { library: 'legacy', pageSerial: 1, detail: { ep: 1, media: [{ id: 'same', archived: true }] }, media: { id: 'same', archived: true } };
+  let finish; const calls = [], loads = [], button = {};
+  const restore = vm.runInNewContext(source + '\nrestoreArchivedMedia', { state, $: () => button, canLeave: () => true, persistDraft() {}, renderMediaSelect() {}, notice() {}, api: (...args) => { calls.push(args); return new Promise(resolve => { finish = resolve; }); }, loadMedia: async id => loads.push(id) });
+  const pending = restore();
+  state.library = 'current'; state.pageSerial++; state.detail = { ep: 1 }; state.media = { id: 'same' };
+  finish({ restored: true }); await pending;
+  assert.equal(calls[0][2], 'legacy'); assert.deepEqual(loads, []);
 });

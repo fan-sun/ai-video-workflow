@@ -5,6 +5,7 @@ import { readFile, readdir, writeFile, rename, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { safeFile, fileId, fingerprint, probe, WorkbenchError } from './media.mjs';
+import { resolveRetainedMedia, restoreRetainedMedia } from '../build/common/retained_media.mjs';
 
 const accepted = a => !!a && (a.confirmed === true || (a.confirmed === undefined && ['approved', 'confirmed', 'accepted_by_user', 'user_approved'].includes(a.status)));
 const actNumber = p => Number(/(?:act[_-]?)(\d+)/i.exec(p)?.[1]) || ('一二三四五六'.indexOf(/第([一二三四五六])幕/.exec(p)?.[1]) + 1) || null;
@@ -17,7 +18,7 @@ export function createWorkbenchStore(root, { probeMedia = probe } = {}) {
   async function json(p) { const f = await safeFile(root, p); return f.exists ? JSON.parse(await readFile(f.absolute, 'utf8')) : null; }
   async function resource(p) {
     if (typeof p !== 'string') return null;
-    try { const f = await safeFile(root, p); return { id: fileId(p), path: relative(p), exists: f.exists }; }
+    try { const resolved = resolveRetainedMedia(root, p), f = await safeFile(root, resolved.path); return { id: fileId(p), path: relative(p), exists: f.exists, ...(resolved.archived ? { archived: true, masterPath: resolved.path } : {}) }; }
     catch (e) { return { path: p, exists: false, error: e.message }; }
   }
   async function relatedPlans(p) {
@@ -122,13 +123,13 @@ export function createWorkbenchStore(root, { probeMedia = probe } = {}) {
       const approval = a.review_approval || sample?.user_review;
       const assistantStatus = a.assistant_visual_review?.status;
       const assistant = assistantStatus === 'pending_visual_review' ? '待连续审看' : /sampled/.test(assistantStatus || '') ? '有抽帧复核记录' : assistantStatus === 'passed' ? '有助手通过记录' : '未记录';
-      return { act: a.act, title: chapters.find(c => c.act === a.act)?.title || `第${a.act}幕`, script: (await resource(a.script))?.exists ? '已生成' : '未单独登记', timing: (await resource(a.timings || a.visual_timing))?.exists ? '已生成' : '未记录', audio, visual, mediaId: output?.id || null, technical: a.motion_result?.status === 'passed' || a.first_reveal_check?.status === 'passed' ? '有技术检查记录' : '未记录', assistant, user: accepted(approval) ? '有局部确认记录' : '未单独记录' };
+      return { act: a.act, title: chapters.find(c => c.act === a.act)?.title || `第${a.act}幕`, script: (await resource(a.script || a.formal_script))?.exists ? '已生成' : '未单独登记', timing: (await resource(a.timings || a.visual_timing))?.exists ? '已生成' : '未记录', audio, visual, mediaId: output?.id || null, technical: a.motion_result?.status === 'passed' || a.first_reveal_check?.status === 'passed' ? '有技术检查记录' : '未记录', assistant, user: accepted(approval) ? '有局部确认记录' : '未单独记录' };
     }));
     const materials = {};
     for (const [key, p] of Object.entries({ script: idx.script || e.script, plan: idx.visual_plan, cover: idx.cover_output || e.cover, copy: idx.publish_copy || e.publish_copy, timeline: idx.timeline_summary })) materials[key] = await resource(p);
     const stage = idx.stage || e.status || '阶段未记录';
     const next = shortStatus(e) === '已发布' ? '本期已登记公开发布' : shortStatus(e) === '待发布' ? '发布资料就绪后，可按现有流程发布' : '按详细制作记录继续；文件生成不等于审片通过';
-    const result = { ep: e.ep, slug: e.slug, topic: e.topic, route, version, status: shortStatus(e), stage, next, warnings, indexPath, currentMediaId: media.find(m => m.current)?.id || null, media, acts, chapters, materials, loadedAt: new Date().toISOString() };
+    const result = { ep: e.ep, slug: e.slug, topic: e.topic, route, version, status: shortStatus(e), stage, next, warnings, indexPath, currentMediaId: media.find(m => m.current)?.id || null, publishMedia: await resource(idx.publish_output), media, acts, chapters, materials, loadedAt: new Date().toISOString() };
     Object.defineProperty(result, '_contexts', { value: contexts });
     return result;
   }
@@ -136,15 +137,22 @@ export function createWorkbenchStore(root, { probeMedia = probe } = {}) {
     const ledger = await json('course/episodes.json');
     if (!Array.isArray(ledger?.episodes)) throw new WorkbenchError('无法读取课程台账', 500);
     const episodes = await Promise.all(ledger.episodes.map(async e => {
-      try { const d = await detail(e.ep); return { ep: d.ep, slug: d.slug, topic: d.topic, route: d.route, version: d.version, status: d.status, stage: d.stage, next: d.next, warnings: d.warnings, actCount: d.acts.length, mediaCount: d.media.length }; }
+      try { const d = await detail(e.ep); return { ep: d.ep, slug: d.slug, topic: d.topic, route: d.route, version: d.version, status: d.status, stage: d.stage, next: d.next, warnings: d.warnings, actCount: d.acts.length, mediaCount: d.media.length, publishMedia: d.publishMedia }; }
       catch (error) { return { ep: e.ep, topic: e.topic, route: e.route === 'vibe' ? 'vibe' : 'teaching', status: shortStatus(e), stage: '资料读取异常', warnings: [error.message] }; }
     }));
     return { episodes: episodes.sort((a, b) => b.ep - a.ep), loadedAt: new Date().toISOString() };
   }
+  async function releaseFolder(ep) {
+    const d = await detail(ep);
+    if (!d.publishMedia) throw new WorkbenchError('本期尚未登记发布版本', 404);
+    const file = await safeFile(root, d.publishMedia.path);
+    if (!file.exists) throw new WorkbenchError('本期发布文件不存在，请核对制作索引', 404);
+    return { path: path.posix.dirname(d.publishMedia.path), absolute: path.dirname(file.absolute) };
+  }
   async function mediaDetail(ep, id) {
     const d = await detail(ep), m = d.media.find(x => x.id === id);
     if (!m) throw new WorkbenchError('本期没有登记该视频', 404);
-    const f = await safeFile(root, m.path);
+    const f = await safeFile(root, resolveRetainedMedia(root, m.path).path);
     if (!f.exists) throw new WorkbenchError('视频文件不存在，请选择其他已登记版本', 404);
     const [sha256, spec] = await Promise.all([fingerprint(f), probeMedia(f)]);
     const context = d._contexts.get(id), idx = context?.context;
@@ -230,7 +238,12 @@ export function createWorkbenchStore(root, { probeMedia = probe } = {}) {
       }
       throw new WorkbenchError('本期没有登记该材料', 404);
     }
-    return { ...(await safeFile(root, item.path)), path: item.path };
+    return { ...(await safeFile(root, resolveRetainedMedia(root, item.path).path)), path: item.path };
+  }
+  async function restoreMedia(ep, id) {
+    const d = await detail(ep), item = d.media.find(value => value.id === id);
+    if (!item) throw new WorkbenchError('本期没有登记该视频', 404);
+    return restoreRetainedMedia(root, item.path);
   }
   async function updateStatus(ep, input) {
     if (!input || Object.keys(input).some(k => !['status', 'expectedStatus'].includes(k)) || !['制作中', '待发布', '已发布'].includes(input.status)) throw new WorkbenchError('只能保存制作中、待发布或已发布状态');
@@ -253,5 +266,5 @@ export function createWorkbenchStore(root, { probeMedia = probe } = {}) {
     statusQueue = task;
     return task;
   }
-  return { list, detail, mediaDetail, asset, updateStatus, root };
+  return { list, detail, mediaDetail, asset, updateStatus, releaseFolder, restoreMedia, root };
 }

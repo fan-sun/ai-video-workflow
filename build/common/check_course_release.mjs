@@ -5,6 +5,7 @@
  * 依赖：Node.js 内置模块；默认从仓库根目录解析索引中的相对路径。
  */
 import { assertCourseVisualReady } from "./check_course_visual_review.mjs";
+import { resolveRetainedMedia } from "./retained_media.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -34,7 +35,7 @@ function resolveRequiredArtifact(rootDir, label, value) {
     throw new Error(`${label} 不能为空`);
   }
   const root = path.resolve(rootDir);
-  const file = path.resolve(root, value);
+  const file = label === "review_output" ? resolveRetainedMedia(root, value).absolute : path.resolve(root, value);
   const relative = path.relative(root, file);
   if (relative.startsWith("..") || path.isAbsolute(relative)) {
     throw new Error(`${label} 必须位于项目目录内`);
